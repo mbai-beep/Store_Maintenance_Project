@@ -1,0 +1,983 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<title>MB Customer Requirement</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --green: #1a9e6f;
+  --green-dark: #0d7a54;
+  --green-light: #e0f5ec;
+  --green-mid: #5dcaa5;
+  --bg: #f4f2ed;
+  --surface: #ffffff;
+  --surface2: #f8f7f3;
+  --border: rgba(0,0,0,0.08);
+  --text: #1a1916;
+  --text2: #6b6960;
+  --text3: #a8a59e;
+  --red: #e53e3e;
+  --amber: #d97706;
+  --blue: #2563eb;
+  --radius: 14px;
+  --radius-sm: 8px;
+  --shadow: 0 2px 16px rgba(0,0,0,0.07);
+  --font: 'DM Sans', sans-serif;
+  --mono: 'DM Mono', monospace;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+body { font-family: var(--font); background: var(--bg); color: var(--text); min-height: 100vh; max-width: 430px; margin: 0 auto; position: relative; overflow-x: hidden; }
+.screen { display: none; flex-direction: column; min-height: 100vh; }
+.screen.active { display: flex; }
+
+/* LOGIN */
+#s-login { background: var(--green); align-items: center; justify-content: center; padding: 40px 28px; }
+.login-logo { width: 72px; height: 72px; background: rgba(255,255,255,0.15); border-radius: 20px; display: flex; align-items: center; justify-content: center; margin: 0 auto 16px; }
+.login-logo svg { width: 36px; height: 36px; }
+.login-card { background: white; border-radius: 24px; padding: 28px 24px; width: 100%; margin-top: 8px; }
+.login-title { font-size: 22px; font-weight: 600; color: var(--text); margin-bottom: 4px; }
+.login-sub { font-size: 13px; color: var(--text2); margin-bottom: 24px; }
+
+/* SETUP BANNER */
+.setup-banner { background: #FEF3C7; border: 1px solid #F59E0B; border-radius: var(--radius-sm); padding: 12px 14px; margin-bottom: 16px; }
+.setup-banner-title { font-size: 12px; font-weight: 600; color: #92400E; margin-bottom: 4px; display: flex; align-items: center; gap: 6px; }
+.setup-banner-text { font-size: 11px; color: #78350F; line-height: 1.5; }
+.setup-banner input { width: 100%; border: 1px solid #F59E0B; border-radius: 6px; padding: 8px 10px; font-size: 12px; margin-top: 8px; font-family: var(--font); background: #FFFBEB; outline: none; }
+.setup-banner button { width: 100%; padding: 8px; background: #D97706; color: white; border: none; border-radius: 6px; font-size: 12px; font-weight: 600; margin-top: 6px; cursor: pointer; font-family: var(--font); }
+.sync-dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; flex-shrink: 0; }
+.sync-dot.green { background: #1D9E75; }
+.sync-dot.red { background: #E24B4A; }
+.sync-dot.amber { background: #D97706; }
+
+/* FIELDS */
+.field-group { margin-bottom: 16px; }
+.field-group label { display: block; font-size: 12px; font-weight: 500; color: var(--text2); margin-bottom: 6px; letter-spacing: 0.03em; text-transform: uppercase; }
+.field-group input, .field-group select, .field-group textarea { width: 100%; border: 1.5px solid var(--border); border-radius: var(--radius-sm); padding: 12px 14px; font-size: 15px; font-family: var(--font); color: var(--text); background: var(--surface2); outline: none; transition: border-color 0.2s; }
+.field-group input:focus, .field-group select:focus, .field-group textarea:focus { border-color: var(--green); background: white; }
+.field-group textarea { resize: none; min-height: 90px; line-height: 1.5; }
+.btn-primary { width: 100%; padding: 14px; background: var(--green); color: white; border: none; border-radius: var(--radius-sm); font-size: 15px; font-weight: 600; font-family: var(--font); cursor: pointer; transition: background 0.2s, transform 0.1s; }
+.btn-primary:active { transform: scale(0.98); background: var(--green-dark); }
+.btn-primary:disabled { background: var(--text3); cursor: not-allowed; }
+.role-selector { display: flex; gap: 8px; margin-bottom: 20px; }
+.role-btn { flex: 1; padding: 10px; border: 1.5px solid var(--border); border-radius: var(--radius-sm); background: var(--surface2); font-size: 13px; font-weight: 500; color: var(--text2); cursor: pointer; transition: all 0.15s; text-align: center; font-family: var(--font); }
+.role-btn.active { border-color: var(--green); background: var(--green-light); color: var(--green-dark); }
+
+/* TOPBAR */
+.topbar { background: var(--green); padding: 52px 20px 16px; display: flex; align-items: flex-end; justify-content: space-between; flex-shrink: 0; }
+.topbar-title { font-size: 20px; font-weight: 600; color: white; }
+.topbar-back { display: flex; align-items: center; gap: 6px; color: rgba(255,255,255,0.85); font-size: 14px; cursor: pointer; background: none; border: none; font-family: var(--font); }
+.avatar { width: 38px; height: 38px; border-radius: 50%; background: rgba(255,255,255,0.2); display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 600; color: white; cursor: pointer; flex-shrink: 0; }
+.sheets-status { display: flex; align-items: center; gap: 5px; background: rgba(255,255,255,0.15); border-radius: 20px; padding: 4px 10px; margin-top: 8px; width: fit-content; }
+.sheets-status span { font-size: 11px; color: rgba(255,255,255,0.9); }
+
+/* HOME */
+.home-body { flex: 1; padding: 0 16px 100px; background: var(--bg); }
+.stats-row { display: flex; gap: 10px; margin: 16px 0; }
+.stat-card { flex: 1; background: white; border-radius: var(--radius); padding: 14px 12px; text-align: center; box-shadow: var(--shadow); border: 1px solid var(--border); }
+.stat-num { font-size: 26px; font-weight: 600; color: var(--green); font-family: var(--mono); }
+.stat-lbl { font-size: 11px; color: var(--text3); margin-top: 2px; }
+.section-head { font-size: 11px; font-weight: 600; color: var(--text3); text-transform: uppercase; letter-spacing: 0.06em; margin: 20px 0 10px; }
+.req-card { background: white; border-radius: var(--radius); padding: 14px 16px; margin-bottom: 10px; box-shadow: var(--shadow); border: 1px solid var(--border); display: flex; align-items: center; gap: 12px; cursor: pointer; transition: transform 0.15s; }
+.req-card:active { transform: scale(0.98); }
+.req-initials { width: 42px; height: 42px; border-radius: 50%; background: var(--green-light); color: var(--green-dark); display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 600; flex-shrink: 0; }
+.req-info { flex: 1; min-width: 0; }
+.req-name { font-size: 14px; font-weight: 500; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.req-store { font-size: 12px; color: var(--text2); margin-top: 2px; }
+.req-time { font-size: 11px; color: var(--text3); margin-top: 2px; }
+.req-meta { display: flex; flex-direction: column; align-items: flex-end; gap: 4px; }
+.badge { font-size: 10px; font-weight: 600; padding: 3px 9px; border-radius: 20px; }
+.badge-new { background: var(--green-light); color: var(--green-dark); }
+.badge-reviewed { background: #FEF3C7; color: #92400E; }
+.badge-actioned { background: #EDE9FE; color: #5B21B6; }
+.badge-pending { background: #FEE2E2; color: #991B1B; }
+.media-pills { display: flex; gap: 4px; }
+.media-pill { width: 22px; height: 22px; border-radius: 6px; display: flex; align-items: center; justify-content: center; font-size: 10px; }
+.pill-voice { background: #EDE9FE; color: #6D28D9; }
+.pill-photo { background: #FEF3C7; color: #92400E; }
+
+/* FAB */
+.fab { position: fixed; bottom: 80px; right: 20px; width: 58px; height: 58px; border-radius: 50%; background: var(--green); color: white; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 20px rgba(26,158,111,0.4); z-index: 100; transition: transform 0.2s; }
+.fab:active { transform: scale(0.92); }
+.fab svg { width: 26px; height: 26px; }
+
+/* BOTTOM NAV */
+.bottom-nav { position: fixed; bottom: 0; left: 50%; transform: translateX(-50%); width: 100%; max-width: 430px; background: white; border-top: 1px solid var(--border); display: flex; padding: 8px 0 20px; z-index: 99; }
+.nav-item { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 3px; cursor: pointer; padding: 4px 0; border: none; background: none; font-family: var(--font); }
+.nav-item span { font-size: 10px; color: var(--text3); }
+.nav-item.active span { color: var(--green); }
+.nav-item svg { width: 22px; height: 22px; stroke: var(--text3); }
+.nav-item.active svg { stroke: var(--green); }
+
+/* FORM */
+.form-body { flex: 1; padding: 16px 16px 100px; background: var(--bg); overflow-y: auto; }
+.form-section { background: white; border-radius: var(--radius); padding: 18px 16px; margin-bottom: 12px; box-shadow: var(--shadow); border: 1px solid var(--border); }
+.form-section-title { font-size: 11px; font-weight: 600; color: var(--text3); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 14px; }
+.capture-row { display: flex; gap: 8px; margin-top: 6px; }
+.capture-btn { flex: 1; border: 1.5px dashed var(--border); border-radius: var(--radius-sm); padding: 14px 8px; background: var(--surface2); display: flex; flex-direction: column; align-items: center; gap: 5px; font-size: 12px; color: var(--text2); cursor: pointer; font-family: var(--font); transition: all 0.15s; }
+.capture-btn svg { width: 20px; height: 20px; }
+.capture-btn.recording { border-style: solid; border-color: var(--green); background: var(--green-light); color: var(--green-dark); }
+.capture-btn.has-data { border-style: solid; border-color: var(--green-mid); background: var(--green-light); color: var(--green-dark); }
+.rec-timer { font-family: var(--mono); font-size: 13px; font-weight: 500; }
+.photo-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-top: 10px; }
+.photo-thumb { aspect-ratio: 1; border-radius: var(--radius-sm); overflow: hidden; border: 1px solid var(--border); cursor: pointer; }
+.photo-thumb img { width: 100%; height: 100%; object-fit: cover; }
+.submit-bar { position: fixed; bottom: 0; left: 50%; transform: translateX(-50%); width: 100%; max-width: 430px; background: white; border-top: 1px solid var(--border); padding: 12px 16px 28px; z-index: 99; }
+
+/* SYNC STATUS in submit bar */
+.sync-status-row { display: flex; align-items: center; gap: 6px; justify-content: center; margin-top: 8px; }
+.sync-status-row span { font-size: 11px; color: var(--text3); }
+
+/* DETAIL */
+.detail-body { flex: 1; padding: 16px 16px 40px; background: var(--bg); overflow-y: auto; }
+.detail-section { background: white; border-radius: var(--radius); padding: 18px 16px; margin-bottom: 12px; box-shadow: var(--shadow); border: 1px solid var(--border); }
+.detail-section-title { font-size: 11px; font-weight: 600; color: var(--text3); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 12px; }
+.detail-row { display: flex; justify-content: space-between; align-items: center; padding: 8px 0; border-bottom: 1px solid var(--border); }
+.detail-row:last-child { border-bottom: none; }
+.detail-key { font-size: 13px; color: var(--text2); }
+.detail-val { font-size: 13px; font-weight: 500; color: var(--text); text-align: right; max-width: 60%; }
+.desc-text { font-size: 14px; color: var(--text); line-height: 1.6; }
+.audio-player { display: flex; align-items: center; gap: 12px; background: var(--green-light); border-radius: var(--radius-sm); padding: 12px 14px; }
+.play-btn { width: 36px; height: 36px; border-radius: 50%; background: var(--green); border: none; display: flex; align-items: center; justify-content: center; cursor: pointer; flex-shrink: 0; }
+.play-btn svg { width: 14px; height: 14px; fill: white; }
+.progress-bar { flex: 1; height: 4px; background: rgba(0,0,0,0.1); border-radius: 2px; }
+.progress-fill { height: 100%; background: var(--green); border-radius: 2px; width: 0%; transition: width 0.3s; }
+.audio-dur { font-size: 12px; color: var(--green-dark); font-family: var(--mono); }
+.photo-gallery { display: grid; grid-template-columns: repeat(3,1fr); gap: 8px; }
+.gallery-img { aspect-ratio: 1; border-radius: var(--radius-sm); overflow: hidden; cursor: pointer; }
+.gallery-img img { width: 100%; height: 100%; object-fit: cover; }
+
+/* MANAGER */
+.manager-topbar { background: #0d1117; padding: 52px 20px 16px; display: flex; align-items: flex-end; justify-content: space-between; }
+.manager-topbar .topbar-title { color: white; }
+.filter-bar { background: #0d1117; padding: 0 16px 14px; display: flex; gap: 8px; overflow-x: auto; scrollbar-width: none; }
+.filter-bar::-webkit-scrollbar { display: none; }
+.filter-chip { padding: 7px 14px; border-radius: 20px; font-size: 12px; font-weight: 500; white-space: nowrap; cursor: pointer; border: 1.5px solid rgba(255,255,255,0.15); color: rgba(255,255,255,0.6); background: transparent; font-family: var(--font); transition: all 0.15s; }
+.filter-chip.active { background: var(--green); border-color: var(--green); color: white; }
+.manager-body { flex: 1; padding: 12px 16px 40px; background: var(--bg); }
+.mgr-stats { display: grid; grid-template-columns: repeat(3,1fr); gap: 8px; margin-bottom: 16px; }
+.mgr-stat { background: white; border-radius: var(--radius-sm); padding: 12px 10px; text-align: center; border: 1px solid var(--border); }
+.mgr-stat-num { font-size: 22px; font-weight: 600; color: var(--text); font-family: var(--mono); }
+.mgr-stat-lbl { font-size: 10px; color: var(--text3); margin-top: 2px; }
+.action-row { display: flex; gap: 8px; margin-bottom: 14px; }
+.export-btn { flex: 1; display: flex; align-items: center; justify-content: center; gap: 8px; background: #0d1117; color: white; border: none; border-radius: var(--radius-sm); padding: 10px 16px; font-size: 13px; font-weight: 500; cursor: pointer; font-family: var(--font); }
+.export-btn svg { width: 16px; height: 16px; flex-shrink: 0; }
+.refresh-btn { display: flex; align-items: center; gap: 6px; background: var(--green-light); color: var(--green-dark); border: 1px solid var(--green-mid); border-radius: var(--radius-sm); padding: 10px 14px; font-size: 13px; font-weight: 500; cursor: pointer; font-family: var(--font); }
+.refresh-btn svg { width: 15px; height: 15px; }
+
+/* TOAST */
+.toast { position: fixed; bottom: 90px; left: 50%; transform: translateX(-50%); background: #1a1916; color: white; padding: 12px 20px; border-radius: 30px; font-size: 13px; font-weight: 500; z-index: 999; opacity: 0; transition: opacity 0.3s; pointer-events: none; white-space: nowrap; max-width: 90%; text-align: center; }
+.toast.show { opacity: 1; }
+.toast.success { background: var(--green-dark); }
+.toast.error { background: var(--red); }
+
+/* LOADING OVERLAY */
+.loading-overlay { display: none; position: fixed; inset: 0; background: rgba(255,255,255,0.85); z-index: 998; align-items: center; justify-content: center; flex-direction: column; gap: 14px; }
+.loading-overlay.show { display: flex; }
+.spinner { width: 36px; height: 36px; border: 3px solid var(--green-light); border-top-color: var(--green); border-radius: 50%; animation: spin 0.8s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
+.loading-text { font-size: 14px; color: var(--text2); }
+
+/* EMPTY */
+.empty-state { text-align: center; padding: 60px 20px; }
+.empty-icon { font-size: 48px; margin-bottom: 12px; opacity: 0.3; }
+.empty-title { font-size: 16px; font-weight: 500; color: var(--text2); margin-bottom: 6px; }
+.empty-sub { font-size: 13px; color: var(--text3); }
+
+/* FULLSCREEN PHOTO */
+.photo-fullscreen { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.95); z-index: 999; align-items: center; justify-content: center; }
+.photo-fullscreen.show { display: flex; }
+.photo-fullscreen img { max-width: 100%; max-height: 100%; object-fit: contain; }
+.photo-close { position: absolute; top: 20px; right: 20px; background: rgba(255,255,255,0.15); border: none; border-radius: 50%; width: 40px; height: 40px; color: white; font-size: 20px; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+
+input[type="file"] { display: none; }
+@keyframes pulse { 0%,100%{opacity:1}50%{opacity:0.5} }
+.recording-pulse { animation: pulse 1s infinite; }
+</style>
+</head>
+<body>
+
+<div class="photo-fullscreen" id="photoFullscreen" onclick="closeFullscreen()">
+  <button class="photo-close">✕</button>
+  <img id="fullscreenImg" src="" alt="">
+</div>
+<div class="toast" id="toast"></div>
+<div class="loading-overlay" id="loadingOverlay">
+  <div class="spinner"></div>
+  <div class="loading-text" id="loadingText">Syncing to Google Sheets...</div>
+</div>
+<input type="file" id="cameraInput" accept="image/*" capture="environment" multiple onchange="handlePhotos(this)">
+<input type="file" id="galleryInput" accept="image/*" multiple onchange="handlePhotos(this)">
+
+<!-- ══ SCREEN 1: LOGIN ══ -->
+<div class="screen active" id="s-login">
+  <div style="text-align:center;margin-bottom:20px;">
+    <div class="login-logo">
+      <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round">
+        <path d="M20 7H4a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2z"/>
+        <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/>
+      </svg>
+    </div>
+    <div style="font-size:26px;font-weight:700;color:white;letter-spacing:-0.5px;">MB Customer</div>
+    <div style="font-size:26px;font-weight:700;color:white;letter-spacing:-0.5px;">Requirement</div>
+    <div style="font-size:12px;color:rgba(255,255,255,0.7);margin-top:4px;">Field employee app</div>
+  </div>
+
+  <div class="login-card">
+    <!-- SHEETS CONFIG BANNER -->
+    <div class="setup-banner" id="setupBanner" style="display:block;">
+      <div class="setup-banner-title">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#92400E" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+        Connect Google Sheets
+      </div>
+      <div class="setup-banner-text">Paste your Google Apps Script Web App URL below to enable real-time sync to your Google Sheet.</div>
+      <input type="url" id="scriptUrlInput" placeholder="https://script.google.com/macros/s/.../exec">
+      <button onclick="saveScriptUrl()">✓ Save &amp; Connect</button>
+    </div>
+    <div id="connectedBanner" style="display:none;background:#e0f5ec;border:1px solid #5dcaa5;border-radius:8px;padding:10px 14px;margin-bottom:16px;">
+      <div style="font-size:12px;font-weight:600;color:#085041;display:flex;align-items:center;gap:6px;">
+        <span style="width:8px;height:8px;background:#1D9E75;border-radius:50%;display:inline-block;flex-shrink:0;"></span>
+        Connected to Google Sheets ✓
+      </div>
+      <div style="font-size:11px;color:#0F6E56;margin-top:3px;word-break:break-all;" id="connectedUrl"></div>
+      <button onclick="disconnectSheets()" style="font-size:11px;color:#A32D2D;background:none;border:none;cursor:pointer;padding:6px 0 0;font-family:var(--font);">⚙ Change URL</button>
+    </div>
+
+    <div class="login-title">Welcome back</div>
+    <div class="login-sub">Sign in to continue</div>
+    <div style="margin-bottom:14px;">
+      <div style="font-size:12px;font-weight:600;color:var(--text2);margin-bottom:8px;text-transform:uppercase;letter-spacing:0.03em;">Sign in as</div>
+      <div class="role-selector">
+        <button class="role-btn active" id="role-emp" onclick="selectRole('employee')">
+          <div style="font-size:18px;margin-bottom:2px;">👤</div>Employee
+        </button>
+        <button class="role-btn" id="role-mgr" onclick="selectRole('manager')">
+          <div style="font-size:18px;margin-bottom:2px;">👑</div>Manager
+        </button>
+      </div>
+    </div>
+    <div class="field-group">
+      <label>Employee Name</label>
+      <input type="text" id="loginName" placeholder="Your full name" value="Ravi Kumar">
+    </div>
+    <div class="field-group">
+      <label>Store Name</label>
+      <input type="text" id="loginStore" placeholder="Your store name" value="Chennai South Store">
+    </div>
+    <div class="field-group" style="margin-bottom:20px;">
+      <label>Employee ID</label>
+      <input type="text" id="loginId" placeholder="e.g. EMP001" value="EMP001">
+    </div>
+    <button class="btn-primary" onclick="doLogin()">Sign in</button>
+  </div>
+</div>
+
+<!-- ══ SCREEN 2: EMPLOYEE HOME ══ -->
+<div class="screen" id="s-home">
+  <div class="topbar">
+    <div>
+      <div style="font-size:12px;color:rgba(255,255,255,0.7);">Good morning</div>
+      <div class="topbar-title" id="empName">Ravi Kumar</div>
+      <div class="sheets-status" id="sheetsStatus">
+        <span class="sync-dot" id="homeSyncDot" style="background:rgba(255,255,255,0.4);"></span>
+        <span id="homeSyncLabel">Checking sync...</span>
+      </div>
+    </div>
+    <div class="avatar" id="empAvatar" onclick="doLogout()">RK</div>
+  </div>
+  <div class="home-body">
+    <div class="stats-row">
+      <div class="stat-card"><div class="stat-num" id="statToday">0</div><div class="stat-lbl">Today</div></div>
+      <div class="stat-card"><div class="stat-num" id="statWeek">0</div><div class="stat-lbl">This week</div></div>
+      <div class="stat-card"><div class="stat-num" id="statTotal">0</div><div class="stat-lbl">Total</div></div>
+    </div>
+    <div class="section-head">Recent entries</div>
+    <div id="entriesList"></div>
+  </div>
+  <button class="fab" onclick="goTo('s-capture')">
+    <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+  </button>
+  <nav class="bottom-nav">
+    <button class="nav-item active" onclick="goTo('s-home')">
+      <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>
+      <span>Home</span>
+    </button>
+    <button class="nav-item" onclick="goTo('s-capture')">
+      <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
+      <span>New</span>
+    </button>
+    <button class="nav-item" onclick="doLogout()">
+      <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+      <span>Logout</span>
+    </button>
+  </nav>
+</div>
+
+<!-- ══ SCREEN 3: CAPTURE FORM ══ -->
+<div class="screen" id="s-capture">
+  <div class="topbar">
+    <div>
+      <button class="topbar-back" onclick="goBack()">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="15 18 9 12 15 6"/></svg>
+        Back
+      </button>
+      <div class="topbar-title" style="margin-top:4px;">New requirement</div>
+    </div>
+  </div>
+  <div class="form-body">
+    <div class="form-section">
+      <div class="form-section-title">Customer info</div>
+      <div class="field-group">
+        <label>Customer name *</label>
+        <input type="text" id="custName" placeholder="Full name">
+      </div>
+      <div class="field-group">
+        <label>Mobile number *</label>
+        <input type="tel" id="custMobile" placeholder="+91 XXXXX XXXXX">
+      </div>
+      <div class="field-group" style="margin-bottom:0;">
+        <label>Store name *</label>
+        <input type="text" id="custStore" placeholder="Store or branch name">
+      </div>
+    </div>
+    <div class="form-section">
+      <div class="form-section-title">Requirement details</div>
+      <div class="field-group" style="margin-bottom:0;">
+        <label>Description</label>
+        <textarea id="reqDesc" placeholder="Describe the customer's requirement..."></textarea>
+      </div>
+    </div>
+    <div class="form-section">
+      <div class="form-section-title">Voice note</div>
+      <div class="capture-row">
+        <button class="capture-btn" id="voiceBtn" onclick="toggleVoice()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+            <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/>
+            <path d="M19 10v2a7 7 0 0 1-14 0v-2M12 19v4M8 23h8"/>
+          </svg>
+          <span id="voiceBtnLabel">Tap to record</span>
+          <span class="rec-timer" id="recTimer" style="display:none;"></span>
+        </button>
+        <button class="capture-btn" id="playBtn" style="display:none;" onclick="playRecording()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+          <span>Play back</span>
+        </button>
+      </div>
+      <div style="font-size:11px;color:var(--text3);margin-top:8px;">Note: Voice note duration is saved to Google Sheets. Audio file stays on device.</div>
+    </div>
+    <div class="form-section">
+      <div class="form-section-title">Photographs</div>
+      <div class="capture-row">
+        <button class="capture-btn" onclick="document.getElementById('cameraInput').click()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+          Camera
+        </button>
+        <button class="capture-btn" onclick="document.getElementById('galleryInput').click()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+          Gallery
+        </button>
+      </div>
+      <div class="photo-grid" id="photoGrid"></div>
+      <div style="font-size:11px;color:var(--text3);margin-top:8px;">Photo count is saved to Google Sheets. Photos stay on device.</div>
+    </div>
+  </div>
+  <div class="submit-bar">
+    <button class="btn-primary" id="submitBtn" onclick="submitForm()">Save & Sync to Google Sheets</button>
+    <div class="sync-status-row">
+      <span class="sync-dot" id="submitSyncDot" style="background:var(--text3);"></span>
+      <span id="submitSyncLabel">Not connected</span>
+    </div>
+  </div>
+</div>
+
+<!-- ══ SCREEN 4: DETAIL ══ -->
+<div class="screen" id="s-detail">
+  <div class="topbar">
+    <div>
+      <button class="topbar-back" onclick="goBack()">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="15 18 9 12 15 6"/></svg>
+        Back
+      </button>
+      <div class="topbar-title" style="margin-top:4px;">Requirement detail</div>
+    </div>
+    <div id="detailBadge" class="badge badge-new">New</div>
+  </div>
+  <div class="detail-body" id="detailBody"></div>
+</div>
+
+<!-- ══ SCREEN 5: MANAGER ══ -->
+<div class="screen" id="s-manager">
+  <div class="manager-topbar">
+    <div>
+      <div style="font-size:12px;color:rgba(255,255,255,0.5);">Manager view</div>
+      <div class="topbar-title" id="mgrName">Manager</div>
+      <div class="sheets-status" id="mgrSheetsStatus" style="margin-top:8px;">
+        <span class="sync-dot" id="mgrSyncDot" style="background:rgba(255,255,255,0.4);"></span>
+        <span id="mgrSyncLabel" style="font-size:11px;color:rgba(255,255,255,0.9);">Checking...</span>
+      </div>
+    </div>
+    <div class="avatar" style="background:rgba(255,255,255,0.1);" onclick="doLogout()" id="mgrAvatar">MK</div>
+  </div>
+  <div class="filter-bar">
+    <button class="filter-chip active" onclick="filterMgr('all',this)">All</button>
+    <button class="filter-chip" onclick="filterMgr('new',this)">New</button>
+    <button class="filter-chip" onclick="filterMgr('reviewed',this)">Reviewed</button>
+    <button class="filter-chip" onclick="filterMgr('today',this)">Today</button>
+    <button class="filter-chip" onclick="filterMgr('week',this)">This week</button>
+  </div>
+  <div class="manager-body">
+    <div class="mgr-stats">
+      <div class="mgr-stat"><div class="mgr-stat-num" id="mgrTotal">0</div><div class="mgr-stat-lbl">Total</div></div>
+      <div class="mgr-stat"><div class="mgr-stat-num" id="mgrToday">0</div><div class="mgr-stat-lbl">Today</div></div>
+      <div class="mgr-stat"><div class="mgr-stat-num" id="mgrEmployees">0</div><div class="mgr-stat-lbl">Employees</div></div>
+    </div>
+    <div class="action-row">
+      <button class="export-btn" onclick="exportCSV()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        Export CSV
+      </button>
+      <button class="refresh-btn" onclick="fetchFromSheets()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-4.95"/></svg>
+        Refresh
+      </button>
+    </div>
+    <div id="mgrList"></div>
+  </div>
+</div>
+
+<script>
+// ════════════════════════════════════════
+// GOOGLE SHEETS INTEGRATION
+// ════════════════════════════════════════
+const SCRIPT_URL_KEY = 'mb_script_url';
+const ENTRIES_KEY    = 'mb_entries';
+const USER_KEY       = 'mb_user';
+
+let SCRIPT_URL = localStorage.getItem(SCRIPT_URL_KEY) || '';
+let currentRole = 'employee';
+let currentScreen = 's-login';
+let screenHistory = [];
+let entries = [];
+let currentUser = JSON.parse(localStorage.getItem(USER_KEY) || 'null');
+let photos = [];
+let photoDataUrls = [];
+let isRecording = false;
+let mediaRecorder = null;
+let audioChunks = [];
+let audioBlob = null;
+let audioUrl = null;
+let recInterval = null;
+let recSeconds = 0;
+
+// ── Google Sheets: send row ──
+async function sendToSheets(row) {
+  if (!SCRIPT_URL) return { ok: false, reason: 'no_url' };
+  try {
+    const res = await fetch(SCRIPT_URL, {
+      method: 'POST',
+      mode: 'no-cors',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ action: 'append', row })
+    });
+    return { ok: true };
+  } catch(e) {
+    return { ok: false, reason: e.message };
+  }
+}
+
+// ── Google Sheets: fetch all rows (manager) ──
+async function fetchFromSheets() {
+  if (!SCRIPT_URL) { showToast('No Google Sheets URL configured', 'error'); return; }
+  showLoading('Fetching from Google Sheets...');
+  try {
+    const url = SCRIPT_URL + '?action=fetch';
+    const res = await fetch(url);
+    const data = await res.json();
+    if (data.rows) {
+      entries = data.rows.map(r => ({
+        id: r[0], customerName: r[1], mobileNumber: r[2], storeName: r[3],
+        description: r[4], employee: r[5], employeeId: r[6], createdAt: r[7],
+        status: r[8] || 'new', hasVoice: r[9] === 'Yes', photoCount: parseInt(r[10])||0,
+        fromSheets: true
+      }));
+      saveEntries();
+      renderManager();
+      showToast('Synced from Google Sheets ✓', 'success');
+    }
+  } catch(e) {
+    showToast('Could not fetch — check your Apps Script URL', 'error');
+  }
+  hideLoading();
+}
+
+// ── Save script URL ──
+function saveScriptUrl() {
+  const url = document.getElementById('scriptUrlInput').value.trim();
+  if (!url || !url.includes('script.google.com')) {
+    showToast('Please enter a valid Apps Script URL', 'error'); return;
+  }
+  SCRIPT_URL = url;
+  localStorage.setItem(SCRIPT_URL_KEY, url);
+  document.getElementById('setupBanner').style.display = 'none';
+  document.getElementById('connectedBanner').style.display = 'block';
+  const short = url.length > 50 ? url.slice(0,50)+'...' : url;
+  document.getElementById('connectedUrl').textContent = short;
+  updateSyncStatus(true);
+  showToast('Google Sheets connected ✓', 'success');
+}
+
+function updateSyncStatus(connected) {
+  const color = connected ? '#1D9E75' : '#E24B4A';
+  const label = connected ? 'Syncing to Google Sheets' : 'Not connected to Sheets';
+  ['homeSyncDot','submitSyncDot','mgrSyncDot'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.style.background = color;
+  });
+  ['homeSyncLabel','submitSyncLabel','mgrSyncLabel'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.textContent = label;
+  });
+  const btn = document.getElementById('submitBtn');
+  if (btn) btn.textContent = connected ? 'Save & Sync to Google Sheets' : 'Save (offline — no Sheets)';
+}
+
+// ════════════════════════════════════════
+// APP STATE & NAVIGATION
+// ════════════════════════════════════════
+function disconnectSheets() {
+  SCRIPT_URL = '';
+  localStorage.removeItem(SCRIPT_URL_KEY);
+  document.getElementById('setupBanner').style.display = 'block';
+  document.getElementById('connectedBanner').style.display = 'none';
+  document.getElementById('scriptUrlInput').value = '';
+  updateSyncStatus(false);
+  showToast('Disconnected from Google Sheets');
+}
+
+function init() {
+  entries = JSON.parse(localStorage.getItem(ENTRIES_KEY) || '[]');
+  if (SCRIPT_URL) {
+    document.getElementById('setupBanner').style.display = 'none';
+    document.getElementById('connectedBanner').style.display = 'block';
+    document.getElementById('scriptUrlInput').value = SCRIPT_URL;
+    const short = SCRIPT_URL.length > 50 ? SCRIPT_URL.slice(0,50)+'...' : SCRIPT_URL;
+    document.getElementById('connectedUrl').textContent = short;
+    updateSyncStatus(true);
+  } else {
+    document.getElementById('setupBanner').style.display = 'block';
+    document.getElementById('connectedBanner').style.display = 'none';
+    updateSyncStatus(false);
+  }
+}
+
+function saveEntries() {
+  try { localStorage.setItem(ENTRIES_KEY, JSON.stringify(entries)); } catch(e){}
+}
+
+function goTo(id) {
+  if (currentScreen === id) return;
+  screenHistory.push(currentScreen);
+  document.getElementById(currentScreen).classList.remove('active');
+  document.getElementById(id).classList.add('active');
+  currentScreen = id;
+  if (id === 's-home') renderHome();
+  if (id === 's-manager') renderManager();
+  if (id === 's-capture') resetForm();
+}
+
+function goBack() {
+  const prev = screenHistory.pop() || (currentRole === 'manager' ? 's-manager' : 's-home');
+  document.getElementById(currentScreen).classList.remove('active');
+  document.getElementById(prev).classList.add('active');
+  currentScreen = prev;
+  if (prev === 's-home') renderHome();
+  if (prev === 's-manager') renderManager();
+}
+
+// ════════════════════════════════════════
+// AUTH
+// ════════════════════════════════════════
+function selectRole(role) {
+  currentRole = role;
+  document.getElementById('role-emp').classList.toggle('active', role === 'employee');
+  document.getElementById('role-mgr').classList.toggle('active', role === 'manager');
+}
+
+function doLogin() {
+  const name = document.getElementById('loginName').value.trim();
+  const store = document.getElementById('loginStore').value.trim();
+  const id = document.getElementById('loginId').value.trim();
+  if (!name) { showToast('Please enter your name'); return; }
+  currentUser = { name, store, id, role: currentRole };
+  localStorage.setItem(USER_KEY, JSON.stringify(currentUser));
+  if (currentRole === 'manager') {
+    document.getElementById('mgrName').textContent = name;
+    const ini = name.split(' ').map(w=>w[0]).join('').slice(0,2).toUpperCase();
+    document.getElementById('mgrAvatar').textContent = ini;
+    goTo('s-manager');
+    if (SCRIPT_URL) setTimeout(fetchFromSheets, 500);
+  } else {
+    document.getElementById('empName').textContent = name;
+    document.getElementById('empAvatar').textContent = name.split(' ').map(w=>w[0]).join('').slice(0,2).toUpperCase();
+    goTo('s-home');
+  }
+}
+
+function doLogout() {
+  currentUser = null;
+  screenHistory = [];
+  document.getElementById(currentScreen).classList.remove('active');
+  document.getElementById('s-login').classList.add('active');
+  currentScreen = 's-login';
+}
+
+// ════════════════════════════════════════
+// HOME
+// ════════════════════════════════════════
+function renderHome() {
+  const now = new Date();
+  const todayStart = new Date(now); todayStart.setHours(0,0,0,0);
+  const weekStart  = new Date(todayStart); weekStart.setDate(weekStart.getDate()-7);
+  const myEntries  = entries.filter(e => e.employee === currentUser?.name);
+  document.getElementById('statToday').textContent = myEntries.filter(e => new Date(e.createdAt) >= todayStart).length;
+  document.getElementById('statWeek').textContent  = myEntries.filter(e => new Date(e.createdAt) >= weekStart).length;
+  document.getElementById('statTotal').textContent = myEntries.length;
+
+  const list = document.getElementById('entriesList');
+  if (myEntries.length === 0) {
+    list.innerHTML = '<div class="empty-state"><div class="empty-icon">📋</div><div class="empty-title">No entries yet</div><div class="empty-sub">Tap + to capture your first customer requirement</div></div>';
+    return;
+  }
+  list.innerHTML = myEntries.slice().reverse().map(e => {
+    const ini = e.customerName.split(' ').map(w=>w[0]).join('').slice(0,2).toUpperCase();
+    return `<div class="req-card" onclick="viewEntry('${e.id}')">
+      <div class="req-initials">${ini}</div>
+      <div class="req-info">
+        <div class="req-name">${esc(e.customerName)}</div>
+        <div class="req-store">${esc(e.storeName)}</div>
+        <div class="req-time">${formatTime(new Date(e.createdAt))}</div>
+      </div>
+      <div class="req-meta">
+        <span class="badge badge-${e.status||'new'}">${capitalize(e.status||'new')}</span>
+        <div class="media-pills">
+          ${e.hasVoice ? '<span class="media-pill pill-voice">🎤</span>' : ''}
+          ${(e.photoCount||0) > 0 ? `<span class="media-pill pill-photo">📷${e.photoCount}</span>` : ''}
+          ${e.synced ? '<span style="font-size:10px;color:var(--green);">✓</span>' : '<span style="font-size:10px;color:var(--text3);">⏳</span>'}
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+// ════════════════════════════════════════
+// CAPTURE + SYNC
+// ════════════════════════════════════════
+function resetForm() {
+  ['custName','custMobile','custStore','reqDesc'].forEach(id => { const el=document.getElementById(id); if(el) el.value=''; });
+  photos=[]; photoDataUrls=[];
+  audioBlob=null; audioUrl=null; isRecording=false;
+  document.getElementById('photoGrid').innerHTML='';
+  const vb=document.getElementById('voiceBtn');
+  vb.classList.remove('recording','has-data');
+  document.getElementById('voiceBtnLabel').textContent='Tap to record';
+  document.getElementById('recTimer').style.display='none';
+  document.getElementById('playBtn').style.display='none';
+  if(recInterval){ clearInterval(recInterval); recInterval=null; }
+  if(currentUser?.store) document.getElementById('custStore').value=currentUser.store;
+}
+
+function handlePhotos(input) {
+  Array.from(input.files).forEach(file => {
+    photos.push(file);
+    const r=new FileReader();
+    r.onload=e=>{
+      photoDataUrls.push(e.target.result);
+      addPhotoThumb(e.target.result);
+    };
+    r.readAsDataURL(file);
+  });
+  input.value='';
+}
+
+function addPhotoThumb(src) {
+  const grid=document.getElementById('photoGrid');
+  const div=document.createElement('div');
+  div.className='photo-thumb';
+  div.onclick=()=>openFullscreen(src);
+  div.innerHTML=`<img src="${src}" alt="photo">`;
+  grid.appendChild(div);
+}
+
+async function toggleVoice() {
+  if(isRecording){ stopRecording(); return; }
+  try {
+    const stream=await navigator.mediaDevices.getUserMedia({audio:true});
+    mediaRecorder=new MediaRecorder(stream);
+    audioChunks=[];
+    mediaRecorder.ondataavailable=e=>audioChunks.push(e.data);
+    mediaRecorder.onstop=()=>{
+      audioBlob=new Blob(audioChunks,{type:'audio/webm'});
+      audioUrl=URL.createObjectURL(audioBlob);
+      document.getElementById('playBtn').style.display='';
+      document.getElementById('voiceBtn').classList.remove('recording');
+      document.getElementById('voiceBtn').classList.add('has-data');
+      document.getElementById('voiceBtnLabel').textContent='Recorded ✓';
+    };
+    mediaRecorder.start();
+    isRecording=true; recSeconds=0;
+    document.getElementById('voiceBtn').classList.add('recording');
+    document.getElementById('voiceBtnLabel').classList.add('recording-pulse');
+    document.getElementById('voiceBtnLabel').textContent='Recording...';
+    document.getElementById('recTimer').style.display='';
+    document.getElementById('recTimer').textContent='0:00';
+    recInterval=setInterval(()=>{
+      recSeconds++;
+      document.getElementById('recTimer').textContent=Math.floor(recSeconds/60)+':'+String(recSeconds%60).padStart(2,'0');
+    },1000);
+  } catch(e){ showToast('Microphone access denied','error'); }
+}
+
+function stopRecording() {
+  if(mediaRecorder){ mediaRecorder.stop(); mediaRecorder.stream.getTracks().forEach(t=>t.stop()); }
+  clearInterval(recInterval); recInterval=null; isRecording=false;
+  document.getElementById('voiceBtnLabel').classList.remove('recording-pulse');
+  document.getElementById('recTimer').style.display='none';
+}
+
+function playRecording() {
+  if(!audioUrl) return;
+  new Audio(audioUrl).play();
+  showToast('Playing voice note...');
+}
+
+async function submitForm() {
+  const name   = document.getElementById('custName').value.trim();
+  const mobile = document.getElementById('custMobile').value.trim();
+  const store  = document.getElementById('custStore').value.trim();
+  const desc   = document.getElementById('reqDesc').value.trim();
+  if(!name||!mobile||!store){ showToast('Please fill in name, mobile & store','error'); return; }
+  if(isRecording) stopRecording();
+
+  const entry = {
+    id: 'MB' + Date.now(),
+    customerName: name,
+    mobileNumber: mobile,
+    storeName: store,
+    description: desc,
+    employee: currentUser?.name || 'Unknown',
+    employeeId: currentUser?.id || '',
+    createdAt: new Date().toISOString(),
+    status: 'new',
+    hasVoice: !!audioBlob,
+    voiceDuration: audioBlob ? recSeconds + 's' : '',
+    photoCount: photos.length,
+    synced: false,
+  };
+
+  entries.push(entry);
+  saveEntries();
+
+  // Sync to Google Sheets
+  if (SCRIPT_URL) {
+    showLoading('Syncing to Google Sheets...');
+    const row = [
+      entry.id, entry.customerName, entry.mobileNumber, entry.storeName,
+      entry.description, entry.employee, entry.employeeId,
+      new Date(entry.createdAt).toLocaleString('en-IN'),
+      entry.status,
+      entry.hasVoice ? 'Yes' : 'No',
+      entry.voiceDuration,
+      entry.photoCount.toString(),
+      new Date().toLocaleString('en-IN')  // Synced at
+    ];
+    const result = await sendToSheets(row);
+    hideLoading();
+    if (result.ok) {
+      entry.synced = true;
+      saveEntries();
+      showToast('Saved & synced to Google Sheets ✓', 'success');
+    } else if (result.reason === 'no_url') {
+      showToast('Saved locally (no Sheets URL)', 'error');
+    } else {
+      showToast('Saved locally — will retry sync', 'error');
+    }
+  } else {
+    showToast('Saved locally (Sheets not configured)');
+  }
+
+  setTimeout(()=>goBack(), 1000);
+}
+
+// ════════════════════════════════════════
+// DETAIL VIEW
+// ════════════════════════════════════════
+function viewEntry(id) {
+  const e = entries.find(x=>x.id===id);
+  if(!e) return;
+  const badge = document.getElementById('detailBadge');
+  badge.textContent = capitalize(e.status||'new');
+  badge.className = 'badge badge-'+(e.status||'new');
+  const ini = e.customerName.split(' ').map(w=>w[0]).join('').slice(0,2).toUpperCase();
+  document.getElementById('detailBody').innerHTML = `
+    <div class="detail-section">
+      <div style="display:flex;align-items:center;gap:12px;margin-bottom:14px;">
+        <div class="req-initials" style="width:48px;height:48px;font-size:16px;">${ini}</div>
+        <div>
+          <div style="font-size:17px;font-weight:600;color:var(--text);">${esc(e.customerName)}</div>
+          <div style="font-size:13px;color:var(--text2);margin-top:2px;">${esc(e.storeName)}</div>
+        </div>
+      </div>
+      <div class="detail-row"><span class="detail-key">Mobile</span><span class="detail-val">${esc(e.mobileNumber)}</span></div>
+      <div class="detail-row"><span class="detail-key">Recorded by</span><span class="detail-val">${esc(e.employee)}</span></div>
+      <div class="detail-row"><span class="detail-key">Date & time</span><span class="detail-val">${formatFull(new Date(e.createdAt))}</span></div>
+      <div class="detail-row"><span class="detail-key">Sheets sync</span><span class="detail-val" style="color:${e.synced?'var(--green)':'var(--amber)'}">${e.synced?'✓ Synced':'⏳ Pending'}</span></div>
+      <div class="detail-row"><span class="detail-key">Status</span>
+        <select onchange="updateStatus('${e.id}',this.value)" style="border:none;background:none;font-family:var(--font);font-size:13px;font-weight:500;color:var(--green);outline:none;cursor:pointer;">
+          <option value="new" ${e.status==='new'?'selected':''}>New</option>
+          <option value="reviewed" ${e.status==='reviewed'?'selected':''}>Reviewed</option>
+          <option value="actioned" ${e.status==='actioned'?'selected':''}>Actioned</option>
+        </select>
+      </div>
+    </div>
+    ${e.description?`<div class="detail-section"><div class="detail-section-title">Description</div><div class="desc-text">${esc(e.description)}</div></div>`:''}
+    ${e.hasVoice?`<div class="detail-section"><div class="detail-section-title">Voice note</div>
+      <div class="audio-player">
+        <button class="play-btn"><svg viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"/></svg></button>
+        <div class="progress-bar"><div class="progress-fill"></div></div>
+        <span class="audio-dur">${e.voiceDuration||'recorded'}</span>
+      </div></div>`:''}
+    ${(e.photoCount||0)>0?`<div class="detail-section"><div class="detail-section-title">Photographs (${e.photoCount})</div>
+      <div class="photo-gallery">${Array(e.photoCount).fill(0).map((_,i)=>`
+        <div class="gallery-img"><div style="width:100%;aspect-ratio:1;background:#e0f5ec;display:flex;align-items:center;justify-content:center;font-size:24px;">🖼️</div></div>`).join('')}
+      </div></div>`:''}
+  `;
+  goTo('s-detail');
+}
+
+function updateStatus(id, status) {
+  const e=entries.find(x=>x.id===id);
+  if(e){ e.status=status; saveEntries(); showToast('Status updated'); }
+}
+
+// ════════════════════════════════════════
+// MANAGER
+// ════════════════════════════════════════
+function renderManager() {
+  const now=new Date();
+  const todayStart=new Date(now); todayStart.setHours(0,0,0,0);
+  const todayCount=entries.filter(e=>new Date(e.createdAt)>=todayStart).length;
+  const empSet=new Set(entries.map(e=>e.employee));
+  document.getElementById('mgrTotal').textContent=entries.length;
+  document.getElementById('mgrToday').textContent=todayCount;
+  document.getElementById('mgrEmployees').textContent=empSet.size;
+  renderMgrList(entries);
+}
+
+function renderMgrList(list) {
+  const el=document.getElementById('mgrList');
+  if(list.length===0){
+    el.innerHTML='<div class="empty-state"><div class="empty-icon">📋</div><div class="empty-title">No entries</div><div class="empty-sub">Tap Refresh to load from Google Sheets</div></div>';
+    return;
+  }
+  el.innerHTML=list.slice().reverse().map(e=>{
+    const ini=e.customerName.split(' ').map(w=>w[0]).join('').slice(0,2).toUpperCase();
+    return `<div class="req-card" onclick="viewMgrEntry('${e.id}')">
+      <div class="req-initials">${ini}</div>
+      <div class="req-info">
+        <div class="req-name">${esc(e.customerName)}</div>
+        <div class="req-store" style="font-size:11px;color:var(--green);">${esc(e.employee||'')} ${e.employeeId?'('+e.employeeId+')':''}</div>
+        <div class="req-store">${esc(e.storeName)}</div>
+        <div class="req-time">${formatTime(new Date(e.createdAt))}</div>
+      </div>
+      <div class="req-meta">
+        <span class="badge badge-${e.status||'new'}">${capitalize(e.status||'new')}</span>
+        <span style="font-size:10px;color:${e.synced?'var(--green)':'var(--text3)'}">${e.synced?'✓ Synced':'local'}</span>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function filterMgr(f, btn) {
+  document.querySelectorAll('.filter-chip').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  const now=new Date();
+  const todayStart=new Date(now); todayStart.setHours(0,0,0,0);
+  const weekStart=new Date(todayStart); weekStart.setDate(weekStart.getDate()-7);
+  let filtered=entries;
+  if(f==='new') filtered=entries.filter(e=>e.status==='new');
+  else if(f==='reviewed') filtered=entries.filter(e=>e.status==='reviewed');
+  else if(f==='today') filtered=entries.filter(e=>new Date(e.createdAt)>=todayStart);
+  else if(f==='week') filtered=entries.filter(e=>new Date(e.createdAt)>=weekStart);
+  renderMgrList(filtered);
+}
+
+function viewMgrEntry(id) {
+  screenHistory.push('s-manager');
+  viewEntry(id);
+}
+
+function exportCSV() {
+  const headers=['ID','Customer Name','Mobile','Store','Description','Employee','Employee ID','Date','Status','Voice Note','Voice Duration','Photo Count','Synced'];
+  const rows=entries.map(e=>[
+    e.id, `"${(e.customerName||'').replace(/"/g,'""')}"`, e.mobileNumber,
+    `"${(e.storeName||'').replace(/"/g,'""')}"`,
+    `"${(e.description||'').replace(/"/g,'""')}"`,
+    e.employee, e.employeeId||'',
+    formatFull(new Date(e.createdAt)),
+    e.status||'new', e.hasVoice?'Yes':'No',
+    e.voiceDuration||'', e.photoCount||0,
+    e.synced?'Yes':'No'
+  ]);
+  const csv=[headers,...rows].map(r=>r.join(',')).join('\n');
+  const blob=new Blob([csv],{type:'text/csv'});
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(blob);
+  a.download='MB_Customer_Requirements.csv';
+  a.click();
+  showToast('Exported: MB_Customer_Requirements.csv','success');
+}
+
+// ════════════════════════════════════════
+// UTILS
+// ════════════════════════════════════════
+function showLoading(msg='Loading...') {
+  document.getElementById('loadingText').textContent=msg;
+  document.getElementById('loadingOverlay').classList.add('show');
+}
+function hideLoading() { document.getElementById('loadingOverlay').classList.remove('show'); }
+
+function showToast(msg, type='') {
+  const t=document.getElementById('toast');
+  t.textContent=msg; t.className='toast show'+(type?' '+type:'');
+  setTimeout(()=>t.classList.remove('show'),3000);
+}
+
+function openFullscreen(src) {
+  document.getElementById('fullscreenImg').src=src;
+  document.getElementById('photoFullscreen').classList.add('show');
+}
+function closeFullscreen() { document.getElementById('photoFullscreen').classList.remove('show'); }
+
+function formatTime(d) {
+  if(isNaN(d)) return '';
+  const diff=Math.floor((new Date()-d)/1000);
+  if(diff<60) return 'Just now';
+  if(diff<3600) return Math.floor(diff/60)+' min ago';
+  if(diff<86400) return Math.floor(diff/3600)+' hr ago';
+  return formatFull(d);
+}
+function formatFull(d) {
+  if(isNaN(d)) return '';
+  return d.toLocaleDateString('en-IN',{day:'numeric',month:'short',year:'numeric'})+', '+
+    d.toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit'});
+}
+function capitalize(s){ return s?s[0].toUpperCase()+s.slice(1):''; }
+function esc(s){ return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+init();
+</script>
+</body>
+</html>
