@@ -2,16 +2,25 @@
 const { getAuth, ensureHeaderRow, SHEET_HEADERS, SHEET_RANGE } = require('../lib/google');
 
 function nowIST() {
-  const p = new Intl.DateTimeFormat('en-CA', {
+  const p = new Intl.DateTimeFormat('en-GB', {
     timeZone: 'Asia/Kolkata',
     year: 'numeric', month: '2-digit', day: '2-digit',
     hour: '2-digit', minute: '2-digit', second: '2-digit',
     hour12: false,
   }).formatToParts(new Date());
   const g = t => p.find(x => x.type === t).value;
-  return `${g('year')}-${g('month')}-${g('day')}T${g('hour')}:${g('minute')}:${g('second')}+05:30`;
+  return `${g('day')}-${g('month')}-${g('year')} ${g('hour')}:${g('minute')}:${g('second')}`;
 }
-
+function parseIST(str) {
+  if (!str) return 0;
+  const m = String(str).match(/^(\d{2})-(\d{2})-(\d{4})[ T](\d{2}):(\d{2}):(\d{2})/);
+  if (m) {
+    const [, dd, mm, yyyy, h, mi, s] = m;
+    return new Date(+yyyy, +mm - 1, +dd, +h, +mi, +s).getTime();
+  }
+  const d = new Date(str);
+  return isNaN(d) ? 0 : d.getTime();
+}
 function sheetRowToEntry(row) {
   const obj = {};
   SHEET_HEADERS.forEach((h, i) => { obj[h] = row[i] != null ? row[i] : ''; });
@@ -64,7 +73,7 @@ module.exports = async function handler(req, res) {
       const rows = (result.data.values || []).slice(1);
       let entries = rows.filter(r => r && r.length).map(sheetRowToEntry);
       if (employee) entries = entries.filter(e => e.employee === employee);
-      entries.sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt));
+      entries.sort((a, b) => parseIST(a.createdAt) - parseIST(b.createdAt));
       return res.status(200).json({ entries });
     }
 

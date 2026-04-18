@@ -430,16 +430,26 @@ let photoPreviews = [];      // data URLs for thumbs
 
 // ──────────── Time helpers ────────────
 function nowIST() {
-  const p = new Intl.DateTimeFormat('en-CA', {
+  const p = new Intl.DateTimeFormat('en-GB', {
     timeZone: 'Asia/Kolkata',
     year: 'numeric', month: '2-digit', day: '2-digit',
     hour: '2-digit', minute: '2-digit', second: '2-digit',
     hour12: false,
   }).formatToParts(new Date());
   const g = t => p.find(x => x.type === t).value;
-  return `${g('year')}-${g('month')}-${g('day')}T${g('hour')}:${g('minute')}:${g('second')}+05:30`;
+  return `${g('day')}-${g('month')}-${g('year')} ${g('hour')}:${g('minute')}:${g('second')}`;
 }
-
+function parseIST(str) {
+  if (!str) return new Date(NaN);
+  if (str instanceof Date) return str;
+  const m = String(str).match(/^(\d{2})-(\d{2})-(\d{4})[ T](\d{2}):(\d{2}):(\d{2})/);
+  if (m) {
+    const [, dd, mm, yyyy, h, mi, s] = m;
+    return new Date(+yyyy, +mm - 1, +dd, +h, +mi, +s);
+  }
+  const d = new Date(str);
+  return isNaN(d) ? new Date(NaN) : d;
+}
 // ──────────── API helpers ────────────
 async function apiListEntries(employee) {
   const url = employee ? `/api/entries?employee=${encodeURIComponent(employee)}` : '/api/entries';
@@ -631,8 +641,8 @@ function renderHome() {
   const todayStart = new Date(now); todayStart.setHours(0,0,0,0);
   const weekStart  = new Date(todayStart); weekStart.setDate(weekStart.getDate() - 7);
   const mine = entries.filter(e => e.employee === currentUser?.name);
-  document.getElementById('statToday').textContent = mine.filter(e => new Date(e.createdAt) >= todayStart).length;
-  document.getElementById('statWeek').textContent  = mine.filter(e => new Date(e.createdAt) >= weekStart).length;
+  document.getElementById('statToday').textContent = mine.filter(e => parseIST(e.createdAt) >= todayStart).length;
+  document.getElementById('statWeek').textContent  = mine.filter(e => parseIST(e.createdAt) >= weekStart).length;
   document.getElementById('statTotal').textContent = mine.length;
 
   const list = document.getElementById('entriesList');
@@ -646,7 +656,7 @@ function renderHome() {
       <div class="entry-info">
         <div class="entry-title">${esc(e.storeName)} · ${esc(e.storeCode)}</div>
         <div class="entry-store">${truncate(esc(e.requirements), 70)}</div>
-        <div class="entry-time">${formatTime(new Date(e.createdAt))}</div>
+        <div class="entry-time">${formatTime(parseIST(e.createdAt))}</div>
       </div>
       <div class="entry-meta">
         <span class="badge badge-${e.status || 'new'}">${capitalize(e.status || 'new')}</span>
@@ -766,7 +776,7 @@ function viewEntry(id) {
       <div class="detail-row"><span class="detail-key">Store Name</span><span class="detail-val">${esc(e.storeName)}</span></div>
       <div class="detail-row"><span class="detail-key">Store Code</span><span class="detail-val">${esc(e.storeCode)}</span></div>
       <div class="detail-row"><span class="detail-key">Reported by</span><span class="detail-val">${esc(e.employee)}${e.employeeId ? ' (' + esc(e.employeeId) + ')' : ''}</span></div>
-      <div class="detail-row"><span class="detail-key">Date &amp; time</span><span class="detail-val">${formatFull(new Date(e.createdAt))}</span></div>
+      <div class="detail-row"><span class="detail-key">Date &amp; time</span><span class="detail-val">${formatFull(parseIST(e.createdAt))}</span></div>
       <div class="detail-row"><span class="detail-key">Photos</span><span class="detail-val">${urls.length}</span></div>
       <div class="detail-row"><span class="detail-key">Status</span>
         <select onchange="updateStatus('${e.id}', this.value)"
@@ -806,7 +816,7 @@ async function updateStatus(id, status) {
 function renderManager() {
   const now = new Date();
   const todayStart = new Date(now); todayStart.setHours(0,0,0,0);
-  const today = entries.filter(e => new Date(e.createdAt) >= todayStart).length;
+  const today = entries.filter(e => parseIST(e.createdAt) >= todayStart).length;
   const stores = new Set(entries.map(e => e.storeCode)).size;
   document.getElementById('mgrTotal').textContent  = entries.length;
   document.getElementById('mgrToday').textContent  = today;
@@ -827,7 +837,7 @@ function renderMgrList(list) {
         <div class="entry-title">${esc(e.storeName)} · ${esc(e.storeCode)}</div>
         <div class="entry-store" style="color:var(--brand-dark);font-weight:500;">${truncate(esc(e.requirements), 60)}</div>
         <div class="entry-store" style="font-size:11px;">${esc(e.employee)}${e.employeeId ? ' (' + esc(e.employeeId) + ')' : ''}</div>
-        <div class="entry-time">${formatTime(new Date(e.createdAt))}</div>
+        <div class="entry-time">${formatTime(parseIST(e.createdAt))}</div>
       </div>
       <div class="entry-meta">
         <span class="badge badge-${e.status || 'new'}">${capitalize(e.status || 'new')}</span>
@@ -847,8 +857,8 @@ function filterMgr(f, btn) {
   if (f === 'new')      out = entries.filter(e => (e.status || 'new') === 'new');
   else if (f === 'reviewed') out = entries.filter(e => e.status === 'reviewed');
   else if (f === 'resolved') out = entries.filter(e => e.status === 'resolved');
-  else if (f === 'today')    out = entries.filter(e => new Date(e.createdAt) >= todayStart);
-  else if (f === 'week')     out = entries.filter(e => new Date(e.createdAt) >= weekStart);
+  else if (f === 'today')    out = entries.filter(e => parseIST(e.createdAt) >= todayStart);
+  else if (f === 'week')     out = entries.filter(e => parseIST(e.createdAt) >= weekStart);
   renderMgrList(out);
 }
 
@@ -861,7 +871,7 @@ function exportCSV() {
   const headers = ['ID','Created At','Store Name','Store Code','Requirements','Employee','Employee ID','Status','Photo Count','Photo URLs'];
   const rows = entries.map(e => [
     e.id,
-    formatFull(new Date(e.createdAt)),
+    formatFull(parseIST(e.createdAt)),
     q(e.storeName), q(e.storeCode), q(e.requirements),
     q(e.employee), q(e.employeeId),
     e.status || 'new',
