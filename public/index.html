@@ -5,27 +5,33 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
-<title>MB Customer Requirement</title>
-<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<title>MB Store Maintenance</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
 :root {
-  --green: #1a9e6f;
-  --green-dark: #0d7a54;
-  --green-light: #e0f5ec;
-  --green-mid: #5dcaa5;
-  --bg: #f4f2ed;
+  /* NEW THEME */
+  --brand: #1A202C;          /* Charcoal (Primary) */
+  --brand-dark: #000000;     /* Darker charcoal */
+  --brand-light: #FFFBEA;    /* Light yellow background */
+  --brand-mid: #ECC94B;      /* Accent yellow */
+
+  --bg: #FFFBEA;             /* App background */
   --surface: #ffffff;
-  --surface2: #f8f7f3;
-  --border: rgba(0,0,0,0.08);
-  --text: #1a1916;
-  --text2: #6b6960;
-  --text3: #a8a59e;
-  --red: #e53e3e;
-  --amber: #d97706;
-  --blue: #2563eb;
+  --surface2: #FFFBEB;
+
+  --border: #E5E7EB;
+
+  --text: #1A202C;           /* Main text */
+  --text2: #4A5568;
+  --text3: #A0AEC0;
+
+  --red: #E53E3E;            /* Error */
+  --amber: #ECC94B;          /* Warning */
+
   --radius: 14px;
   --radius-sm: 8px;
-  --shadow: 0 2px 16px rgba(0,0,0,0.07);
+  --shadow: 0 2px 16px rgba(0,0,0,0.08);
+
   --font: 'DM Sans', sans-serif;
   --mono: 'DM Mono', monospace;
 }
@@ -35,113 +41,117 @@ body { font-family: var(--font); background: var(--bg); color: var(--text); min-
 .screen.active { display: flex; }
 
 /* LOGIN */
-#s-login { background: var(--green); align-items: center; justify-content: center; padding: 40px 28px; }
-.login-logo { width: 72px; height: 72px; background: rgba(255,255,255,0.15); border-radius: 20px; display: flex; align-items: center; justify-content: center; margin: 0 auto 16px; }
-.login-logo svg { width: 36px; height: 36px; }
-.login-card { background: white; border-radius: 24px; padding: 28px 24px; width: 100%; margin-top: 8px; }
-.login-title { font-size: 22px; font-weight: 600; color: var(--text); margin-bottom: 4px; }
-.login-sub { font-size: 13px; color: var(--text2); margin-bottom: 24px; }
-.sync-dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; flex-shrink: 0; }
-.sync-dot.green { background: #1D9E75; }
-.sync-dot.red { background: #E24B4A; }
-.sync-dot.amber { background: #D97706; }
+#s-login { background: linear-gradient(135deg, #1A202C, #2D3748); align-items: center; justify-content: center; padding: 40px 24px; }
+.brand-head { text-align: center; margin-bottom: 20px; }
+.brand-logo { width: 72px; height: 72px; background: rgba(255,255,255,0.15); border-radius: 20px; display: flex; align-items: center; justify-content: center; margin: 0 auto 16px; }
+.brand-logo svg { width: 38px; height: 38px; }
+.brand-title { font-size: 26px; font-weight: 700; color: white; letter-spacing: -0.5px; line-height: 1.1; }
+.brand-sub { font-size: 12px; color: rgba(255,255,255,0.75); margin-top: 6px; }
 
-/* FIELDS */
-.field-group { margin-bottom: 16px; }
-.field-group label { display: block; font-size: 12px; font-weight: 500; color: var(--text2); margin-bottom: 6px; letter-spacing: 0.03em; text-transform: uppercase; }
-.field-group input, .field-group select, .field-group textarea { width: 100%; border: 1.5px solid var(--border); border-radius: var(--radius-sm); padding: 12px 14px; font-size: 15px; font-family: var(--font); color: var(--text); background: var(--surface2); outline: none; transition: border-color 0.2s; }
-.field-group input:focus, .field-group select:focus, .field-group textarea:focus { border-color: var(--green); background: white; }
-.field-group textarea { resize: none; min-height: 90px; line-height: 1.5; }
-.btn-primary { width: 100%; padding: 14px; background: var(--green); color: white; border: none; border-radius: var(--radius-sm); font-size: 15px; font-weight: 600; font-family: var(--font); cursor: pointer; transition: background 0.2s, transform 0.1s; }
-.btn-primary:active { transform: scale(0.98); background: var(--green-dark); }
+.login-card { background: white; border-radius: 24px; padding: 26px 22px; width: 100%; }
+.login-title { font-size: 20px; font-weight: 600; margin-bottom: 3px; }
+.login-hint { font-size: 13px; color: var(--text2); margin-bottom: 20px; }
+
+.role-row { display: flex; gap: 8px; margin-bottom: 18px; }
+.role-btn { flex: 1; padding: 12px 8px; border: 1.5px solid var(--border); border-radius: var(--radius-sm); background: var(--surface2); font-size: 13px; font-weight: 500; color: var(--text2); cursor: pointer; font-family: var(--font); text-align: center; transition: all 0.15s; }
+.role-btn.active {
+  border-color: var(--brand-mid);
+  background: #FFF3C4;
+  color: #1A202C;
+}
+.role-emoji { font-size: 18px; display: block; margin-bottom: 3px; }
+
+.field { margin-bottom: 14px; }
+.field label { display: block; font-size: 11px; font-weight: 600; color: var(--text2); margin-bottom: 6px; letter-spacing: 0.04em; text-transform: uppercase; }
+.field input, .field select, .field textarea { width: 100%; border: 1.5px solid var(--border); border-radius: var(--radius-sm); padding: 12px 14px; font-size: 15px; font-family: var(--font); color: var(--text); background: var(--surface2); outline: none; transition: all 0.15s; }
+.field input:focus, .field select:focus, .field textarea:focus { border-color: var(--brand); background: white; }
+.field textarea { resize: none; min-height: 96px; line-height: 1.5; }
+
+.btn-primary {
+  width: 100%; padding: 14px; background: var(--brand-mid); color: #1A202C; border: none; border-radius: var(--radius-sm); font-size: 15px; font-weight: 600; font-family: var(--font); cursor: pointer; transition: all 0.15s;
+}
+.btn-primary:active { transform: scale(0.98); background: #D69E2E; }
 .btn-primary:disabled { background: var(--text3); cursor: not-allowed; }
-.role-selector { display: flex; gap: 8px; margin-bottom: 20px; }
-.role-btn { flex: 1; padding: 10px; border: 1.5px solid var(--border); border-radius: var(--radius-sm); background: var(--surface2); font-size: 13px; font-weight: 500; color: var(--text2); cursor: pointer; transition: all 0.15s; text-align: center; font-family: var(--font); }
-.role-btn.active { border-color: var(--green); background: var(--green-light); color: var(--green-dark); }
 
 /* TOPBAR */
-.topbar { background: var(--green); padding: 52px 20px 16px; display: flex; align-items: flex-end; justify-content: space-between; flex-shrink: 0; }
-.topbar-title { font-size: 20px; font-weight: 600; color: white; }
-.topbar-back { display: flex; align-items: center; gap: 6px; color: rgba(255,255,255,0.85); font-size: 14px; cursor: pointer; background: none; border: none; font-family: var(--font); }
-.avatar { width: 38px; height: 38px; border-radius: 50%; background: rgba(255,255,255,0.2); display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 600; color: white; cursor: pointer; flex-shrink: 0; }
-.sheets-status { display: flex; align-items: center; gap: 5px; background: rgba(255,255,255,0.15); border-radius: 20px; padding: 4px 10px; margin-top: 8px; width: fit-content; }
-.sheets-status span { font-size: 11px; color: rgba(255,255,255,0.9); }
+.topbar { background: var(--brand); padding: 52px 20px 16px; display: flex; align-items: flex-end; justify-content: space-between; flex-shrink: 0; }
+.topbar-title { font-size: 19px; font-weight: 600; color: white; }
+.topbar-back { display: flex; align-items: center; gap: 6px; color: rgba(255,255,255,0.88); font-size: 13px; cursor: pointer; background: none; border: none; font-family: var(--font); padding: 0; }
+.avatar { width: 38px; height: 38px; border-radius: 50%; background: rgba(255,255,255,0.2); display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 600; color: white; cursor: pointer; flex-shrink: 0; }
+.sync-pill { display: inline-flex; align-items: center; gap: 5px; background: rgba(255,255,255,0.15); border-radius: 20px; padding: 3px 10px; margin-top: 6px; }
+.sync-pill span { font-size: 11px; color: rgba(255,255,255,0.92); }
+.sync-dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; flex-shrink: 0; background: rgba(255,255,255,0.4); }
+.sync-dot.ok { background: #7ee4b5; }
+.sync-dot.bad { background: #ffb4b4; }
 
 /* HOME */
 .home-body { flex: 1; padding: 0 16px 100px; background: var(--bg); }
 .stats-row { display: flex; gap: 10px; margin: 16px 0; }
-.stat-card { flex: 1; background: white; border-radius: var(--radius); padding: 14px 12px; text-align: center; box-shadow: var(--shadow); border: 1px solid var(--border); }
-.stat-num { font-size: 26px; font-weight: 600; color: var(--green); font-family: var(--mono); }
-.stat-lbl { font-size: 11px; color: var(--text3); margin-top: 2px; }
-.section-head { font-size: 11px; font-weight: 600; color: var(--text3); text-transform: uppercase; letter-spacing: 0.06em; margin: 20px 0 10px; }
-.req-card { background: white; border-radius: var(--radius); padding: 14px 16px; margin-bottom: 10px; box-shadow: var(--shadow); border: 1px solid var(--border); display: flex; align-items: center; gap: 12px; cursor: pointer; transition: transform 0.15s; }
-.req-card:active { transform: scale(0.98); }
-.req-initials { width: 42px; height: 42px; border-radius: 50%; background: var(--green-light); color: var(--green-dark); display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 600; flex-shrink: 0; }
-.req-info { flex: 1; min-width: 0; }
-.req-name { font-size: 14px; font-weight: 500; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.req-store { font-size: 12px; color: var(--text2); margin-top: 2px; }
-.req-time { font-size: 11px; color: var(--text3); margin-top: 2px; }
-.req-meta { display: flex; flex-direction: column; align-items: flex-end; gap: 4px; }
-.badge { font-size: 10px; font-weight: 600; padding: 3px 9px; border-radius: 20px; }
-.badge-new { background: var(--green-light); color: var(--green-dark); }
-.badge-reviewed { background: #FEF3C7; color: #92400E; }
-.badge-actioned { background: #EDE9FE; color: #5B21B6; }
-.badge-pending { background: #FEE2E2; color: #991B1B; }
-.media-pills { display: flex; gap: 4px; }
-.media-pill { width: 22px; height: 22px; border-radius: 6px; display: flex; align-items: center; justify-content: center; font-size: 10px; }
-.pill-voice { background: #EDE9FE; color: #6D28D9; }
-.pill-photo { background: #FEF3C7; color: #92400E; }
+.stat-card { flex: 1; background: white; border-radius: var(--radius); padding: 14px 10px; text-align: center; box-shadow: var(--shadow); border: 1px solid var(--border); }
+.stat-num { font-size: 24px; font-weight: 600; color: var(--brand); font-family: var(--mono); }
+.stat-lbl { font-size: 10px; color: var(--text3); margin-top: 2px; text-transform: uppercase; letter-spacing: 0.04em; }
+.section-head { font-size: 11px; font-weight: 600; color: var(--text3); text-transform: uppercase; letter-spacing: 0.06em; margin: 18px 0 10px; }
 
-/* FAB */
-.fab { position: fixed; bottom: 80px; right: 20px; width: 58px; height: 58px; border-radius: 50%; background: var(--green); color: white; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 20px rgba(26,158,111,0.4); z-index: 100; transition: transform 0.2s; }
+.entry-card { background: white; border-radius: var(--radius); padding: 14px 16px; margin-bottom: 10px; box-shadow: var(--shadow); border: 1px solid var(--border); display: flex; align-items: center; gap: 12px; cursor: pointer; transition: transform 0.15s; }
+.entry-card:active { transform: scale(0.98); }
+.entry-icon {
+  width: 42px; height: 42px; border-radius: 10px; background: #FFF3C4; color: #1A202C; display: flex; align-items: center; justify-content: center; font-size: 18px; flex-shrink: 0;
+}
+.entry-info { flex: 1; min-width: 0; }
+.entry-title { font-size: 14px; font-weight: 600; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.entry-store { font-size: 12px; color: var(--text2); margin-top: 2px; }
+.entry-time { font-size: 11px; color: var(--text3); margin-top: 2px; }
+.entry-meta { display: flex; flex-direction: column; align-items: flex-end; gap: 4px; }
+.badge { font-size: 10px; font-weight: 600; padding: 3px 9px; border-radius: 20px; }
+.badge-new { background: var(--brand-light); color: var(--brand-dark); }
+.badge-reviewed { background: #FEF3C7; color: #92400E; }
+.badge-resolved { background: #EDE9FE; color: #5B21B6; }
+.photo-chip { font-size: 10px; color: var(--text3); display: flex; align-items: center; gap: 3px; }
+
+/* FAB + NAV */
+.fab { position: fixed; bottom: 80px; right: calc(50% - 195px); width: 58px; height: 58px; border-radius: 50%; background: var(--brand-mid); color: #1A202C; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 20px rgba(0,0,0,0.25); z-index: 100; transition: transform 0.2s; }
 .fab:active { transform: scale(0.92); }
 .fab svg { width: 26px; height: 26px; }
-
-/* BOTTOM NAV */
 .bottom-nav { position: fixed; bottom: 0; left: 50%; transform: translateX(-50%); width: 100%; max-width: 430px; background: white; border-top: 1px solid var(--border); display: flex; padding: 8px 0 20px; z-index: 99; }
 .nav-item { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 3px; cursor: pointer; padding: 4px 0; border: none; background: none; font-family: var(--font); }
 .nav-item span { font-size: 10px; color: var(--text3); }
-.nav-item.active span { color: var(--green); }
+.nav-item.active span { color: var(--brand); }
 .nav-item svg { width: 22px; height: 22px; stroke: var(--text3); }
-.nav-item.active svg { stroke: var(--green); }
+.nav-item.active svg { stroke: var(--brand); }
 
 /* FORM */
-.form-body { flex: 1; padding: 16px 16px 100px; background: var(--bg); overflow-y: auto; }
-.form-section { background: white; border-radius: var(--radius); padding: 18px 16px; margin-bottom: 12px; box-shadow: var(--shadow); border: 1px solid var(--border); }
-.form-section-title { font-size: 11px; font-weight: 600; color: var(--text3); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 14px; }
-.capture-row { display: flex; gap: 8px; margin-top: 6px; }
-.capture-btn { flex: 1; border: 1.5px dashed var(--border); border-radius: var(--radius-sm); padding: 14px 8px; background: var(--surface2); display: flex; flex-direction: column; align-items: center; gap: 5px; font-size: 12px; color: var(--text2); cursor: pointer; font-family: var(--font); transition: all 0.15s; }
-.capture-btn svg { width: 20px; height: 20px; }
-.capture-btn.recording { border-style: solid; border-color: var(--green); background: var(--green-light); color: var(--green-dark); }
-.capture-btn.has-data { border-style: solid; border-color: var(--green-mid); background: var(--green-light); color: var(--green-dark); }
-.rec-timer { font-family: var(--mono); font-size: 13px; font-weight: 500; }
-.photo-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-top: 10px; }
-.photo-thumb { aspect-ratio: 1; border-radius: var(--radius-sm); overflow: hidden; border: 1px solid var(--border); cursor: pointer; }
-.photo-thumb img { width: 100%; height: 100%; object-fit: cover; }
-.submit-bar { position: fixed; bottom: 0; left: 50%; transform: translateX(-50%); width: 100%; max-width: 430px; background: white; border-top: 1px solid var(--border); padding: 12px 16px 28px; z-index: 99; }
+.form-body { flex: 1; padding: 16px 16px 120px; background: var(--bg); overflow-y: auto; }
+.form-section { background: white; border-radius: var(--radius); padding: 16px; margin-bottom: 12px; box-shadow: var(--shadow); border: 1px solid var(--border); }
+.form-section-title { font-size: 11px; font-weight: 600; color: var(--text3); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 12px; }
+.required-mark { color: var(--red); margin-left: 2px; }
 
-/* SYNC STATUS in submit bar */
-.sync-status-row { display: flex; align-items: center; gap: 6px; justify-content: center; margin-top: 8px; }
-.sync-status-row span { font-size: 11px; color: var(--text3); }
+.photo-actions { display: flex; gap: 8px; }
+.photo-btn { flex: 1; border: 1.5px dashed var(--border); border-radius: var(--radius-sm); padding: 14px 8px; background: var(--surface2); display: flex; flex-direction: column; align-items: center; gap: 5px; font-size: 12px; color: var(--text2); cursor: pointer; font-family: var(--font); transition: all 0.15s; }
+.photo-btn svg { width: 20px; height: 20px; }
+.photo-btn:active { background: var(--brand-light); }
+.photo-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-top: 12px; }
+.photo-thumb { position: relative; aspect-ratio: 1; border-radius: var(--radius-sm); overflow: hidden; border: 1px solid var(--border); background: var(--surface2); }
+.photo-thumb img { width: 100%; height: 100%; object-fit: cover; }
+.photo-remove { position: absolute; top: 4px; right: 4px; width: 22px; height: 22px; border-radius: 50%; background: rgba(0,0,0,0.7); color: white; border: none; font-size: 13px; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+.photo-count-hint { font-size: 11px; color: var(--text3); margin-top: 8px; }
+
+.submit-bar { position: fixed; bottom: 0; left: 50%; transform: translateX(-50%); width: 100%; max-width: 430px; background: white; border-top: 1px solid var(--border); padding: 12px 16px 28px; z-index: 99; }
+.sync-row { display: flex; align-items: center; gap: 6px; justify-content: center; margin-top: 8px; }
+.sync-row span { font-size: 11px; color: var(--text3); }
 
 /* DETAIL */
 .detail-body { flex: 1; padding: 16px 16px 40px; background: var(--bg); overflow-y: auto; }
-.detail-section { background: white; border-radius: var(--radius); padding: 18px 16px; margin-bottom: 12px; box-shadow: var(--shadow); border: 1px solid var(--border); }
+.detail-section { background: white; border-radius: var(--radius); padding: 16px; margin-bottom: 12px; box-shadow: var(--shadow); border: 1px solid var(--border); }
 .detail-section-title { font-size: 11px; font-weight: 600; color: var(--text3); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 12px; }
-.detail-row { display: flex; justify-content: space-between; align-items: center; padding: 8px 0; border-bottom: 1px solid var(--border); }
+.detail-row { display: flex; justify-content: space-between; align-items: center; padding: 8px 0; border-bottom: 1px solid var(--border); gap: 12px; }
 .detail-row:last-child { border-bottom: none; }
-.detail-key { font-size: 13px; color: var(--text2); }
-.detail-val { font-size: 13px; font-weight: 500; color: var(--text); text-align: right; max-width: 60%; }
-.desc-text { font-size: 14px; color: var(--text); line-height: 1.6; }
-.audio-player { display: flex; align-items: center; gap: 12px; background: var(--green-light); border-radius: var(--radius-sm); padding: 12px 14px; }
-.play-btn { width: 36px; height: 36px; border-radius: 50%; background: var(--green); border: none; display: flex; align-items: center; justify-content: center; cursor: pointer; flex-shrink: 0; }
-.play-btn svg { width: 14px; height: 14px; fill: white; }
-.progress-bar { flex: 1; height: 4px; background: rgba(0,0,0,0.1); border-radius: 2px; }
-.progress-fill { height: 100%; background: var(--green); border-radius: 2px; width: 0%; transition: width 0.3s; }
-.audio-dur { font-size: 12px; color: var(--green-dark); font-family: var(--mono); }
+.detail-key { font-size: 13px; color: var(--text2); flex-shrink: 0; }
+.detail-val { font-size: 13px; font-weight: 500; color: var(--text); text-align: right; word-break: break-word; }
+.desc-text { font-size: 14px; color: var(--text); line-height: 1.6; white-space: pre-wrap; }
 .photo-gallery { display: grid; grid-template-columns: repeat(3,1fr); gap: 8px; }
-.gallery-img { aspect-ratio: 1; border-radius: var(--radius-sm); overflow: hidden; cursor: pointer; }
+.gallery-img { aspect-ratio: 1; border-radius: var(--radius-sm); overflow: hidden; cursor: pointer; background: var(--surface2); }
 .gallery-img img { width: 100%; height: 100%; object-fit: cover; }
+.gallery-link { display: block; text-decoration: none; }
 
 /* MANAGER */
 .manager-topbar { background: #0d1117; padding: 52px 20px 16px; display: flex; align-items: flex-end; justify-content: space-between; }
@@ -149,46 +159,51 @@ body { font-family: var(--font); background: var(--bg); color: var(--text); min-
 .filter-bar { background: #0d1117; padding: 0 16px 14px; display: flex; gap: 8px; overflow-x: auto; scrollbar-width: none; }
 .filter-bar::-webkit-scrollbar { display: none; }
 .filter-chip { padding: 7px 14px; border-radius: 20px; font-size: 12px; font-weight: 500; white-space: nowrap; cursor: pointer; border: 1.5px solid rgba(255,255,255,0.15); color: rgba(255,255,255,0.6); background: transparent; font-family: var(--font); transition: all 0.15s; }
-.filter-chip.active { background: var(--green); border-color: var(--green); color: white; }
+.filter-chip.active { background: var(--brand); border-color: var(--brand); color: white; }
 .manager-body { flex: 1; padding: 12px 16px 40px; background: var(--bg); }
-.mgr-stats { display: grid; grid-template-columns: repeat(3,1fr); gap: 8px; margin-bottom: 16px; }
-.mgr-stat { background: white; border-radius: var(--radius-sm); padding: 12px 10px; text-align: center; border: 1px solid var(--border); }
-.mgr-stat-num { font-size: 22px; font-weight: 600; color: var(--text); font-family: var(--mono); }
+.mgr-stats { display: grid; grid-template-columns: repeat(3,1fr); gap: 8px; margin-bottom: 14px; }
+.mgr-stat { background: white; border-radius: var(--radius-sm); padding: 12px 8px; text-align: center; border: 1px solid var(--border); }
+.mgr-stat-num { font-size: 20px; font-weight: 600; font-family: var(--mono); }
 .mgr-stat-lbl { font-size: 10px; color: var(--text3); margin-top: 2px; }
 .action-row { display: flex; gap: 8px; margin-bottom: 14px; }
-.export-btn { flex: 1; display: flex; align-items: center; justify-content: center; gap: 8px; background: #0d1117; color: white; border: none; border-radius: var(--radius-sm); padding: 10px 16px; font-size: 13px; font-weight: 500; cursor: pointer; font-family: var(--font); }
-.export-btn svg { width: 16px; height: 16px; flex-shrink: 0; }
-.refresh-btn { display: flex; align-items: center; gap: 6px; background: var(--green-light); color: var(--green-dark); border: 1px solid var(--green-mid); border-radius: var(--radius-sm); padding: 10px 14px; font-size: 13px; font-weight: 500; cursor: pointer; font-family: var(--font); }
+.export-btn { flex: 1; display: flex; align-items: center; justify-content: center; gap: 6px; background: #0d1117; color: white; border: none; border-radius: var(--radius-sm); padding: 10px 12px; font-size: 13px; font-weight: 500; cursor: pointer; font-family: var(--font); }
+.export-btn svg { width: 15px; height: 15px; }
+.refresh-btn { display: flex; align-items: center; gap: 6px; background: var(--brand-light); color: var(--brand-dark); border: 1px solid var(--brand-mid); border-radius: var(--radius-sm); padding: 10px 14px; font-size: 13px; font-weight: 500; cursor: pointer; font-family: var(--font); }
 .refresh-btn svg { width: 15px; height: 15px; }
 
-/* TOAST */
+/* TOAST + OVERLAYS */
 .toast { position: fixed; bottom: 90px; left: 50%; transform: translateX(-50%); background: #1a1916; color: white; padding: 12px 20px; border-radius: 30px; font-size: 13px; font-weight: 500; z-index: 999; opacity: 0; transition: opacity 0.3s; pointer-events: none; white-space: nowrap; max-width: 90%; text-align: center; }
 .toast.show { opacity: 1; }
-.toast.success { background: var(--green-dark); }
+.toast.success { background: #1A202C; }
 .toast.error { background: var(--red); }
-
-/* LOADING OVERLAY */
-.loading-overlay { display: none; position: fixed; inset: 0; background: rgba(255,255,255,0.85); z-index: 998; align-items: center; justify-content: center; flex-direction: column; gap: 14px; }
+.loading-overlay { display: none; position: fixed; inset: 0; background: rgba(255,255,255,0.88); z-index: 998; align-items: center; justify-content: center; flex-direction: column; gap: 14px; }
 .loading-overlay.show { display: flex; }
-.spinner { width: 36px; height: 36px; border: 3px solid var(--green-light); border-top-color: var(--green); border-radius: 50%; animation: spin 0.8s linear infinite; }
+.spinner { width: 36px; height: 36px; border: 3px solid var(--brand-light); border-top-color: var(--brand); border-radius: 50%; animation: spin 0.8s linear infinite; }
 @keyframes spin { to { transform: rotate(360deg); } }
 .loading-text { font-size: 14px; color: var(--text2); }
-
-/* EMPTY */
-.empty-state { text-align: center; padding: 60px 20px; }
-.empty-icon { font-size: 48px; margin-bottom: 12px; opacity: 0.3; }
-.empty-title { font-size: 16px; font-weight: 500; color: var(--text2); margin-bottom: 6px; }
-.empty-sub { font-size: 13px; color: var(--text3); }
-
-/* FULLSCREEN PHOTO */
 .photo-fullscreen { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.95); z-index: 999; align-items: center; justify-content: center; }
 .photo-fullscreen.show { display: flex; }
 .photo-fullscreen img { max-width: 100%; max-height: 100%; object-fit: contain; }
 .photo-close { position: absolute; top: 20px; right: 20px; background: rgba(255,255,255,0.15); border: none; border-radius: 50%; width: 40px; height: 40px; color: white; font-size: 20px; cursor: pointer; display: flex; align-items: center; justify-content: center; }
-
+.empty-state { text-align: center; padding: 60px 20px; }
+.empty-icon { font-size: 46px; margin-bottom: 12px; opacity: 0.35; }
+.empty-title { font-size: 15px; font-weight: 500; color: var(--text2); margin-bottom: 6px; }
+.empty-sub { font-size: 12px; color: var(--text3); }
 input[type="file"] { display: none; }
-@keyframes pulse { 0%,100%{opacity:1}50%{opacity:0.5} }
-.recording-pulse { animation: pulse 1s infinite; }
+
+.badge-new {
+  background: #FFF3C4;
+  color: #975A16;
+}
+.badge-reviewed {
+  background: #FEF3C7;
+  color: #92400E;
+}
+.badge-resolved {
+  background: #E6FFFA;
+  color: #065F46;
+}
+
 </style>
 </head>
 <body>
@@ -200,78 +215,74 @@ input[type="file"] { display: none; }
 <div class="toast" id="toast"></div>
 <div class="loading-overlay" id="loadingOverlay">
   <div class="spinner"></div>
-  <div class="loading-text" id="loadingText">Saving to database...</div>
+  <div class="loading-text" id="loadingText">Working…</div>
 </div>
 <input type="file" id="cameraInput" accept="image/*" capture="environment" multiple onchange="handlePhotos(this)">
 <input type="file" id="galleryInput" accept="image/*" multiple onchange="handlePhotos(this)">
 
-<!-- ══ SCREEN 1: LOGIN ══ -->
+<!-- LOGIN -->
 <div class="screen active" id="s-login">
-  <div style="text-align:center;margin-bottom:20px;">
-    <div class="login-logo">
+  <div class="brand-head">
+    <div class="brand-logo">
       <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round">
-        <path d="M20 7H4a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2z"/>
-        <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/>
+        <path d="M3 21h18"/>
+        <path d="M5 21V7l7-4 7 4v14"/>
+        <path d="M9 9h1M14 9h1M9 13h1M14 13h1M9 17h1M14 17h1"/>
       </svg>
     </div>
-    <div style="font-size:26px;font-weight:700;color:white;letter-spacing:-0.5px;">MB Customer</div>
-    <div style="font-size:26px;font-weight:700;color:white;letter-spacing:-0.5px;">Requirement</div>
-    <div style="font-size:12px;color:rgba(255,255,255,0.7);margin-top:4px;">Field employee app</div>
+    <div class="brand-title">MB Store<br>Maintenance</div>
+    <div class="brand-sub">Store requirement capture · PAN India</div>
   </div>
-
   <div class="login-card">
-    <div class="login-title">Welcome back</div>
-    <div class="login-sub">Sign in to continue</div>
-    <div style="margin-bottom:14px;">
-      <div style="font-size:12px;font-weight:600;color:var(--text2);margin-bottom:8px;text-transform:uppercase;letter-spacing:0.03em;">Sign in as</div>
-      <div class="role-selector">
-        <button class="role-btn active" id="role-emp" onclick="selectRole('employee')">
-          <div style="font-size:18px;margin-bottom:2px;">👤</div>Employee
-        </button>
-        <button class="role-btn" id="role-mgr" onclick="selectRole('manager')">
-          <div style="font-size:18px;margin-bottom:2px;">👑</div>Manager
-        </button>
-      </div>
+    <div class="login-title">Sign in</div>
+    <div class="login-hint">Choose your role to continue</div>
+    <div class="role-row">
+      <button class="role-btn active" id="role-emp" onclick="selectRole('employee')">
+        <span class="role-emoji">👷</span>Employee
+      </button>
+      <button class="role-btn" id="role-mgr" onclick="selectRole('manager')">
+        <span class="role-emoji">👑</span>Manager
+      </button>
     </div>
-    <div class="field-group">
-      <label>Employee Name</label>
-      <input type="text" id="loginName" placeholder="Your full name" value="Ravi Kumar">
+    <div class="field">
+      <label>Your Name</label>
+      <input type="text" id="loginName" placeholder="Full name" autocomplete="name">
     </div>
-    <div class="field-group">
-      <label>Store Name</label>
-      <input type="text" id="loginStore" placeholder="Your store name" value="Chennai South Store">
-    </div>
-    <div class="field-group" style="margin-bottom:20px;">
+    <div class="field">
       <label>Employee ID</label>
-      <input type="text" id="loginId" placeholder="e.g. EMP001" value="EMP001">
+      <input type="text" id="loginId" placeholder="e.g. EMP001">
+    </div>
+    <div class="field" style="margin-bottom: 18px;">
+      <label>Default Store Name</label>
+      <input type="text" id="loginStore" placeholder="e.g. Chennai T.Nagar">
     </div>
     <button class="btn-primary" onclick="doLogin()">Sign in</button>
   </div>
 </div>
 
-<!-- ══ SCREEN 2: EMPLOYEE HOME ══ -->
+<!-- EMPLOYEE HOME -->
 <div class="screen" id="s-home">
   <div class="topbar">
     <div>
-      <div style="font-size:12px;color:rgba(255,255,255,0.7);">Good morning</div>
-      <div class="topbar-title" id="empName">Ravi Kumar</div>
-      <div class="sheets-status" id="sheetsStatus">
-        <span class="sync-dot" id="homeSyncDot" style="background:rgba(255,255,255,0.4);"></span>
-        <span id="homeSyncLabel">Checking connection...</span>
+      <div style="font-size:12px;color:rgba(255,255,255,0.75);">Welcome</div>
+      <div class="topbar-title" id="empName">Employee</div>
+      <div class="sync-pill">
+        <span class="sync-dot" id="homeSyncDot"></span>
+        <span id="homeSyncLabel">Checking connection…</span>
       </div>
     </div>
-    <div class="avatar" id="empAvatar" onclick="doLogout()">RK</div>
+    <div class="avatar" id="empAvatar" onclick="doLogout()">EM</div>
   </div>
   <div class="home-body">
     <div class="stats-row">
       <div class="stat-card"><div class="stat-num" id="statToday">0</div><div class="stat-lbl">Today</div></div>
-      <div class="stat-card"><div class="stat-num" id="statWeek">0</div><div class="stat-lbl">This week</div></div>
+      <div class="stat-card"><div class="stat-num" id="statWeek">0</div><div class="stat-lbl">7 days</div></div>
       <div class="stat-card"><div class="stat-num" id="statTotal">0</div><div class="stat-lbl">Total</div></div>
     </div>
-    <div class="section-head">Recent entries</div>
+    <div class="section-head">My recent requests</div>
     <div id="entriesList"></div>
   </div>
-  <button class="fab" onclick="goTo('s-capture')">
+  <button class="fab" onclick="goTo('s-capture')" title="New request">
     <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
   </button>
   <nav class="bottom-nav">
@@ -290,7 +301,7 @@ input[type="file"] { display: none; }
   </nav>
 </div>
 
-<!-- ══ SCREEN 3: CAPTURE FORM ══ -->
+<!-- CAPTURE FORM -->
 <div class="screen" id="s-capture">
   <div class="topbar">
     <div>
@@ -298,80 +309,54 @@ input[type="file"] { display: none; }
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="15 18 9 12 15 6"/></svg>
         Back
       </button>
-      <div class="topbar-title" style="margin-top:4px;">New requirement</div>
+      <div class="topbar-title" style="margin-top:4px;">New maintenance request</div>
     </div>
   </div>
   <div class="form-body">
     <div class="form-section">
-      <div class="form-section-title">Customer info</div>
-      <div class="field-group">
-        <label>Customer name *</label>
-        <input type="text" id="custName" placeholder="Full name">
+      <div class="form-section-title">Store details</div>
+      <div class="field">
+        <label>Store Name<span class="required-mark">*</span></label>
+        <input type="text" id="fStoreName" placeholder="e.g. Chennai T.Nagar">
       </div>
-      <div class="field-group">
-        <label>Mobile number *</label>
-        <input type="tel" id="custMobile" placeholder="+91 XXXXX XXXXX">
-      </div>
-      <div class="field-group" style="margin-bottom:0;">
-        <label>Store name *</label>
-        <input type="text" id="custStore" placeholder="Store or branch name">
+      <div class="field" style="margin-bottom: 0;">
+        <label>Store Code<span class="required-mark">*</span></label>
+        <input type="text" id="fStoreCode" placeholder="e.g. MB-CHN-001">
       </div>
     </div>
     <div class="form-section">
-      <div class="form-section-title">Requirement details</div>
-      <div class="field-group">
-        <label>Requirement *</label>
-        <input type="text" id="reqTitle" placeholder="e.g. New stock, Price query, Exchange...">
-      </div>
-      <div class="field-group" style="margin-bottom:0;">
-        <label>Description</label>
-        <textarea id="reqDesc" placeholder="Additional details about the requirement..."></textarea>
+      <div class="form-section-title">Maintenance requirement</div>
+      <div class="field" style="margin-bottom: 0;">
+        <label>Requirements<span class="required-mark">*</span></label>
+        <textarea id="fRequirements" placeholder="Describe the maintenance issue in detail (e.g. AC not cooling in cashier area, tube light flickering in display section, leakage near store entry…)"></textarea>
       </div>
     </div>
     <div class="form-section">
-      <div class="form-section-title">Voice note</div>
-      <div class="capture-row">
-        <button class="capture-btn" id="voiceBtn" onclick="toggleVoice()">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
-            <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/>
-            <path d="M19 10v2a7 7 0 0 1-14 0v-2M12 19v4M8 23h8"/>
-          </svg>
-          <span id="voiceBtnLabel">Tap to record</span>
-          <span class="rec-timer" id="recTimer" style="display:none;"></span>
-        </button>
-        <button class="capture-btn" id="playBtn" style="display:none;" onclick="playRecording()">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polygon points="5 3 19 12 5 21 5 3"/></svg>
-          <span>Play back</span>
-        </button>
-      </div>
-      <div style="font-size:11px;color:var(--text3);margin-top:8px;">Note: Voice note duration is saved. Audio file stays on device.</div>
-    </div>
-    <div class="form-section">
-      <div class="form-section-title">Photographs</div>
-      <div class="capture-row">
-        <button class="capture-btn" onclick="document.getElementById('cameraInput').click()">
+      <div class="form-section-title">Photographs<span class="required-mark">*</span></div>
+      <div class="photo-actions">
+        <button type="button" class="photo-btn" onclick="document.getElementById('cameraInput').click()">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
           Camera
         </button>
-        <button class="capture-btn" onclick="document.getElementById('galleryInput').click()">
+        <button type="button" class="photo-btn" onclick="document.getElementById('galleryInput').click()">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
           Gallery
         </button>
       </div>
       <div class="photo-grid" id="photoGrid"></div>
-      <div style="font-size:11px;color:var(--text3);margin-top:8px;">Photo count is saved. Photos stay on device.</div>
+      <div class="photo-count-hint" id="photoHint">At least 1 photo required. Photos upload to Google Drive.</div>
     </div>
   </div>
   <div class="submit-bar">
-    <button class="btn-primary" id="submitBtn" onclick="submitForm()">Save &amp; Sync</button>
-    <div class="sync-status-row">
-      <span class="sync-dot" id="submitSyncDot" style="background:var(--text3);"></span>
-      <span id="submitSyncLabel">Checking connection...</span>
+    <button class="btn-primary" id="submitBtn" onclick="submitForm()">Submit request</button>
+    <div class="sync-row">
+      <span class="sync-dot" id="submitSyncDot"></span>
+      <span id="submitSyncLabel">Checking connection…</span>
     </div>
   </div>
 </div>
 
-<!-- ══ SCREEN 4: DETAIL ══ -->
+<!-- DETAIL -->
 <div class="screen" id="s-detail">
   <div class="topbar">
     <div>
@@ -379,38 +364,39 @@ input[type="file"] { display: none; }
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="15 18 9 12 15 6"/></svg>
         Back
       </button>
-      <div class="topbar-title" style="margin-top:4px;">Requirement detail</div>
+      <div class="topbar-title" style="margin-top:4px;">Request detail</div>
     </div>
     <div id="detailBadge" class="badge badge-new">New</div>
   </div>
   <div class="detail-body" id="detailBody"></div>
 </div>
 
-<!-- ══ SCREEN 5: MANAGER ══ -->
+<!-- MANAGER -->
 <div class="screen" id="s-manager">
   <div class="manager-topbar">
     <div>
       <div style="font-size:12px;color:rgba(255,255,255,0.5);">Manager view</div>
       <div class="topbar-title" id="mgrName">Manager</div>
-      <div class="sheets-status" id="mgrSheetsStatus" style="margin-top:8px;">
-        <span class="sync-dot" id="mgrSyncDot" style="background:rgba(255,255,255,0.4);"></span>
-        <span id="mgrSyncLabel" style="font-size:11px;color:rgba(255,255,255,0.9);">Checking...</span>
+      <div class="sync-pill" style="background:rgba(255,255,255,0.08);">
+        <span class="sync-dot" id="mgrSyncDot"></span>
+        <span id="mgrSyncLabel" style="font-size:11px;color:rgba(255,255,255,0.9);">Checking…</span>
       </div>
     </div>
-    <div class="avatar" style="background:rgba(255,255,255,0.1);" onclick="doLogout()" id="mgrAvatar">MK</div>
+    <div class="avatar" style="background:rgba(255,255,255,0.1);" id="mgrAvatar" onclick="doLogout()">MG</div>
   </div>
   <div class="filter-bar">
-    <button class="filter-chip active" onclick="filterMgr('all',this)">All</button>
-    <button class="filter-chip" onclick="filterMgr('new',this)">New</button>
-    <button class="filter-chip" onclick="filterMgr('reviewed',this)">Reviewed</button>
-    <button class="filter-chip" onclick="filterMgr('today',this)">Today</button>
-    <button class="filter-chip" onclick="filterMgr('week',this)">This week</button>
+    <button class="filter-chip active" onclick="filterMgr('all', this)">All</button>
+    <button class="filter-chip" onclick="filterMgr('new', this)">New</button>
+    <button class="filter-chip" onclick="filterMgr('reviewed', this)">Reviewed</button>
+    <button class="filter-chip" onclick="filterMgr('resolved', this)">Resolved</button>
+    <button class="filter-chip" onclick="filterMgr('today', this)">Today</button>
+    <button class="filter-chip" onclick="filterMgr('week', this)">This week</button>
   </div>
   <div class="manager-body">
     <div class="mgr-stats">
       <div class="mgr-stat"><div class="mgr-stat-num" id="mgrTotal">0</div><div class="mgr-stat-lbl">Total</div></div>
       <div class="mgr-stat"><div class="mgr-stat-num" id="mgrToday">0</div><div class="mgr-stat-lbl">Today</div></div>
-      <div class="mgr-stat"><div class="mgr-stat-num" id="mgrEmployees">0</div><div class="mgr-stat-lbl">Employees</div></div>
+      <div class="mgr-stat"><div class="mgr-stat-num" id="mgrStores">0</div><div class="mgr-stat-lbl">Stores</div></div>
     </div>
     <div class="action-row">
       <button class="export-btn" onclick="exportCSV()">
@@ -427,111 +413,98 @@ input[type="file"] { display: none; }
 </div>
 
 <script>
-// ════════════════════════════════════════
-// TURSO DATABASE INTEGRATION
-// ════════════════════════════════════════
-const ENTRIES_KEY = 'mb_entries';
-const USER_KEY    = 'mb_user';
+// ──────────────────────────────────────────
+// MB Store Maintenance · Frontend
+// Storage: Google Sheets (entries) + Google Drive (photos)
+// ──────────────────────────────────────────
+const LS_ENTRIES = 'mbsm_entries';
+const LS_USER    = 'mbsm_user';
 
-let dbConnected   = false;
 let currentRole   = 'employee';
 let currentScreen = 's-login';
 let screenHistory = [];
 let entries       = [];
-let currentUser   = JSON.parse(localStorage.getItem(USER_KEY) || 'null');
-let photos        = [];
-let photoDataUrls = [];
-let isRecording   = false;
-let mediaRecorder = null;
-let audioChunks   = [];
-let audioBlob     = null;
-let audioUrl      = null;
-let recInterval   = null;
-let recSeconds    = 0;
+let currentUser   = JSON.parse(localStorage.getItem(LS_USER) || 'null');
+let photoFiles    = [];      // File[]
+let photoPreviews = [];      // data URLs for thumbs
 
-// ── POST one entry to the database ──
-async function syncToAPI(entry) {
+// ──────────── API helpers ────────────
+async function apiListEntries(employee) {
+  const url = employee ? `/api/entries?employee=${encodeURIComponent(employee)}` : '/api/entries';
   try {
-    const res  = await fetch('/api/entries', {
-      method:  'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body:    JSON.stringify(entry),
-    });
-    const data = await res.json();
-    return (res.ok && data.success) ? { ok: true } : { ok: false, reason: data.error || 'api_error' };
-  } catch (e) {
-    return { ok: false, reason: e.message };
-  }
-}
-
-// ── GET entries from the database (all, or by employee) ──
-async function fetchFromAPI(employee) {
-  const url = employee
-    ? `/api/entries?employee=${encodeURIComponent(employee)}`
-    : '/api/entries';
-  try {
-    const res  = await fetch(url);
+    const res = await fetch(url);
     if (!res.ok) throw new Error('HTTP ' + res.status);
-    const data = await res.json();
-    return data.entries || [];
+    const d = await res.json();
+    return d.entries || [];
   } catch (e) {
-    showToast('Could not reach database', 'error');
     return null;
   }
 }
 
-// ── PATCH status change ──
-async function patchStatus(id, status) {
+async function apiCreateEntry(payload) {
   try {
-    await fetch(`/api/entries/${id}`, {
-      method:  'PATCH',
+    const res = await fetch('/api/entries', {
+      method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body:    JSON.stringify({ status }),
+      body: JSON.stringify(payload),
     });
-  } catch (e) { /* silent – local state already updated */ }
+    const d = await res.json();
+    return res.ok ? { ok: true, entry: d.entry } : { ok: false, error: d.error || 'api_error' };
+  } catch (e) {
+    return { ok: false, error: e.message };
+  }
 }
 
-// ── Update connection indicator across all screens ──
-function updateSyncStatus(connected) {
-  dbConnected = connected;
-  const color = connected ? '#1D9E75' : '#E24B4A';
-  const label = connected ? 'Connected to database' : 'Database offline';
-  ['homeSyncDot', 'submitSyncDot', 'mgrSyncDot'].forEach(id => {
+async function apiUploadPhoto(file, meta) {
+  const fd = new FormData();
+  fd.append('photo', file);
+  fd.append('storeCode', meta.storeCode || '');
+  fd.append('employeeId', meta.employeeId || '');
+  try {
+    const res = await fetch('/api/upload', { method: 'POST', body: fd });
+    const d = await res.json();
+    return res.ok ? { ok: true, url: d.url, name: d.name } : { ok: false, error: d.error || 'upload_error' };
+  } catch (e) {
+    return { ok: false, error: e.message };
+  }
+}
+
+async function apiPatchStatus(id, status) {
+  try {
+    await fetch(`/api/entries/${encodeURIComponent(id)}`, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ status }),
+    });
+  } catch (e) { /* swallow */ }
+}
+
+async function pingConnection() {
+  try {
+    const ctrl = new AbortController();
+    const t = setTimeout(() => ctrl.abort(), 6000);
+    const res = await fetch('/api/entries', { signal: ctrl.signal });
+    clearTimeout(t);
+    setSyncStatus(res.ok);
+  } catch (e) {
+    setSyncStatus(false);
+  }
+}
+
+function setSyncStatus(ok) {
+  const cls = ok ? 'ok' : 'bad';
+  const label = ok ? 'Connected' : 'Offline';
+  ['homeSyncDot','submitSyncDot','mgrSyncDot'].forEach(id => {
     const el = document.getElementById(id);
-    if (el) el.style.background = color;
+    if (el) { el.classList.remove('ok','bad'); el.classList.add(cls); }
   });
-  ['homeSyncLabel', 'submitSyncLabel', 'mgrSyncLabel'].forEach(id => {
+  ['homeSyncLabel','submitSyncLabel','mgrSyncLabel'].forEach(id => {
     const el = document.getElementById(id);
     if (el) el.textContent = label;
   });
 }
 
-// ── Ping the API to check reachability ──
-async function checkAPIConnection() {
-  try {
-    const ctrl = new AbortController();
-    const t    = setTimeout(() => ctrl.abort(), 5000);
-    const res  = await fetch('/api/entries', { signal: ctrl.signal });
-    clearTimeout(t);
-    updateSyncStatus(res.ok);
-  } catch (e) {
-    updateSyncStatus(false);
-  }
-}
-
-// ════════════════════════════════════════
-// APP STATE & NAVIGATION
-// ════════════════════════════════════════
-function init() {
-  entries = JSON.parse(localStorage.getItem(ENTRIES_KEY) || '[]');
-  updateSyncStatus(false);
-  checkAPIConnection();
-}
-
-function saveEntries() {
-  try { localStorage.setItem(ENTRIES_KEY, JSON.stringify(entries)); } catch (e) {}
-}
-
+// ──────────── Navigation ────────────
 function goTo(id) {
   if (currentScreen === id) return;
   screenHistory.push(currentScreen);
@@ -542,7 +515,6 @@ function goTo(id) {
   if (id === 's-manager') renderManager();
   if (id === 's-capture') resetForm();
 }
-
 function goBack() {
   const prev = screenHistory.pop() || (currentRole === 'manager' ? 's-manager' : 's-home');
   document.getElementById(currentScreen).classList.remove('active');
@@ -552,356 +524,301 @@ function goBack() {
   if (prev === 's-manager') renderManager();
 }
 
-// ════════════════════════════════════════
-// AUTH
-// ════════════════════════════════════════
+// ──────────── Auth ────────────
 function selectRole(role) {
   currentRole = role;
   document.getElementById('role-emp').classList.toggle('active', role === 'employee');
   document.getElementById('role-mgr').classList.toggle('active', role === 'manager');
 }
 
-function doLogin() {
+async function doLogin() {
   const name  = document.getElementById('loginName').value.trim();
-  const store = document.getElementById('loginStore').value.trim();
   const id    = document.getElementById('loginId').value.trim();
-  if (!name) { showToast('Please enter your name'); return; }
-  currentUser = { name, store, id, role: currentRole };
-  localStorage.setItem(USER_KEY, JSON.stringify(currentUser));
+  const store = document.getElementById('loginStore').value.trim();
+  if (!name) { showToast('Please enter your name', 'error'); return; }
+  if (!id)   { showToast('Please enter your Employee ID', 'error'); return; }
+  currentUser = { name, id, store, role: currentRole };
+  localStorage.setItem(LS_USER, JSON.stringify(currentUser));
+  const initials = name.split(' ').map(w => w[0]).join('').slice(0,2).toUpperCase();
   if (currentRole === 'manager') {
-    document.getElementById('mgrName').textContent = name;
-    const ini = name.split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase();
-    document.getElementById('mgrAvatar').textContent = ini;
+    document.getElementById('mgrName').textContent   = name;
+    document.getElementById('mgrAvatar').textContent = initials;
     goTo('s-manager');
     refreshManagerData();
   } else {
-    document.getElementById('empName').textContent = name;
-    document.getElementById('empAvatar').textContent =
-      name.split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase();
+    document.getElementById('empName').textContent   = name;
+    document.getElementById('empAvatar').textContent = initials;
     goTo('s-home');
     loadEmployeeEntries(name);
   }
 }
 
 function doLogout() {
-  currentUser   = null;
+  currentUser = null;
+  localStorage.removeItem(LS_USER);
   screenHistory = [];
   document.getElementById(currentScreen).classList.remove('active');
   document.getElementById('s-login').classList.add('active');
   currentScreen = 's-login';
 }
 
-// ── Load this employee's entries from the database ──
+// ──────────── Data load ────────────
 async function loadEmployeeEntries(employee) {
-  const fetched = await fetchFromAPI(employee);
-  if (fetched === null) return;
-  // Keep locally-only (not yet synced) entries alongside API data
-  const apiIds    = new Set(fetched.map(e => e.id));
-  const localOnly = entries.filter(e => e.employee === employee && !apiIds.has(e.id));
-  const others    = entries.filter(e => e.employee !== employee && !apiIds.has(e.id));
-  entries = [...fetched, ...localOnly, ...others];
-  saveEntries();
+  const fetched = await apiListEntries(employee);
+  if (fetched !== null) {
+    const apiIds  = new Set(fetched.map(e => e.id));
+    const pending = entries.filter(e => !apiIds.has(e.id) && e.employee === employee && !e.synced);
+    const others  = entries.filter(e => e.employee !== employee);
+    entries = [...fetched, ...pending, ...others];
+    saveEntriesLocal();
+  } else {
+    showToast('Offline — showing cached data', 'error');
+  }
   renderHome();
 }
 
-// ── Reload all entries into the manager view ──
 async function refreshManagerData() {
-  showLoading('Fetching from database...');
-  const fetched = await fetchFromAPI();
+  showLoading('Fetching from Google Sheets…');
+  const fetched = await apiListEntries();
   hideLoading();
-  if (fetched === null) return;
-  const apiIds      = new Set(fetched.map(e => e.id));
-  const pendingLocal = entries.filter(e => !apiIds.has(e.id) && !e.synced);
-  entries = [...fetched, ...pendingLocal];
-  saveEntries();
+  if (fetched === null) { showToast('Could not reach backend', 'error'); return; }
+  const apiIds   = new Set(fetched.map(e => e.id));
+  const pending  = entries.filter(e => !apiIds.has(e.id) && !e.synced);
+  entries = [...fetched, ...pending];
+  saveEntriesLocal();
   renderManager();
-  if (fetched.length > 0) showToast('Synced from database ✓', 'success');
+  if (fetched.length > 0) showToast('Synced ✓', 'success');
 }
 
-// ════════════════════════════════════════
-// HOME
-// ════════════════════════════════════════
-function renderHome() {
-  const now       = new Date();
-  const todayStart = new Date(now); todayStart.setHours(0, 0, 0, 0);
-  const weekStart  = new Date(todayStart); weekStart.setDate(weekStart.getDate() - 7);
-  const myEntries  = entries.filter(e => e.employee === currentUser?.name);
+function saveEntriesLocal() {
+  try { localStorage.setItem(LS_ENTRIES, JSON.stringify(entries.slice(-200))); } catch (e) {}
+}
 
-  document.getElementById('statToday').textContent =
-    myEntries.filter(e => new Date(e.createdAt) >= todayStart).length;
-  document.getElementById('statWeek').textContent =
-    myEntries.filter(e => new Date(e.createdAt) >= weekStart).length;
-  document.getElementById('statTotal').textContent = myEntries.length;
+// ──────────── Home ────────────
+function renderHome() {
+  const now = new Date();
+  const todayStart = new Date(now); todayStart.setHours(0,0,0,0);
+  const weekStart  = new Date(todayStart); weekStart.setDate(weekStart.getDate() - 7);
+  const mine = entries.filter(e => e.employee === currentUser?.name);
+  document.getElementById('statToday').textContent = mine.filter(e => new Date(e.createdAt) >= todayStart).length;
+  document.getElementById('statWeek').textContent  = mine.filter(e => new Date(e.createdAt) >= weekStart).length;
+  document.getElementById('statTotal').textContent = mine.length;
 
   const list = document.getElementById('entriesList');
-  if (myEntries.length === 0) {
-    list.innerHTML = '<div class="empty-state"><div class="empty-icon">📋</div><div class="empty-title">No entries yet</div><div class="empty-sub">Tap + to capture your first customer requirement</div></div>';
+  if (mine.length === 0) {
+    list.innerHTML = '<div class="empty-state"><div class="empty-icon">🧰</div><div class="empty-title">No requests yet</div><div class="empty-sub">Tap + to report your first maintenance issue</div></div>';
     return;
   }
-  list.innerHTML = myEntries.slice().reverse().map(e => {
-    const ini = e.customerName.split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase();
-    return `<div class="req-card" onclick="viewEntry('${e.id}')">
-      <div class="req-initials">${ini}</div>
-      <div class="req-info">
-        <div class="req-name">${esc(e.customerName)}</div>
-        <div class="req-store" style="color:var(--green-dark);font-weight:500;">${esc(e.requirement || '')}</div>
-        <div class="req-store">${esc(e.storeName)}</div>
-        <div class="req-time">${formatTime(new Date(e.createdAt))}</div>
+  list.innerHTML = mine.slice().reverse().map(e => `
+    <div class="entry-card" onclick="viewEntry('${e.id}')">
+      <div class="entry-icon">🛠️</div>
+      <div class="entry-info">
+        <div class="entry-title">${esc(e.storeName)} · ${esc(e.storeCode)}</div>
+        <div class="entry-store">${truncate(esc(e.requirements), 70)}</div>
+        <div class="entry-time">${formatTime(new Date(e.createdAt))}</div>
       </div>
-      <div class="req-meta">
+      <div class="entry-meta">
         <span class="badge badge-${e.status || 'new'}">${capitalize(e.status || 'new')}</span>
-        <div class="media-pills">
-          ${e.hasVoice ? '<span class="media-pill pill-voice">🎤</span>' : ''}
-          ${(e.photoCount || 0) > 0 ? `<span class="media-pill pill-photo">📷${e.photoCount}</span>` : ''}
-          ${e.synced
-            ? '<span style="font-size:10px;color:var(--green);">✓</span>'
-            : '<span style="font-size:10px;color:var(--text3);">⏳</span>'}
-        </div>
+        <span class="photo-chip">📷 ${e.photoCount || 0}</span>
       </div>
-    </div>`;
-  }).join('');
+    </div>
+  `).join('');
 }
 
-// ════════════════════════════════════════
-// CAPTURE + SYNC
-// ════════════════════════════════════════
+// ──────────── Capture form ────────────
 function resetForm() {
-  ['custName', 'custMobile', 'custStore', 'reqTitle', 'reqDesc'].forEach(id => {
-    const el = document.getElementById(id); if (el) el.value = '';
-  });
-  photos = []; photoDataUrls = [];
-  audioBlob = null; audioUrl = null; isRecording = false;
+  ['fStoreName','fStoreCode','fRequirements'].forEach(id => { const el = document.getElementById(id); if (el) el.value = ''; });
+  photoFiles = []; photoPreviews = [];
   document.getElementById('photoGrid').innerHTML = '';
-  const vb = document.getElementById('voiceBtn');
-  vb.classList.remove('recording', 'has-data');
-  document.getElementById('voiceBtnLabel').textContent = 'Tap to record';
-  document.getElementById('recTimer').style.display = 'none';
-  document.getElementById('playBtn').style.display  = 'none';
-  if (recInterval) { clearInterval(recInterval); recInterval = null; }
-  if (currentUser?.store) document.getElementById('custStore').value = currentUser.store;
+  document.getElementById('photoHint').textContent = 'At least 1 photo required. Photos upload to Google Drive.';
+  if (currentUser?.store) document.getElementById('fStoreName').value = currentUser.store;
 }
 
 function handlePhotos(input) {
   Array.from(input.files).forEach(file => {
-    photos.push(file);
-    const r = new FileReader();
-    r.onload = e => { photoDataUrls.push(e.target.result); addPhotoThumb(e.target.result); };
-    r.readAsDataURL(file);
+    photoFiles.push(file);
+    const reader = new FileReader();
+    reader.onload = ev => {
+      photoPreviews.push(ev.target.result);
+      renderPhotoGrid();
+    };
+    reader.readAsDataURL(file);
   });
   input.value = '';
 }
 
-function addPhotoThumb(src) {
+function renderPhotoGrid() {
   const grid = document.getElementById('photoGrid');
-  const div  = document.createElement('div');
-  div.className = 'photo-thumb';
-  div.onclick   = () => openFullscreen(src);
-  div.innerHTML = `<img src="${src}" alt="photo">`;
-  grid.appendChild(div);
+  grid.innerHTML = photoPreviews.map((src, i) => `
+    <div class="photo-thumb">
+      <img src="${src}" alt="photo ${i+1}" onclick="openFullscreen('${src}')">
+      <button class="photo-remove" onclick="removePhoto(${i})" type="button">✕</button>
+    </div>
+  `).join('');
+  document.getElementById('photoHint').textContent = `${photoFiles.length} photo(s) queued for upload to Google Drive.`;
 }
 
-async function toggleVoice() {
-  if (isRecording) { stopRecording(); return; }
-  try {
-    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-    mediaRecorder = new MediaRecorder(stream);
-    audioChunks   = [];
-    mediaRecorder.ondataavailable = e => audioChunks.push(e.data);
-    mediaRecorder.onstop = () => {
-      audioBlob = new Blob(audioChunks, { type: 'audio/webm' });
-      audioUrl  = URL.createObjectURL(audioBlob);
-      document.getElementById('playBtn').style.display = '';
-      document.getElementById('voiceBtn').classList.remove('recording');
-      document.getElementById('voiceBtn').classList.add('has-data');
-      document.getElementById('voiceBtnLabel').textContent = 'Recorded ✓';
-    };
-    mediaRecorder.start();
-    isRecording = true; recSeconds = 0;
-    document.getElementById('voiceBtn').classList.add('recording');
-    document.getElementById('voiceBtnLabel').classList.add('recording-pulse');
-    document.getElementById('voiceBtnLabel').textContent = 'Recording...';
-    document.getElementById('recTimer').style.display = '';
-    document.getElementById('recTimer').textContent   = '0:00';
-    recInterval = setInterval(() => {
-      recSeconds++;
-      document.getElementById('recTimer').textContent =
-        Math.floor(recSeconds / 60) + ':' + String(recSeconds % 60).padStart(2, '0');
-    }, 1000);
-  } catch (e) { showToast('Microphone access denied', 'error'); }
-}
-
-function stopRecording() {
-  if (mediaRecorder) { mediaRecorder.stop(); mediaRecorder.stream.getTracks().forEach(t => t.stop()); }
-  clearInterval(recInterval); recInterval = null; isRecording = false;
-  document.getElementById('voiceBtnLabel').classList.remove('recording-pulse');
-  document.getElementById('recTimer').style.display = 'none';
-}
-
-function playRecording() {
-  if (!audioUrl) return;
-  new Audio(audioUrl).play();
-  showToast('Playing voice note...');
+function removePhoto(i) {
+  photoFiles.splice(i, 1);
+  photoPreviews.splice(i, 1);
+  renderPhotoGrid();
 }
 
 async function submitForm() {
-  const name   = document.getElementById('custName').value.trim();
-  const mobile = document.getElementById('custMobile').value.trim();
-  const store  = document.getElementById('custStore').value.trim();
-  const req    = document.getElementById('reqTitle').value.trim();
-  const desc   = document.getElementById('reqDesc').value.trim();
-  if (!name || !mobile || !store || !req) { showToast('Please fill in name, mobile, store & requirement', 'error'); return; }
-  if (isRecording) stopRecording();
+  const storeName  = document.getElementById('fStoreName').value.trim();
+  const storeCode  = document.getElementById('fStoreCode').value.trim();
+  const reqs       = document.getElementById('fRequirements').value.trim();
+  if (!storeName) { showToast('Store Name is required', 'error'); return; }
+  if (!storeCode) { showToast('Store Code is required', 'error'); return; }
+  if (!reqs)      { showToast('Requirements are required', 'error'); return; }
+  if (photoFiles.length === 0) { showToast('Please add at least one photo', 'error'); return; }
 
-  const entry = {
-    id:            'MB' + Date.now(),
-    customerName:  name,
-    mobileNumber:  mobile,
-    storeName:     store,
-    requirement:   req,
-    description:   desc,
-    employee:      currentUser?.name || 'Unknown',
-    employeeId:    currentUser?.id   || '',
-    createdAt:     new Date().toISOString(),
-    status:        'new',
-    hasVoice:      !!audioBlob,
-    voiceDuration: audioBlob ? recSeconds + 's' : '',
-    photoCount:    photos.length,
-    synced:        false,
-  };
+  const btn = document.getElementById('submitBtn');
+  btn.disabled = true;
 
-  entries.push(entry);
-  saveEntries();
-
-  showLoading('Saving to database...');
-  const result = await syncToAPI(entry);
-  hideLoading();
-
-  if (result.ok) {
-    entry.synced = true;
-    saveEntries();
-    showToast('Saved to database ✓', 'success');
-  } else {
-    showToast('Saved locally — will retry sync', 'error');
+  // 1) Upload photos to Drive
+  showLoading(`Uploading photo 1 of ${photoFiles.length}…`);
+  const urls = [];
+  for (let i = 0; i < photoFiles.length; i++) {
+    document.getElementById('loadingText').textContent = `Uploading photo ${i+1} of ${photoFiles.length}…`;
+    const r = await apiUploadPhoto(photoFiles[i], { storeCode, employeeId: currentUser?.id });
+    if (!r.ok) {
+      hideLoading();
+      btn.disabled = false;
+      showToast('Photo upload failed: ' + r.error, 'error');
+      return;
+    }
+    urls.push(r.url);
   }
 
-  setTimeout(() => goBack(), 1000);
+  // 2) Append row to Google Sheets
+  document.getElementById('loadingText').textContent = 'Saving to Google Sheets…';
+  const payload = {
+    id:           'MBSM' + Date.now(),
+    storeName,
+    storeCode,
+    requirements: reqs,
+    photoUrls:    urls,
+    photoCount:   urls.length,
+    employee:     currentUser?.name || 'Unknown',
+    employeeId:   currentUser?.id   || '',
+    createdAt:    new Date().toISOString(),
+    status:       'new',
+  };
+  const result = await apiCreateEntry(payload);
+  hideLoading();
+  btn.disabled = false;
+
+  if (result.ok) {
+    entries.push({ ...payload, synced: true });
+    saveEntriesLocal();
+    showToast('Submitted ✓', 'success');
+    setTimeout(() => goBack(), 800);
+  } else {
+    entries.push({ ...payload, synced: false });
+    saveEntriesLocal();
+    showToast('Sheet save failed — photos uploaded. Retry later.', 'error');
+  }
 }
 
-// ════════════════════════════════════════
-// DETAIL VIEW
-// ════════════════════════════════════════
+// ──────────── Detail view ────────────
 function viewEntry(id) {
   const e = entries.find(x => x.id === id);
   if (!e) return;
   const badge = document.getElementById('detailBadge');
   badge.textContent = capitalize(e.status || 'new');
-  badge.className   = 'badge badge-' + (e.status || 'new');
-  const ini = e.customerName.split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase();
+  badge.className = 'badge badge-' + (e.status || 'new');
+  const urls = Array.isArray(e.photoUrls) ? e.photoUrls : (e.photoUrls ? String(e.photoUrls).split(',').map(s => s.trim()).filter(Boolean) : []);
+
   document.getElementById('detailBody').innerHTML = `
     <div class="detail-section">
-      <div style="display:flex;align-items:center;gap:12px;margin-bottom:14px;">
-        <div class="req-initials" style="width:48px;height:48px;font-size:16px;">${ini}</div>
-        <div>
-          <div style="font-size:17px;font-weight:600;color:var(--text);">${esc(e.customerName)}</div>
-          <div style="font-size:13px;color:var(--text2);margin-top:2px;">${esc(e.storeName)}</div>
-        </div>
-      </div>
-      <div class="detail-row"><span class="detail-key">Mobile</span><span class="detail-val">${esc(e.mobileNumber)}</span></div>
-      <div class="detail-row"><span class="detail-key">Requirement</span><span class="detail-val" style="color:var(--green);font-weight:600;">${esc(e.requirement || '—')}</span></div>
-      <div class="detail-row"><span class="detail-key">Recorded by</span><span class="detail-val">${esc(e.employee)}</span></div>
+      <div class="detail-row"><span class="detail-key">Store Name</span><span class="detail-val">${esc(e.storeName)}</span></div>
+      <div class="detail-row"><span class="detail-key">Store Code</span><span class="detail-val">${esc(e.storeCode)}</span></div>
+      <div class="detail-row"><span class="detail-key">Reported by</span><span class="detail-val">${esc(e.employee)}${e.employeeId ? ' (' + esc(e.employeeId) + ')' : ''}</span></div>
       <div class="detail-row"><span class="detail-key">Date &amp; time</span><span class="detail-val">${formatFull(new Date(e.createdAt))}</span></div>
-      <div class="detail-row"><span class="detail-key">DB sync</span>
-        <span class="detail-val" style="color:${e.synced ? 'var(--green)' : 'var(--amber)'}">
-          ${e.synced ? '✓ Synced' : '⏳ Pending'}
-        </span>
-      </div>
+      <div class="detail-row"><span class="detail-key">Photos</span><span class="detail-val">${urls.length}</span></div>
       <div class="detail-row"><span class="detail-key">Status</span>
-        <select onchange="updateStatus('${e.id}',this.value)"
-                style="border:none;background:none;font-family:var(--font);font-size:13px;font-weight:500;color:var(--green);outline:none;cursor:pointer;">
+        <select onchange="updateStatus('${e.id}', this.value)"
+          style="border:none;background:none;font-family:var(--font);font-size:13px;font-weight:600;color:var(--brand);outline:none;cursor:pointer;">
           <option value="new"      ${e.status === 'new'      ? 'selected' : ''}>New</option>
           <option value="reviewed" ${e.status === 'reviewed' ? 'selected' : ''}>Reviewed</option>
-          <option value="actioned" ${e.status === 'actioned' ? 'selected' : ''}>Actioned</option>
+          <option value="resolved" ${e.status === 'resolved' ? 'selected' : ''}>Resolved</option>
         </select>
       </div>
     </div>
-    ${e.description ? `<div class="detail-section"><div class="detail-section-title">Description</div><div class="desc-text">${esc(e.description)}</div></div>` : ''}
-    ${e.hasVoice ? `<div class="detail-section"><div class="detail-section-title">Voice note</div>
-      <div class="audio-player">
-        <button class="play-btn"><svg viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"/></svg></button>
-        <div class="progress-bar"><div class="progress-fill"></div></div>
-        <span class="audio-dur">${e.voiceDuration || 'recorded'}</span>
-      </div></div>` : ''}
-    ${(e.photoCount || 0) > 0 ? `<div class="detail-section"><div class="detail-section-title">Photographs (${e.photoCount})</div>
-      <div class="photo-gallery">${Array(e.photoCount).fill(0).map(() =>
-        `<div class="gallery-img"><div style="width:100%;aspect-ratio:1;background:#e0f5ec;display:flex;align-items:center;justify-content:center;font-size:24px;">🖼️</div></div>`
-      ).join('')}</div></div>` : ''}
+    <div class="detail-section">
+      <div class="detail-section-title">Requirements</div>
+      <div class="desc-text">${esc(e.requirements || '—')}</div>
+    </div>
+    ${urls.length ? `
+      <div class="detail-section">
+        <div class="detail-section-title">Photographs (${urls.length})</div>
+        <div class="photo-gallery">
+          ${urls.map(u => `<a class="gallery-link" href="${esc(u)}" target="_blank" rel="noopener"><div class="gallery-img"><img src="${esc(u)}" alt="photo" onerror="this.parentElement.innerHTML='<div style=\\'width:100%;aspect-ratio:1;display:flex;align-items:center;justify-content:center;font-size:22px;\\'>🖼️</div>'"></div></a>`).join('')}
+        </div>
+        <div style="font-size:11px;color:var(--text3);margin-top:8px;">Tap any photo to open in Google Drive.</div>
+      </div>` : ''}
   `;
   goTo('s-detail');
 }
 
 async function updateStatus(id, status) {
   const e = entries.find(x => x.id === id);
-  if (e) {
-    e.status = status;
-    saveEntries();
-    showToast('Status updated');
-    patchStatus(id, status);
-  }
+  if (!e) return;
+  e.status = status;
+  saveEntriesLocal();
+  showToast('Status updated');
+  apiPatchStatus(id, status);
 }
 
-// ════════════════════════════════════════
-// MANAGER
-// ════════════════════════════════════════
+// ──────────── Manager ────────────
 function renderManager() {
-  const now        = new Date();
-  const todayStart = new Date(now); todayStart.setHours(0, 0, 0, 0);
-  const todayCount = entries.filter(e => new Date(e.createdAt) >= todayStart).length;
-  const empSet     = new Set(entries.map(e => e.employee));
-  document.getElementById('mgrTotal').textContent     = entries.length;
-  document.getElementById('mgrToday').textContent     = todayCount;
-  document.getElementById('mgrEmployees').textContent = empSet.size;
+  const now = new Date();
+  const todayStart = new Date(now); todayStart.setHours(0,0,0,0);
+  const today = entries.filter(e => new Date(e.createdAt) >= todayStart).length;
+  const stores = new Set(entries.map(e => e.storeCode)).size;
+  document.getElementById('mgrTotal').textContent  = entries.length;
+  document.getElementById('mgrToday').textContent  = today;
+  document.getElementById('mgrStores').textContent = stores;
   renderMgrList(entries);
 }
 
 function renderMgrList(list) {
   const el = document.getElementById('mgrList');
   if (list.length === 0) {
-    el.innerHTML = '<div class="empty-state"><div class="empty-icon">📋</div><div class="empty-title">No entries</div><div class="empty-sub">Tap Refresh to load from database</div></div>';
+    el.innerHTML = '<div class="empty-state"><div class="empty-icon">📭</div><div class="empty-title">No requests</div><div class="empty-sub">Tap Refresh to fetch from Google Sheets</div></div>';
     return;
   }
-  el.innerHTML = list.slice().reverse().map(e => {
-    const ini = e.customerName.split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase();
-    return `<div class="req-card" onclick="viewMgrEntry('${e.id}')">
-      <div class="req-initials">${ini}</div>
-      <div class="req-info">
-        <div class="req-name">${esc(e.customerName)}</div>
-        <div class="req-store" style="color:var(--green-dark);font-weight:500;">${esc(e.requirement || '')}</div>
-        <div class="req-store" style="font-size:11px;color:var(--green);">${esc(e.employee || '')} ${e.employeeId ? '(' + e.employeeId + ')' : ''}</div>
-        <div class="req-store">${esc(e.storeName)}</div>
-        <div class="req-time">${formatTime(new Date(e.createdAt))}</div>
+  el.innerHTML = list.slice().reverse().map(e => `
+    <div class="entry-card" onclick="viewMgrEntry('${e.id}')">
+      <div class="entry-icon">🛠️</div>
+      <div class="entry-info">
+        <div class="entry-title">${esc(e.storeName)} · ${esc(e.storeCode)}</div>
+        <div class="entry-store" style="color:var(--brand-dark);font-weight:500;">${truncate(esc(e.requirements), 60)}</div>
+        <div class="entry-store" style="font-size:11px;">${esc(e.employee)}${e.employeeId ? ' (' + esc(e.employeeId) + ')' : ''}</div>
+        <div class="entry-time">${formatTime(new Date(e.createdAt))}</div>
       </div>
-      <div class="req-meta">
+      <div class="entry-meta">
         <span class="badge badge-${e.status || 'new'}">${capitalize(e.status || 'new')}</span>
-        <span style="font-size:10px;color:${e.synced ? 'var(--green)' : 'var(--text3)'}">
-          ${e.synced ? '✓ Synced' : 'local'}
-        </span>
+        <span class="photo-chip">📷 ${e.photoCount || (Array.isArray(e.photoUrls) ? e.photoUrls.length : 0)}</span>
       </div>
-    </div>`;
-  }).join('');
+    </div>
+  `).join('');
 }
 
 function filterMgr(f, btn) {
   document.querySelectorAll('.filter-chip').forEach(b => b.classList.remove('active'));
   btn.classList.add('active');
-  const now        = new Date();
-  const todayStart = new Date(now); todayStart.setHours(0, 0, 0, 0);
+  const now = new Date();
+  const todayStart = new Date(now); todayStart.setHours(0,0,0,0);
   const weekStart  = new Date(todayStart); weekStart.setDate(weekStart.getDate() - 7);
-  let filtered = entries;
-  if (f === 'new')      filtered = entries.filter(e => e.status === 'new');
-  else if (f === 'reviewed') filtered = entries.filter(e => e.status === 'reviewed');
-  else if (f === 'today')    filtered = entries.filter(e => new Date(e.createdAt) >= todayStart);
-  else if (f === 'week')     filtered = entries.filter(e => new Date(e.createdAt) >= weekStart);
-  renderMgrList(filtered);
+  let out = entries;
+  if (f === 'new')      out = entries.filter(e => (e.status || 'new') === 'new');
+  else if (f === 'reviewed') out = entries.filter(e => e.status === 'reviewed');
+  else if (f === 'resolved') out = entries.filter(e => e.status === 'resolved');
+  else if (f === 'today')    out = entries.filter(e => new Date(e.createdAt) >= todayStart);
+  else if (f === 'week')     out = entries.filter(e => new Date(e.createdAt) >= weekStart);
+  renderMgrList(out);
 }
 
 function viewMgrEntry(id) {
@@ -910,49 +827,43 @@ function viewMgrEntry(id) {
 }
 
 function exportCSV() {
-  const headers = ['ID','Customer Name','Mobile','Store','Requirement','Description','Employee','Employee ID','Date','Status','Voice Note','Voice Duration','Photo Count','Synced'];
+  const headers = ['ID','Created At','Store Name','Store Code','Requirements','Employee','Employee ID','Status','Photo Count','Photo URLs'];
   const rows = entries.map(e => [
-    e.id, `"${(e.customerName || '').replace(/"/g, '""')}"`, e.mobileNumber,
-    `"${(e.storeName    || '').replace(/"/g, '""')}"`,
-    `"${(e.requirement  || '').replace(/"/g, '""')}"`,
-    `"${(e.description  || '').replace(/"/g, '""')}"`,
-    e.employee, e.employeeId || '',
+    e.id,
     formatFull(new Date(e.createdAt)),
-    e.status || 'new', e.hasVoice ? 'Yes' : 'No',
-    e.voiceDuration || '', e.photoCount || 0,
-    e.synced ? 'Yes' : 'No',
+    q(e.storeName), q(e.storeCode), q(e.requirements),
+    q(e.employee), q(e.employeeId),
+    e.status || 'new',
+    e.photoCount || (Array.isArray(e.photoUrls) ? e.photoUrls.length : 0),
+    q(Array.isArray(e.photoUrls) ? e.photoUrls.join(' | ') : (e.photoUrls || '')),
   ]);
-  const csv  = [headers, ...rows].map(r => r.join(',')).join('\n');
+  const csv = [headers, ...rows].map(r => r.join(',')).join('\n');
   const blob = new Blob([csv], { type: 'text/csv' });
-  const a    = document.createElement('a');
-  a.href     = URL.createObjectURL(blob);
-  a.download = 'MB_Customer_Requirements.csv';
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = `MB_Store_Maintenance_${new Date().toISOString().slice(0,10)}.csv`;
   a.click();
-  showToast('Exported: MB_Customer_Requirements.csv', 'success');
+  showToast('CSV exported ✓', 'success');
 }
+function q(s) { return `"${String(s || '').replace(/"/g, '""')}"`; }
 
-// ════════════════════════════════════════
-// UTILS
-// ════════════════════════════════════════
-function showLoading(msg = 'Loading...') {
+// ──────────── Utils ────────────
+function showLoading(msg = 'Working…') {
   document.getElementById('loadingText').textContent = msg;
   document.getElementById('loadingOverlay').classList.add('show');
 }
 function hideLoading() { document.getElementById('loadingOverlay').classList.remove('show'); }
-
 function showToast(msg, type = '') {
   const t = document.getElementById('toast');
   t.textContent = msg;
-  t.className   = 'toast show' + (type ? ' ' + type : '');
-  setTimeout(() => t.classList.remove('show'), 3000);
+  t.className = 'toast show' + (type ? ' ' + type : '');
+  setTimeout(() => t.classList.remove('show'), 2600);
 }
-
 function openFullscreen(src) {
   document.getElementById('fullscreenImg').src = src;
   document.getElementById('photoFullscreen').classList.add('show');
 }
 function closeFullscreen() { document.getElementById('photoFullscreen').classList.remove('show'); }
-
 function formatTime(d) {
   if (isNaN(d)) return '';
   const diff = Math.floor((new Date() - d) / 1000);
@@ -963,13 +874,19 @@ function formatTime(d) {
 }
 function formatFull(d) {
   if (isNaN(d)) return '';
-  return d.toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' }) + ', ' +
-         d.toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' });
+  return d.toLocaleDateString('en-IN', { day:'numeric', month:'short', year:'numeric' }) + ', ' +
+         d.toLocaleTimeString('en-IN', { hour:'2-digit', minute:'2-digit' });
 }
 function capitalize(s) { return s ? s[0].toUpperCase() + s.slice(1) : ''; }
-function esc(s) { return (s || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;'); }
+function truncate(s, n) { return s && s.length > n ? s.slice(0, n - 1) + '…' : s; }
+function esc(s) { return String(s == null ? '' : s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;'); }
 
-init();
+// ──────────── Init ────────────
+(function init() {
+  entries = JSON.parse(localStorage.getItem(LS_ENTRIES) || '[]');
+  pingConnection();
+  setInterval(pingConnection, 30000);
+})();
 </script>
 </body>
 </html>
