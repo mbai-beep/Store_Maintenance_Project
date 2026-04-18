@@ -1,7 +1,7 @@
 // api/upload.js
 // POST /api/upload  (multipart: photo, storeCode, employeeId)
 const { getAuth } = require('../lib/google');
-const formidable = require('formidable');
+const { formidable } = require('formidable');
 const fs = require('fs');
 
 module.exports.config = { api: { bodyParser: false } };
