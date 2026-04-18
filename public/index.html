@@ -456,12 +456,31 @@ async function apiCreateEntry(payload) {
 }
 
 async function apiUploadPhoto(file, meta) {
-  const fd = new FormData();
-  fd.append('photo', file);
-  fd.append('storeCode', meta.storeCode || '');
-  fd.append('employeeId', meta.employeeId || '');
   try {
-    const res = await fetch('/api/upload', { method: 'POST', body: fd });
+    // Read file as base64 in browser (FileReader is native, no deps).
+    const base64 = await new Promise((resolve, reject) => {
+      const r = new FileReader();
+      r.onload  = () => resolve(r.result);
+      r.onerror = () => reject(new Error('file read failed'));
+      r.readAsDataURL(file);
+    });
+    // Split "data:image/jpeg;base64,AAAA..." into mime + payload
+    const commaIdx = base64.indexOf(',');
+    const header   = base64.substring(5, commaIdx);       // "image/jpeg;base64"
+    const mime     = header.split(';')[0];                // "image/jpeg"
+    const payload  = base64.substring(commaIdx + 1);
+
+    const res = await fetch('/api/upload', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        photo:      payload,
+        filename:   file.name,
+        mimeType:   mime,
+        storeCode:  meta.storeCode  || '',
+        employeeId: meta.employeeId || '',
+      }),
+    });
     const d = await res.json();
     return res.ok ? { ok: true, url: d.url, name: d.name } : { ok: false, error: d.error || 'upload_error' };
   } catch (e) {

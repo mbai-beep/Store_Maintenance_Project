@@ -9,7 +9,6 @@
     "deploy": "vercel --prod"
   },
   "dependencies": {
-    "googleapis": "^133.0.0",
-    "formidable": "^2.1.2"
+    "googleapis": "^133.0.0"
   }
 }
