@@ -1,8 +1,16 @@
-// api/entries.js
-// GET  /api/entries            -> list rows
-// GET  /api/entries?employee=X -> filter by employee
-// POST /api/entries            -> append a row
+// api/entries.js - Sheet-backed list + append; IST timestamps.
 const { getAuth, ensureHeaderRow, SHEET_HEADERS, SHEET_RANGE } = require('../lib/google');
+
+function nowIST() {
+  const p = new Intl.DateTimeFormat('en-CA', {
+    timeZone: 'Asia/Kolkata',
+    year: 'numeric', month: '2-digit', day: '2-digit',
+    hour: '2-digit', minute: '2-digit', second: '2-digit',
+    hour12: false,
+  }).formatToParts(new Date());
+  const g = t => p.find(x => x.type === t).value;
+  return `${g('year')}-${g('month')}-${g('day')}T${g('hour')}:${g('minute')}:${g('second')}+05:30`;
+}
 
 function sheetRowToEntry(row) {
   const obj = {};
@@ -18,7 +26,7 @@ function entryToSheetRow(e) {
   const urls = Array.isArray(e.photoUrls) ? e.photoUrls.join(' | ') : (e.photoUrls || '');
   return [
     e.id || '',
-    e.createdAt || new Date().toISOString(),
+    e.createdAt || nowIST(),
     e.storeName || '',
     e.storeCode || '',
     e.requirements || '',

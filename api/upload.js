@@ -1,14 +1,55 @@
-// api/upload.js
-// POST /api/upload  (application/json: { photo: base64, filename, mimeType, storeCode, employeeId })
-// Decodes base64 payload, streams to Google Drive. Zero external parser deps.
-
+// api/upload.js - photo upload to Drive, one subfolder per storeCode.
 const { getAuth } = require('../lib/google');
 const { Readable } = require('stream');
 
-// Allow up to 15 MB JSON body (base64 inflates ~33% vs raw bytes, so ~11 MB raw photo).
 module.exports.config = {
   api: { bodyParser: { sizeLimit: '15mb' } },
 };
+
+// Module-level cache: survives within a warm serverless container.
+const _folderCache = new Map();
+
+function sanitizeFolderName(raw) {
+  const s = String(raw || 'UNKNOWN').trim().replace(/[^\w\-]/g, '_').toUpperCase();
+  return s || 'UNKNOWN';
+}
+
+async function getOrCreateStoreFolder(drive, parentId, storeCode) {
+  const name = sanitizeFolderName(storeCode);
+  const cacheKey = `${parentId}:${name}`;
+  if (_folderCache.has(cacheKey)) return _folderCache.get(cacheKey);
+
+  // Escape single quotes in folder name for Drive query syntax
+  const safeForQuery = name.replace(/'/g, "\\'");
+  const q = `'${parentId}' in parents and name='${safeForQuery}' and mimeType='application/vnd.google-apps.folder' and trashed=false`;
+
+  const list = await drive.files.list({
+    q,
+    fields: 'files(id, name)',
+    supportsAllDrives: true,
+    includeItemsFromAllDrives: true,
+    pageSize: 1,
+  });
+
+  let id;
+  if (list.data.files && list.data.files.length > 0) {
+    id = list.data.files[0].id;
+  } else {
+    const created = await drive.files.create({
+      requestBody: {
+        name,
+        mimeType: 'application/vnd.google-apps.folder',
+        parents: [parentId],
+      },
+      fields: 'id',
+      supportsAllDrives: true,
+    });
+    id = created.data.id;
+    console.log(`[api/upload] created new store folder "${name}" -> ${id}`);
+  }
+  _folderCache.set(cacheKey, id);
+  return id;
+}
 
 module.exports = async function handler(req, res) {
   if (req.method !== 'POST') {
@@ -38,13 +79,16 @@ module.exports = async function handler(req, res) {
     const origName = filename || 'photo.jpg';
     const ext      = (origName.match(/\.[a-z0-9]+$/i) || ['.jpg'])[0];
     const stamp    = new Date().toISOString().replace(/[:.]/g, '-');
-    const driveName = `${storeCode || 'UNKNOWN'}__${employeeId || 'UNKNOWN'}__${stamp}${ext}`;
+    const driveName = `${sanitizeFolderName(storeCode)}__${employeeId || 'UNKNOWN'}__${stamp}${ext}`;
 
     const { drive } = getAuth();
     const mt = mimeType || 'image/jpeg';
 
+    // One subfolder per store under the root DRIVE_FOLDER_ID
+    const storeFolderId = await getOrCreateStoreFolder(drive, DRIVE_FOLDER_ID, storeCode);
+
     const createRes = await drive.files.create({
-      requestBody: { name: driveName, parents: [DRIVE_FOLDER_ID] },
+      requestBody: { name: driveName, parents: [storeFolderId] },
       media: { mimeType: mt, body: Readable.from(buf) },
       fields: 'id, name, webViewLink, webContentLink',
       supportsAllDrives: true,
@@ -60,7 +104,7 @@ module.exports = async function handler(req, res) {
     const viewUrl = `https://drive.google.com/uc?export=view&id=${fileId}`;
     const openUrl = createRes.data.webViewLink || `https://drive.google.com/file/d/${fileId}/view`;
 
-    res.status(200).json({ success: true, id: fileId, name: driveName, url: viewUrl, openUrl });
+    res.status(200).json({ success: true, id: fileId, name: driveName, url: viewUrl, openUrl, folder: sanitizeFolderName(storeCode) });
   } catch (err) {
     console.error('[api/upload]', err);
     res.status(500).json({ error: err.message || 'upload_error' });
