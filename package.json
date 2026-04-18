@@ -10,6 +10,6 @@
   },
   "dependencies": {
     "googleapis": "^133.0.0",
-    "formidable": "^3.5.1"
+    "formidable": "^2.1.2"
   }
 }

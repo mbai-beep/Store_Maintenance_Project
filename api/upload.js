@@ -1,8 +1,12 @@
 // api/upload.js
 // POST /api/upload  (multipart: photo, storeCode, employeeId)
 const { getAuth } = require('../lib/google');
-const { formidable } = require('formidable');
 const fs = require('fs');
+
+// Defensive import: handles formidable v2 (fn export), v3 (.formidable named export),
+// and ESM interop (.default export). Whichever shape ships, we get a callable.
+const _formidablePkg = require('formidable');
+const formidable = _formidablePkg.formidable || _formidablePkg.default || _formidablePkg;
 
 module.exports.config = { api: { bodyParser: false } };
 
@@ -26,20 +30,24 @@ module.exports = async function handler(req, res) {
   if (!DRIVE_FOLDER_ID) return res.status(500).json({ error: 'DRIVE_FOLDER_ID env var is missing' });
 
   try {
+    if (typeof formidable !== 'function') {
+      throw new Error('formidable import resolved to non-function: ' + typeof formidable);
+    }
     const { fields, files } = await parseForm(req);
     const photo = pickFirst(files.photo);
     if (!photo) return res.status(400).json({ error: 'photo file is required' });
 
     const storeCode  = pickFirst(fields.storeCode)  || 'UNKNOWN';
     const employeeId = pickFirst(fields.employeeId) || 'UNKNOWN';
-    const origName   = photo.originalFilename || 'photo.jpg';
+    const origName   = photo.originalFilename || photo.name || 'photo.jpg';
     const ext        = (origName.match(/\.[a-z0-9]+$/i) || ['.jpg'])[0];
     const stamp      = new Date().toISOString().replace(/[:.]/g, '-');
     const driveName  = `${storeCode}__${employeeId}__${stamp}${ext}`;
 
     const { drive } = getAuth();
-    const mimeType = photo.mimetype || 'image/jpeg';
-    const fileStream = fs.createReadStream(photo.filepath);
+    const mimeType  = photo.mimetype || photo.type || 'image/jpeg';
+    const filepath  = photo.filepath || photo.path;
+    const fileStream = fs.createReadStream(filepath);
 
     const createRes = await drive.files.create({
       requestBody: { name: driveName, parents: [DRIVE_FOLDER_ID] },
@@ -55,7 +63,7 @@ module.exports = async function handler(req, res) {
       });
     } catch (permErr) { console.warn('[api/upload] permission set failed:', permErr.message); }
 
-    try { fs.unlinkSync(photo.filepath); } catch (e) {}
+    try { fs.unlinkSync(filepath); } catch (e) {}
 
     const viewUrl = `https://drive.google.com/uc?export=view&id=${fileId}`;
     const openUrl = createRes.data.webViewLink || `https://drive.google.com/file/d/${fileId}/view`;
