@@ -1,79 +1,87 @@
-const { getDB, ensureTable } = require('./_db');
+// api/entries.js
+// GET  /api/entries            -> list rows
+// GET  /api/entries?employee=X -> filter by employee
+// POST /api/entries            -> append a row
+const { getAuth, ensureHeaderRow, SHEET_HEADERS, SHEET_RANGE } = require('../lib/google');
 
-function mapRow(r) {
-  return {
-    id:           r.id,
-    customerName: r.customer_name,
-    mobileNumber: r.mobile_number,
-    storeName:    r.store_name,
-    requirement:  r.requirement   || '',
-    description:  r.description   || '',
-    employee:     r.employee,
-    employeeId:   r.employee_id  || '',
-    createdAt:    r.created_at,
-    status:       r.status       || 'new',
-    hasVoice:     r.has_voice === 1,
-    voiceDuration:r.voice_duration || '',
-    photoCount:   typeof r.photo_count === 'number' ? r.photo_count : (parseInt(r.photo_count) || 0),
-    synced:       true,
-  };
+function sheetRowToEntry(row) {
+  const obj = {};
+  SHEET_HEADERS.forEach((h, i) => { obj[h] = row[i] != null ? row[i] : ''; });
+  obj.photoUrls = obj.photoUrls
+    ? String(obj.photoUrls).split(' | ').map(s => s.trim()).filter(Boolean)
+    : [];
+  obj.photoCount = Number(obj.photoCount) || obj.photoUrls.length;
+  return obj;
+}
+
+function entryToSheetRow(e) {
+  const urls = Array.isArray(e.photoUrls) ? e.photoUrls.join(' | ') : (e.photoUrls || '');
+  return [
+    e.id || '',
+    e.createdAt || new Date().toISOString(),
+    e.storeName || '',
+    e.storeCode || '',
+    e.requirements || '',
+    e.employee || '',
+    e.employeeId || '',
+    e.status || 'new',
+    String(e.photoCount != null ? e.photoCount : (Array.isArray(e.photoUrls) ? e.photoUrls.length : 0)),
+    urls,
+  ];
+}
+
+function readJson(req) {
+  return new Promise((resolve, reject) => {
+    let d = '';
+    req.on('data', c => { d += c; });
+    req.on('end', () => { try { resolve(d ? JSON.parse(d) : {}); } catch (e) { reject(e); } });
+    req.on('error', reject);
+  });
 }
 
 module.exports = async function handler(req, res) {
-  try {
-    await ensureTable();
-    const db = getDB();
+  const SHEET_ID = process.env.SHEET_ID;
+  if (!SHEET_ID) return res.status(500).json({ error: 'SHEET_ID env var is missing' });
 
-    /* ── GET: list entries (all, or filtered by employee) ── */
+  try {
+    const { sheets } = getAuth();
+    await ensureHeaderRow();
+
     if (req.method === 'GET') {
-      const { employee } = req.query;
-      let result;
-      if (employee) {
-        result = await db.execute({
-          sql:  'SELECT * FROM entries WHERE employee = ? ORDER BY created_at DESC',
-          args: [employee],
-        });
-      } else {
-        result = await db.execute('SELECT * FROM entries ORDER BY created_at DESC');
-      }
-      return res.json({ entries: result.rows.map(mapRow) });
+      const employee = (req.query && req.query.employee) || '';
+      const result = await sheets.spreadsheets.values.get({
+        spreadsheetId: SHEET_ID,
+        range: SHEET_RANGE,
+      });
+      const rows = (result.data.values || []).slice(1);
+      let entries = rows.filter(r => r && r.length).map(sheetRowToEntry);
+      if (employee) entries = entries.filter(e => e.employee === employee);
+      entries.sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt));
+      return res.status(200).json({ entries });
     }
 
-    /* ── POST: create entry ── */
     if (req.method === 'POST') {
-      const b = req.body;
-      if (!b.id || !b.customerName || !b.mobileNumber || !b.storeName || !b.employee || !b.createdAt) {
-        return res.status(400).json({ error: 'Missing required fields' });
-      }
-      await db.execute({
-        sql: `INSERT OR REPLACE INTO entries
-              (id, customer_name, mobile_number, store_name, requirement, description, employee,
-               employee_id, created_at, status, has_voice, voice_duration, photo_count, synced_at)
-              VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-        args: [
-          b.id,
-          b.customerName,
-          b.mobileNumber,
-          b.storeName,
-          b.requirement    || '',
-          b.description    || '',
-          b.employee,
-          b.employeeId     || '',
-          b.createdAt,
-          b.status         || 'new',
-          b.hasVoice ? 1 : 0,
-          b.voiceDuration  || '',
-          b.photoCount     || 0,
-          new Date().toISOString(),
-        ],
+      const body = req.body && typeof req.body === 'object' ? req.body : await readJson(req);
+      if (!body.id)           return res.status(400).json({ error: 'id is required' });
+      if (!body.storeName)    return res.status(400).json({ error: 'storeName is required' });
+      if (!body.storeCode)    return res.status(400).json({ error: 'storeCode is required' });
+      if (!body.requirements) return res.status(400).json({ error: 'requirements is required' });
+
+      const row = entryToSheetRow(body);
+      await sheets.spreadsheets.values.append({
+        spreadsheetId: SHEET_ID,
+        range: SHEET_RANGE,
+        valueInputOption: 'RAW',
+        insertDataOption: 'INSERT_ROWS',
+        requestBody: { values: [row] },
       });
-      return res.json({ success: true });
+      return res.status(200).json({ success: true, entry: sheetRowToEntry(row) });
     }
 
     res.setHeader('Allow', 'GET, POST');
-    return res.status(405).json({ error: 'Method not allowed' });
+    res.status(405).json({ error: 'Method not allowed' });
   } catch (err) {
     console.error('[api/entries]', err);
-    return res.status(500).json({ error: 'Internal server error' });
+    res.status(500).json({ error: err.message || 'internal_error' });
   }
 };

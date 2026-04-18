@@ -1,11 +1,15 @@
 {
-  "name": "mb-customer-req-app",
+  "name": "store-maintenance-web-app",
   "version": "1.0.0",
+  "description": "Meena Bazaar Store Maintenance Web App - photos to Google Drive, metadata to Google Sheets.",
   "private": true,
-  "dependencies": {
-    "@libsql/client": "^0.14.0"
+  "engines": { "node": "22.x" },
+  "scripts": {
+    "dev": "vercel dev",
+    "deploy": "vercel --prod"
   },
-  "engines": {
-    "node": "22.x"
+  "dependencies": {
+    "googleapis": "^133.0.0",
+    "formidable": "^3.5.1"
   }
 }
