@@ -6,7 +6,9 @@
   "engines": { "node": "22.x" },
   "scripts": {
     "dev": "vercel dev",
-    "deploy": "vercel --prod"
+    "deploy": "vercel --prod",
+    "inspect-source": "node scripts/inspect-source.js",
+    "migrate-employees": "node scripts/migrate-employees.js"
   },
   "dependencies": {
     "@libsql/client": "^0.14.0",

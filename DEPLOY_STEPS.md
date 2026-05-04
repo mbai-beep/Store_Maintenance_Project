@@ -142,3 +142,76 @@ Q mobileNumber
 ## 7. Rollback
 
 If anything goes wrong, the previous build is one-click revertable from the Vercel dashboard → Deployments → click the last working deploy → "Promote to production". The Turso tables are idempotent — re-running `ensureSchema()` is safe.
+
+---
+
+## 8. Migrating employees from `mbz-customer-req` → `mbz-store-req`
+
+This brings every employee row (including hashed passwords) from your existing Customer Requirement DB into the new Store Maintenance DB so people can sign in with their existing credentials.
+
+### Prereqs
+
+- Turso CLI installed (`turso --help` works on Windows)
+- You're logged in (`turso auth whoami`)
+
+### Step 1 — Get fresh tokens for both databases
+
+```
+turso db tokens create mbz-customer-req
+turso db tokens create mbz-store-req
+```
+
+Copy each long `eyJ...` token.
+
+### Step 2 — Inspect the source first (sanity check)
+
+```
+cd D:\AI_ML_Projects\Store_Maintenance_Web_App
+
+# PowerShell:
+$env:SOURCE_TURSO_URL="libsql://mbz-customer-req-mbz-admin.aws-ap-south-1.turso.io"
+$env:SOURCE_TURSO_TOKEN="<paste token>"
+npm run inspect-source
+```
+
+Expected output: list of tables, column definitions for `employees`, row count, 3 sample rows (with the password_hash truncated for safety).
+
+### Step 3 — Run the migration
+
+```
+# PowerShell:
+$env:TARGET_TURSO_URL="libsql://mbz-store-req-mbz-admin.aws-ap-south-1.turso.io"
+$env:TARGET_TURSO_TOKEN="<paste new-db token>"
+
+# Optional: force every migrated user to change password on first login of the new app
+# $env:FORCE_PWD_CHANGE="1"
+
+npm run migrate-employees
+```
+
+You'll see something like:
+```
+[1/4] Ensuring target schema...
+[2/4] Inspecting source schema...
+     source columns: emp_code, emp_name, ...
+[3/4] Reading source rows...
+     147 rows to migrate
+[4/4] Upserting into target...
+---
+  migrated:  147
+  skipped:   0
+  total src: 147
+Done.
+```
+
+### Step 4 — Test login
+
+Visit https://store-maintenance-project.vercel.app/ and sign in with `2266` / `MB@2266` (or whatever password the user already had on the customer-requirement app — same hash carries over).
+
+### Notes
+
+- The migration is **idempotent** — re-running just refreshes existing rows (UPSERT on emp_code).
+- Password hashes are copied as-is; bcrypt-format hashes work transparently across both apps.
+- If a row in the source DB is missing `emp_code`, `emp_name`, or `password_hash`, it's skipped with a warning.
+- Set `FORCE_PWD_CHANGE=1` if you want everyone to be forced through a change-password flow the first time they log in to the new app (useful if the customer-req app didn't have a password expiry).
+- The script auto-creates the new table schema if it doesn't exist yet, so you don't need to wait for the first API call to bootstrap it.
