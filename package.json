@@ -1,7 +1,7 @@
 {
   "name": "store-maintenance-web-app",
-  "version": "1.0.0",
-  "description": "Meena Bazaar Store Maintenance Web App - photos to Google Drive, metadata to Google Sheets.",
+  "version": "2.0.0",
+  "description": "Meena Bazaar Store Maintenance Web App - Turso-backed auth, photos to Drive, metadata to Sheets.",
   "private": true,
   "engines": { "node": "22.x" },
   "scripts": {
@@ -9,6 +9,8 @@
     "deploy": "vercel --prod"
   },
   "dependencies": {
+    "@libsql/client": "^0.14.0",
+    "bcryptjs": "^2.4.3",
     "googleapis": "^133.0.0"
   }
 }

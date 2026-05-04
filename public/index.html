@@ -1,933 +1,1327 @@
+<!-- MB Store Maintenance App v1 -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="mobile-web-app-capable" content="yes">
 <title>MB Store Maintenance</title>
-<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Sacramento&display=swap" rel="stylesheet">
 <style>
-:root {
-  /* NEW THEME */
-  --brand: #1A202C;          /* Charcoal (Primary) */
-  --brand-dark: #000000;     /* Darker charcoal */
-  --brand-light: #FFFBEA;    /* Light yellow background */
-  --brand-mid: #ECC94B;      /* Accent yellow */
-
-  --bg: #FFFBEA;             /* App background */
-  --surface: #ffffff;
-  --surface2: #FFFBEB;
-
-  --border: #E5E7EB;
-
-  --text: #1A202C;           /* Main text */
-  --text2: #4A5568;
-  --text3: #A0AEC0;
-
-  --red: #E53E3E;            /* Error */
-  --amber: #ECC94B;          /* Warning */
-
-  --radius: 14px;
-  --radius-sm: 8px;
-  --shadow: 0 2px 16px rgba(0,0,0,0.08);
-
-  --font: 'DM Sans', sans-serif;
-  --mono: 'DM Mono', monospace;
-}
-* { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
-body { font-family: var(--font); background: var(--bg); color: var(--text); min-height: 100vh; max-width: 430px; margin: 0 auto; position: relative; overflow-x: hidden; }
-.screen { display: none; flex-direction: column; min-height: 100vh; }
-.screen.active { display: flex; }
-
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Segoe UI',Arial,sans-serif;background:#EAF4F8;min-height:100vh;display:flex;flex-direction:column;align-items:center}
+.hidden{display:none!important}
+/* HEADER */
+.app-header{width:100%;max-width:600px;background:linear-gradient(135deg,#8DBBCC,#8DBBCC);color:#fff;padding:14px 16px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;box-shadow:0 2px 8px rgba(0,0,0,.25)}
+.app-header .title{font-size:17px;font-weight:700;letter-spacing:.3px}
+.app-header .subtitle{font-size:11px;opacity:.85;margin-top:1px}
+.app-header .user-badge{font-size:11px;background:rgba(255,255,255,.18);border-radius:20px;padding:4px 10px;text-align:right;max-width:140px;word-break:break-word;white-space:pre-line}
+/* SECTIONS */
+.page{width:100%;max-width:600px;padding:0 0 80px;flex:1}
 /* LOGIN */
-#s-login { background: linear-gradient(135deg, #1A202C, #2D3748); align-items: center; justify-content: center; padding: 40px 24px; }
-.brand-head { text-align: center; margin-bottom: 20px; }
-.brand-logo { width: 72px; height: 72px; background: rgba(255,255,255,0.15); border-radius: 20px; display: flex; align-items: center; justify-content: center; margin: 0 auto 16px; }
-.brand-logo svg { width: 38px; height: 38px; }
-.brand-title { font-size: 26px; font-weight: 700; color: white; letter-spacing: -0.5px; line-height: 1.1; }
-.brand-sub { font-size: 12px; color: rgba(255,255,255,0.75); margin-top: 6px; }
-
-.login-card { background: white; border-radius: 24px; padding: 26px 22px; width: 100%; }
-.login-title { font-size: 20px; font-weight: 600; margin-bottom: 3px; }
-.login-hint { font-size: 13px; color: var(--text2); margin-bottom: 20px; }
-
-.role-row { display: flex; gap: 8px; margin-bottom: 18px; }
-.role-btn { flex: 1; padding: 12px 8px; border: 1.5px solid var(--border); border-radius: var(--radius-sm); background: var(--surface2); font-size: 13px; font-weight: 500; color: var(--text2); cursor: pointer; font-family: var(--font); text-align: center; transition: all 0.15s; }
-.role-btn.active {
-  border-color: var(--brand-mid);
-  background: #FFF3C4;
-  color: #1A202C;
-}
-.role-emoji { font-size: 18px; display: block; margin-bottom: 3px; }
-
-.field { margin-bottom: 14px; }
-.field label { display: block; font-size: 11px; font-weight: 600; color: var(--text2); margin-bottom: 6px; letter-spacing: 0.04em; text-transform: uppercase; }
-.field input, .field select, .field textarea { width: 100%; border: 1.5px solid var(--border); border-radius: var(--radius-sm); padding: 12px 14px; font-size: 15px; font-family: var(--font); color: var(--text); background: var(--surface2); outline: none; transition: all 0.15s; }
-.field input:focus, .field select:focus, .field textarea:focus { border-color: var(--brand); background: white; }
-.field textarea { resize: none; min-height: 96px; line-height: 1.5; }
-
-.btn-primary {
-  width: 100%; padding: 14px; background: var(--brand-mid); color: #1A202C; border: none; border-radius: var(--radius-sm); font-size: 15px; font-weight: 600; font-family: var(--font); cursor: pointer; transition: all 0.15s;
-}
-.btn-primary:active { transform: scale(0.98); background: #D69E2E; }
-.btn-primary:disabled { background: var(--text3); cursor: not-allowed; }
-
-/* TOPBAR */
-.topbar { background: var(--brand); padding: 52px 20px 16px; display: flex; align-items: flex-end; justify-content: space-between; flex-shrink: 0; }
-.topbar-title { font-size: 19px; font-weight: 600; color: white; }
-.topbar-back { display: flex; align-items: center; gap: 6px; color: rgba(255,255,255,0.88); font-size: 13px; cursor: pointer; background: none; border: none; font-family: var(--font); padding: 0; }
-.avatar { width: 38px; height: 38px; border-radius: 50%; background: rgba(255,255,255,0.2); display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 600; color: white; cursor: pointer; flex-shrink: 0; }
-.sync-pill { display: inline-flex; align-items: center; gap: 5px; background: rgba(255,255,255,0.15); border-radius: 20px; padding: 3px 10px; margin-top: 6px; }
-.sync-pill span { font-size: 11px; color: rgba(255,255,255,0.92); }
-.sync-dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; flex-shrink: 0; background: rgba(255,255,255,0.4); }
-.sync-dot.ok { background: #7ee4b5; }
-.sync-dot.bad { background: #ffb4b4; }
-
-/* HOME */
-.home-body { flex: 1; padding: 0 16px 100px; background: var(--bg); }
-.stats-row { display: flex; gap: 10px; margin: 16px 0; }
-.stat-card { flex: 1; background: white; border-radius: var(--radius); padding: 14px 10px; text-align: center; box-shadow: var(--shadow); border: 1px solid var(--border); }
-.stat-num { font-size: 24px; font-weight: 600; color: var(--brand); font-family: var(--mono); }
-.stat-lbl { font-size: 10px; color: var(--text3); margin-top: 2px; text-transform: uppercase; letter-spacing: 0.04em; }
-.section-head { font-size: 11px; font-weight: 600; color: var(--text3); text-transform: uppercase; letter-spacing: 0.06em; margin: 18px 0 10px; }
-
-.entry-card { background: white; border-radius: var(--radius); padding: 14px 16px; margin-bottom: 10px; box-shadow: var(--shadow); border: 1px solid var(--border); display: flex; align-items: center; gap: 12px; cursor: pointer; transition: transform 0.15s; }
-.entry-card:active { transform: scale(0.98); }
-.entry-icon {
-  width: 42px; height: 42px; border-radius: 10px; background: #FFF3C4; color: #1A202C; display: flex; align-items: center; justify-content: center; font-size: 18px; flex-shrink: 0;
-}
-.entry-info { flex: 1; min-width: 0; }
-.entry-title { font-size: 14px; font-weight: 600; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.entry-store { font-size: 12px; color: var(--text2); margin-top: 2px; }
-.entry-time { font-size: 11px; color: var(--text3); margin-top: 2px; }
-.entry-meta { display: flex; flex-direction: column; align-items: flex-end; gap: 4px; }
-.badge { font-size: 10px; font-weight: 600; padding: 3px 9px; border-radius: 20px; }
-.badge-new { background: var(--brand-light); color: var(--brand-dark); }
-.badge-reviewed { background: #FEF3C7; color: #92400E; }
-.badge-resolved { background: #EDE9FE; color: #5B21B6; }
-.photo-chip { font-size: 10px; color: var(--text3); display: flex; align-items: center; gap: 3px; }
-
-/* FAB + NAV */
-.fab { position: fixed; bottom: 80px; right: calc(50% - 195px); width: 58px; height: 58px; border-radius: 50%; background: var(--brand-mid); color: #1A202C; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 20px rgba(0,0,0,0.25); z-index: 100; transition: transform 0.2s; }
-.fab:active { transform: scale(0.92); }
-.fab svg { width: 26px; height: 26px; }
-.bottom-nav { position: fixed; bottom: 0; left: 50%; transform: translateX(-50%); width: 100%; max-width: 430px; background: white; border-top: 1px solid var(--border); display: flex; padding: 8px 0 20px; z-index: 99; }
-.nav-item { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 3px; cursor: pointer; padding: 4px 0; border: none; background: none; font-family: var(--font); }
-.nav-item span { font-size: 10px; color: var(--text3); }
-.nav-item.active span { color: var(--brand); }
-.nav-item svg { width: 22px; height: 22px; stroke: var(--text3); }
-.nav-item.active svg { stroke: var(--brand); }
-
+#loginSection{width:100%;max-width:600px;min-height:100vh;display:flex;flex-direction:column;align-items:center}
+.login-hero{width:100%;background:linear-gradient(135deg,#8DBBCC,#8DBBCC);color:#fff;padding:40px 20px 30px;text-align:center}
+.login-hero .logo{font-size:52px;margin-bottom:8px}
+.login-hero h1{font-size:22px;font-weight:700}
+.login-hero p{font-size:13px;opacity:.85;margin-top:4px}
+.login-card{background:#fff;border-radius:18px 18px 0 0;margin-top:-12px;width:100%;padding:28px 24px;flex:1}
+.login-card h2{font-size:18px;font-weight:700;color:#8DBBCC;margin-bottom:4px}
+.login-card p{font-size:13px;color:#777;margin-bottom:20px}
 /* FORM */
-.form-body { flex: 1; padding: 16px 16px 120px; background: var(--bg); overflow-y: auto; }
-.form-section { background: white; border-radius: var(--radius); padding: 16px; margin-bottom: 12px; box-shadow: var(--shadow); border: 1px solid var(--border); }
-.form-section-title { font-size: 11px; font-weight: 600; color: var(--text3); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 12px; }
-.required-mark { color: var(--red); margin-left: 2px; }
+.field{margin-bottom:14px}
+.field label{display:block;font-size:12px;font-weight:600;color:#555;margin-bottom:5px;text-transform:uppercase;letter-spacing:.4px}
+.field input,.field select,.field textarea{width:100%;padding:12px 14px;border:1.5px solid #ddd;border-radius:10px;font-size:15px;outline:none;transition:border-color .2s;background:#fff;color:#333;appearance:none;-webkit-appearance:none}
+.field input:focus,.field select:focus,.field textarea:focus{border-color:#8DBBCC}
+.field input[readonly]{background:#F5EFE6 !important;color:#555;cursor:not-allowed}
+.field textarea{resize:vertical;min-height:80px;font-family:inherit}
+.field .pw-wrap{position:relative}
+.field .pw-wrap input{padding-right:44px}
+.field .pw-toggle{position:absolute;right:12px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;font-size:18px;color:#999;padding:4px}
+.field .input-hint{font-size:11px;color:#999;margin-top:4px}
+.checkbox-row{display:flex;align-items:center;gap:8px;margin-bottom:16px}
+.checkbox-row input[type=checkbox]{width:18px;height:18px;accent-color:#8DBBCC;cursor:pointer}
+.checkbox-row label{font-size:14px;color:#555;cursor:pointer}
+/* BUTTONS */
+.btn{display:block;width:100%;padding:14px;border:none;border-radius:12px;font-size:16px;font-weight:700;cursor:pointer;transition:all .2s;letter-spacing:.3px}
+.btn-primary{background:#F1F3F5;color:#2c2c2c;border:1.5px solid #c0cdd4}
+.btn-primary:hover{background:#e2e6ea}
+.btn-primary:active{transform:scale(.98)}
+.btn-secondary{background:#EAF4F8;color:#8DBBCC;border:1.5px solid #8DBBCC}
+.btn-sm{width:auto;display:inline-block;padding:7px 14px;font-size:13px;border-radius:8px;font-weight:600}
+.btn-danger{background:#c62828;color:#fff}
+.btn-danger:hover{background:#b71c1c}
+.btn-gray{background:#f5f5f5;color:#555;border:1px solid #ddd}
+.link-btn{background:none;border:none;color:#8DBBCC;font-size:14px;cursor:pointer;text-decoration:underline;padding:0}
+.link-btn:hover{color:#8DBBCC}
+/* CARD */
+.card{background:#fff;border-radius:14px;padding:16px;margin:10px 12px;box-shadow:0 2px 8px rgba(0,0,0,.07)}
+.card-title{font-size:13px;font-weight:700;color:#8DBBCC;text-transform:uppercase;letter-spacing:.4px;margin-bottom:10px;display:flex;align-items:center;gap:6px}
+/* NAV TABS */
+.nav-tabs{width:100%;max-width:600px;background:#fff;display:flex;box-shadow:0 2px 6px rgba(0,0,0,.1);position:sticky;top:56px;z-index:99}
+.nav-tab{flex:1;padding:12px 8px;border:none;background:none;font-size:13px;font-weight:600;color:#999;cursor:pointer;border-bottom:3px solid transparent;transition:all .2s}
+.nav-tab.active{color:#8DBBCC;border-bottom-color:#8DBBCC}
+/* TOAST */
+#toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:#323232;color:#fff;padding:12px 20px;border-radius:10px;font-size:14px;z-index:9999;opacity:0;transition:opacity .3s;pointer-events:none;max-width:340px;text-align:center}
+#toast.show{opacity:1}
+#toast.success{background:#8DBBCC}
+#toast.error{background:#c62828}
+/* CHIPS */
+.req-section{margin-bottom:12px;border:1.5px solid #e8e8e8;border-radius:12px;overflow:hidden}
+.req-section-header{background:#E3F2F8;padding:10px 14px;font-size:13px;font-weight:700;color:#8DBBCC;display:flex;align-items:center;gap:8px;letter-spacing:.2px}
+.req-section-header .sno{background:#8DBBCC;color:#fff;border-radius:50%;width:24px;height:24px;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;flex-shrink:0}
+.chips{display:flex;flex-wrap:wrap;gap:8px;padding:12px}
+.chip{padding:10px 16px;border-radius:24px;border:2px solid #ddd;font-size:13px;font-weight:500;cursor:pointer;transition:all .15s;background:#fff;color:#444;user-select:none;-webkit-user-select:none;min-height:42px;display:inline-flex;align-items:center;gap:6px}
+.chip.selected{background:#E3F2F8;border-color:#8DBBCC;color:#1a1a1a;font-weight:700;box-shadow:0 2px 6px rgba(141,187,204,.25)}
+.chip.others-chip{border-style:dashed;border-color:#aaa;color:#666}
+.chip.others-chip.selected{background:#E3F2F8;border-color:#8DBBCC;border-style:solid;color:#8DBBCC}
+.chip:active{transform:scale(.95)}
+.others-input-wrap{display:none;padding:4px 12px 12px}
+.others-input-wrap textarea{width:100%;padding:10px 12px;border:2px solid #8DBBCC;border-radius:10px;font-size:14px;font-family:inherit;outline:none;background:#E3F2F8;resize:vertical;min-height:70px}
+.others-input-wrap textarea::placeholder{color:#bbb}
+/* AUDIO */
+.audio-section{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.rec-btn{padding:10px 18px;border-radius:24px;border:none;font-size:13px;font-weight:700;cursor:pointer;display:flex;align-items:center;gap:6px;transition:all .2s}
+.rec-btn.start{background:#c62828;color:#fff}
+.rec-btn.stop{background:#f5f5f5;color:#555;border:1px solid #ddd}
+.rec-indicator{width:10px;height:10px;border-radius:50%;background:#f44336;animation:pulse 1s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
+.audio-player{width:100%;margin-top:8px}
+/* PHOTO */
+.photo-grid{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}
+.photo-thumb-wrap{position:relative;width:72px;height:72px}
+.photo-thumb{width:72px;height:72px;object-fit:cover;border-radius:8px;border:2px solid #ddd}
+.photo-remove{position:absolute;top:-6px;right:-6px;background:#c62828;color:#fff;border:none;border-radius:50%;width:22px;height:22px;font-size:12px;cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:0 1px 3px rgba(0,0,0,.3)}
+.photo-add{width:72px;height:72px;border-radius:8px;border:2px dashed #aaa;display:flex;align-items:center;justify-content:center;font-size:26px;cursor:pointer;background:#fafafa;color:#999}
+.photo-counter{font-size:12px;color:#777;margin-top:6px;font-weight:600}
+.photo-counter.error{color:#c62828}
+.photo-counter.ok{color:#2e7d32}
+/* ENTRY CARDS */
+.entry-card{background:#fff;border-radius:14px;margin:8px 12px;box-shadow:0 2px 8px rgba(0,0,0,.07);overflow:hidden}
+.entry-header{padding:12px 14px;display:flex;justify-content:space-between;align-items:flex-start;gap:8px}
+.entry-name{font-size:15px;font-weight:700;color:#222}
+.entry-meta{font-size:12px;color:#777;margin-top:3px}
+.entry-body{padding:0 14px 12px;border-top:1px solid #f0f0f0}
+.status-badge{padding:4px 10px;border-radius:20px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.3px;white-space:nowrap}
+.status-pending{background:#fff8e1;color:#f57f17;border:1px solid #ffe082}
+.status-fulfilled{background:#E3F2F8;color:#8DBBCC;border:1px solid #8DBBCC}
+.status-not{background:#fce4ec;color:#c62828;border:1px solid #ef9a9a}
+.status-actions{display:flex;gap:6px;margin-top:10px;flex-wrap:wrap}
+.req-summary{font-size:12px;color:#555;margin-top:8px;line-height:1.6}
+.req-summary strong{color:#8DBBCC}
+/* FORGOT */
+.forgot-card{background:#fff;border-radius:14px;margin:16px 12px;padding:24px 20px;box-shadow:0 2px 8px rgba(0,0,0,.07)}
+.forgot-card h2{font-size:18px;font-weight:700;color:#8DBBCC;margin-bottom:6px}
+.forgot-card p{font-size:13px;color:#777;margin-bottom:18px}
+.step-indicator{display:flex;gap:8px;margin-bottom:20px}
+.step-dot{width:28px;height:4px;border-radius:2px;background:#e0e0e0}
+.step-dot.active{background:#8DBBCC}
+.otp-inputs{display:flex;gap:8px;justify-content:center;margin-bottom:16px}
+.otp-inputs input{width:44px;height:52px;text-align:center;font-size:22px;font-weight:700;border:2px solid #ddd;border-radius:10px;outline:none}
+.otp-inputs input:focus{border-color:#8DBBCC}
+/* MODAL */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:200;display:flex;align-items:center;justify-content:center;padding:16px}
+.modal{background:#fff;border-radius:18px;padding:24px 20px;width:100%;max-width:420px}
+.modal h3{font-size:18px;font-weight:700;color:#8DBBCC;margin-bottom:6px}
+.modal p{font-size:13px;color:#777;margin-bottom:18px}
+.pwd-rules{background:#FFF8E1;border-left:3px solid #f57f17;padding:10px 12px;border-radius:6px;font-size:11.5px;color:#6d4c00;margin-bottom:14px;line-height:1.6}
+.pwd-rules strong{color:#3e2700}
+/* LOADERS */
+.spinner{display:inline-block;width:20px;height:20px;border:3px solid rgba(255,255,255,.4);border-top-color:#fff;border-radius:50%;animation:spin .7s linear infinite;vertical-align:middle;margin-right:6px}
+@keyframes spin{to{transform:rotate(360deg)}}
+.loading-text{text-align:center;padding:32px;color:#999;font-size:14px}
+/* MISC */
+.divider{height:1px;background:#f0f0f0;margin:10px 0}
+.section-gap{height:10px}
+.info-row{display:flex;justify-content:space-between;font-size:12px;padding:2px 0}
+.info-row span:first-child{color:#999}
+.info-row span:last-child{color:#333;font-weight:500}
+select option:disabled{color:#bbb}
 
-.photo-actions { display: flex; gap: 8px; }
-.photo-btn { flex: 1; border: 1.5px dashed var(--border); border-radius: var(--radius-sm); padding: 14px 8px; background: var(--surface2); display: flex; flex-direction: column; align-items: center; gap: 5px; font-size: 12px; color: var(--text2); cursor: pointer; font-family: var(--font); transition: all 0.15s; }
-.photo-btn svg { width: 20px; height: 20px; }
-.photo-btn:active { background: var(--brand-light); }
-.photo-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-top: 12px; }
-.photo-thumb { position: relative; aspect-ratio: 1; border-radius: var(--radius-sm); overflow: hidden; border: 1px solid var(--border); background: var(--surface2); }
-.photo-thumb img { width: 100%; height: 100%; object-fit: cover; }
-.photo-remove { position: absolute; top: 4px; right: 4px; width: 22px; height: 22px; border-radius: 50%; background: rgba(0,0,0,0.7); color: white; border: none; font-size: 13px; cursor: pointer; display: flex; align-items: center; justify-content: center; }
-.photo-count-hint { font-size: 11px; color: var(--text3); margin-top: 8px; }
-
-.submit-bar { position: fixed; bottom: 0; left: 50%; transform: translateX(-50%); width: 100%; max-width: 430px; background: white; border-top: 1px solid var(--border); padding: 12px 16px 28px; z-index: 99; }
-.sync-row { display: flex; align-items: center; gap: 6px; justify-content: center; margin-top: 8px; }
-.sync-row span { font-size: 11px; color: var(--text3); }
-
-/* DETAIL */
-.detail-body { flex: 1; padding: 16px 16px 40px; background: var(--bg); overflow-y: auto; }
-.detail-section { background: white; border-radius: var(--radius); padding: 16px; margin-bottom: 12px; box-shadow: var(--shadow); border: 1px solid var(--border); }
-.detail-section-title { font-size: 11px; font-weight: 600; color: var(--text3); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 12px; }
-.detail-row { display: flex; justify-content: space-between; align-items: center; padding: 8px 0; border-bottom: 1px solid var(--border); gap: 12px; }
-.detail-row:last-child { border-bottom: none; }
-.detail-key { font-size: 13px; color: var(--text2); flex-shrink: 0; }
-.detail-val { font-size: 13px; font-weight: 500; color: var(--text); text-align: right; word-break: break-word; }
-.desc-text { font-size: 14px; color: var(--text); line-height: 1.6; white-space: pre-wrap; }
-.photo-gallery { display: grid; grid-template-columns: repeat(3,1fr); gap: 8px; }
-.gallery-img { aspect-ratio: 1; border-radius: var(--radius-sm); overflow: hidden; cursor: pointer; background: var(--surface2); }
-.gallery-img img { width: 100%; height: 100%; object-fit: cover; }
-.gallery-link { display: block; text-decoration: none; }
-
-/* MANAGER */
-.manager-topbar { background: #0d1117; padding: 52px 20px 16px; display: flex; align-items: flex-end; justify-content: space-between; }
-.manager-topbar .topbar-title { color: white; }
-.filter-bar { background: #0d1117; padding: 0 16px 14px; display: flex; gap: 8px; overflow-x: auto; scrollbar-width: none; }
-.filter-bar::-webkit-scrollbar { display: none; }
-.filter-chip { padding: 7px 14px; border-radius: 20px; font-size: 12px; font-weight: 500; white-space: nowrap; cursor: pointer; border: 1.5px solid rgba(255,255,255,0.15); color: rgba(255,255,255,0.6); background: transparent; font-family: var(--font); transition: all 0.15s; }
-.filter-chip.active { background: var(--brand); border-color: var(--brand); color: white; }
-.manager-body { flex: 1; padding: 12px 16px 40px; background: var(--bg); }
-.mgr-stats { display: grid; grid-template-columns: repeat(3,1fr); gap: 8px; margin-bottom: 14px; }
-.mgr-stat { background: white; border-radius: var(--radius-sm); padding: 12px 8px; text-align: center; border: 1px solid var(--border); }
-.mgr-stat-num { font-size: 20px; font-weight: 600; font-family: var(--mono); }
-.mgr-stat-lbl { font-size: 10px; color: var(--text3); margin-top: 2px; }
-.action-row { display: flex; gap: 8px; margin-bottom: 14px; }
-.export-btn { flex: 1; display: flex; align-items: center; justify-content: center; gap: 6px; background: #0d1117; color: white; border: none; border-radius: var(--radius-sm); padding: 10px 12px; font-size: 13px; font-weight: 500; cursor: pointer; font-family: var(--font); }
-.export-btn svg { width: 15px; height: 15px; }
-.refresh-btn { display: flex; align-items: center; gap: 6px; background: var(--brand-light); color: var(--brand-dark); border: 1px solid var(--brand-mid); border-radius: var(--radius-sm); padding: 10px 14px; font-size: 13px; font-weight: 500; cursor: pointer; font-family: var(--font); }
-.refresh-btn svg { width: 15px; height: 15px; }
-
-/* TOAST + OVERLAYS */
-.toast { position: fixed; bottom: 90px; left: 50%; transform: translateX(-50%); background: #1a1916; color: white; padding: 12px 20px; border-radius: 30px; font-size: 13px; font-weight: 500; z-index: 999; opacity: 0; transition: opacity 0.3s; pointer-events: none; white-space: nowrap; max-width: 90%; text-align: center; }
-.toast.show { opacity: 1; }
-.toast.success { background: #1A202C; }
-.toast.error { background: var(--red); }
-.loading-overlay { display: none; position: fixed; inset: 0; background: rgba(255,255,255,0.88); z-index: 998; align-items: center; justify-content: center; flex-direction: column; gap: 14px; }
-.loading-overlay.show { display: flex; }
-.spinner { width: 36px; height: 36px; border: 3px solid var(--brand-light); border-top-color: var(--brand); border-radius: 50%; animation: spin 0.8s linear infinite; }
-@keyframes spin { to { transform: rotate(360deg); } }
-.loading-text { font-size: 14px; color: var(--text2); }
-.photo-fullscreen { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.95); z-index: 999; align-items: center; justify-content: center; }
-.photo-fullscreen.show { display: flex; }
-.photo-fullscreen img { max-width: 100%; max-height: 100%; object-fit: contain; }
-.photo-close { position: absolute; top: 20px; right: 20px; background: rgba(255,255,255,0.15); border: none; border-radius: 50%; width: 40px; height: 40px; color: white; font-size: 20px; cursor: pointer; display: flex; align-items: center; justify-content: center; }
-.empty-state { text-align: center; padding: 60px 20px; }
-.empty-icon { font-size: 46px; margin-bottom: 12px; opacity: 0.35; }
-.empty-title { font-size: 15px; font-weight: 500; color: var(--text2); margin-bottom: 6px; }
-.empty-sub { font-size: 12px; color: var(--text3); }
-input[type="file"] { display: none; }
-
-.badge-new {
-  background: #FFF3C4;
-  color: #975A16;
-}
-.badge-reviewed {
-  background: #FEF3C7;
-  color: #92400E;
-}
-.badge-resolved {
-  background: #E6FFFA;
-  color: #065F46;
-}
-
+/* MB BRAND THEME */
+.mb-logo-banner{background:transparent;padding:22px 20px 14px;text-align:center}
+.mb-logo-img{height:90px;width:auto;max-width:100%;display:block;margin:0 auto}
+.mb-logo-text{font-family:'Sacramento',cursive;font-size:54px;color:#2c2c2c;line-height:1.2}
+.btn-primary{box-shadow:0 3px 0 #b0bec5}
+.btn-primary:active{transform:translateY(2px);box-shadow:none}
+.link-btn{color:#C61E32 !important}
+.link-btn:hover{color:#9e1828 !important;text-decoration:underline !important}
+.field input,.field select,.field textarea{background:#F5EFE6}
+.field input:focus,.field select:focus,.field textarea:focus{border-color:#8DBBCC;background:#fff;box-shadow:0 0 0 2px rgba(141,187,204,.2)}
+.login-card{border-top:3px solid #8DBBCC}
 </style>
 </head>
 <body>
 
-<div class="photo-fullscreen" id="photoFullscreen" onclick="closeFullscreen()">
-  <button class="photo-close">✕</button>
-  <img id="fullscreenImg" src="" alt="">
-</div>
-<div class="toast" id="toast"></div>
-<div class="loading-overlay" id="loadingOverlay">
-  <div class="spinner"></div>
-  <div class="loading-text" id="loadingText">Working…</div>
-</div>
-<input type="file" id="cameraInput" accept="image/*" capture="environment" multiple onchange="handlePhotos(this)">
-<input type="file" id="galleryInput" accept="image/*" multiple onchange="handlePhotos(this)">
-
 <!-- LOGIN -->
-<div class="screen active" id="s-login">
-  <div class="brand-head">
-    <div class="brand-logo">
-      <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round">
-        <path d="M3 21h18"/>
-        <path d="M5 21V7l7-4 7 4v14"/>
-        <path d="M9 9h1M14 9h1M9 13h1M14 13h1M9 17h1M14 17h1"/>
-      </svg>
-    </div>
-    <div class="brand-title">MB Store<br>Maintenance</div>
-    <div class="brand-sub">Store requirement capture · PAN India</div>
+<div id="loginSection">
+  <div class="mb-logo-banner">
+    <img src="https://mbz.in/cdn/shop/files/logo-500-black_copy.png?v=1725614377&width=300"
+         class="mb-logo-img" alt="Meena Bazaar"
+         onerror="this.style.display='none';document.getElementById('logoFallback').style.display='block'">
+    <div id="logoFallback" class="mb-logo-text" style="display:none">Meena Bazaar</div>
+  </div>
+  <div class="login-hero">
+    <div class="logo">&#x1F527;</div>
+    <h1>MB Store Maintenance</h1>
+    <p>Store Issue &amp; Repair Tracker</p>
   </div>
   <div class="login-card">
-    <div class="login-title">Sign in</div>
-    <div class="login-hint">Choose your role to continue</div>
-    <div class="role-row">
-      <button class="role-btn active" id="role-emp" onclick="selectRole('employee')">
-        <span class="role-emoji">👷</span>Employee
-      </button>
-      <button class="role-btn" id="role-mgr" onclick="selectRole('manager')">
-        <span class="role-emoji">👑</span>Manager
-      </button>
-    </div>
-    <div class="field">
-      <label>Your Name</label>
-      <input type="text" id="loginName" placeholder="Full name" autocomplete="name">
-    </div>
+    <h2>Welcome Back</h2>
+    <p>Sign in to log a maintenance request</p>
     <div class="field">
       <label>Employee ID</label>
-      <input type="text" id="loginId" placeholder="e.g. EMP001">
+      <input type="number" id="loginEmpCode" placeholder="Enter your employee code" inputmode="numeric">
     </div>
-    <div class="field" style="margin-bottom: 18px;">
-      <label>Default Store Name</label>
-      <input type="text" id="loginStore" placeholder="e.g. Chennai T.Nagar">
+    <div class="field">
+      <label>Password</label>
+      <div class="pw-wrap">
+        <input type="password" id="loginPwd" placeholder="Enter your password">
+        <button class="pw-toggle" onclick="togglePw('loginPwd',this)" tabindex="-1">&#128065;</button>
+      </div>
+      <div class="input-hint">First time? Use <strong>MB@&lt;YourEmployeeCode&gt;</strong> (e.g. MB@2266)</div>
     </div>
-    <button class="btn-primary" onclick="doLogin()">Sign in</button>
+    <div class="checkbox-row">
+      <input type="checkbox" id="rememberMe">
+      <label for="rememberMe">Remember me for 30 days</label>
+    </div>
+    <button class="btn btn-primary" onclick="doLogin()" id="loginBtn">Sign In</button>
+    <div style="text-align:center;margin-top:16px">
+      <button class="link-btn" onclick="showForgot()">Forgot Password?</button>
+    </div>
   </div>
 </div>
 
-<!-- EMPLOYEE HOME -->
-<div class="screen" id="s-home">
-  <div class="topbar">
-    <div>
-      <div style="font-size:12px;color:rgba(255,255,255,0.75);">Welcome</div>
-      <div class="topbar-title" id="empName">Employee</div>
-      <div class="sync-pill">
-        <span class="sync-dot" id="homeSyncDot"></span>
-        <span id="homeSyncLabel">Checking connection…</span>
-      </div>
-    </div>
-    <div class="avatar" id="empAvatar" onclick="doLogout()">EM</div>
+<!-- FORGOT PASSWORD -->
+<div id="forgotSection" class="hidden page" style="padding:0">
+  <div class="app-header">
+    <div><div class="title">Forgot Password</div></div>
+    <button onclick="showLogin()" style="background:rgba(255,255,255,.2);border:none;color:#fff;border-radius:8px;padding:6px 12px;cursor:pointer;font-size:13px">&#8592; Back</button>
   </div>
-  <div class="home-body">
-    <div class="stats-row">
-      <div class="stat-card"><div class="stat-num" id="statToday">0</div><div class="stat-lbl">Today</div></div>
-      <div class="stat-card"><div class="stat-num" id="statWeek">0</div><div class="stat-lbl">7 days</div></div>
-      <div class="stat-card"><div class="stat-num" id="statTotal">0</div><div class="stat-lbl">Total</div></div>
-    </div>
-    <div class="section-head">My recent requests</div>
-    <div id="entriesList"></div>
+  <div id="forgotStep1" class="forgot-card">
+    <div class="step-indicator"><div class="step-dot active"></div><div class="step-dot"></div><div class="step-dot"></div></div>
+    <h2>Step 1 of 3</h2>
+    <p>Enter your Employee ID and registered mobile number to receive an OTP.</p>
+    <div class="field"><label>Employee ID</label><input type="number" id="fpEmpCode" placeholder="Your employee code" inputmode="numeric"></div>
+    <div class="field"><label>Registered Mobile</label><input type="tel" id="fpMobile" placeholder="10-digit mobile number" maxlength="10" inputmode="tel"></div>
+    <button class="btn btn-primary" onclick="sendOTP()" id="sendOtpBtn">Send OTP</button>
   </div>
-  <button class="fab" onclick="goTo('s-capture')" title="New request">
-    <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-  </button>
-  <nav class="bottom-nav">
-    <button class="nav-item active" onclick="goTo('s-home')">
-      <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>
-      <span>Home</span>
-    </button>
-    <button class="nav-item" onclick="goTo('s-capture')">
-      <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
-      <span>New</span>
-    </button>
-    <button class="nav-item" onclick="doLogout()">
-      <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
-      <span>Logout</span>
-    </button>
-  </nav>
+  <div id="forgotStep2" class="forgot-card hidden">
+    <div class="step-indicator"><div class="step-dot"></div><div class="step-dot active"></div><div class="step-dot"></div></div>
+    <h2>Step 2 of 3</h2>
+    <p id="otpSentMsg">Enter the 6-digit OTP sent to your registered mobile.</p>
+    <div class="otp-inputs">
+      <input type="tel" maxlength="1" id="o1" oninput="otpMove(this,'o2')" onkeydown="otpBack(event,this,'')">
+      <input type="tel" maxlength="1" id="o2" oninput="otpMove(this,'o3')" onkeydown="otpBack(event,this,'o1')">
+      <input type="tel" maxlength="1" id="o3" oninput="otpMove(this,'o4')" onkeydown="otpBack(event,this,'o2')">
+      <input type="tel" maxlength="1" id="o4" oninput="otpMove(this,'o5')" onkeydown="otpBack(event,this,'o3')">
+      <input type="tel" maxlength="1" id="o5" oninput="otpMove(this,'o6')" onkeydown="otpBack(event,this,'o4')">
+      <input type="tel" maxlength="1" id="o6" oninput="otpMove(this,'')" onkeydown="otpBack(event,this,'o5')">
+    </div>
+    <button class="btn btn-primary" onclick="verifyOTP()" id="verifyOtpBtn">Verify OTP</button>
+    <div style="text-align:center;margin-top:12px"><button class="link-btn" onclick="sendOTP()">Resend OTP</button></div>
+  </div>
+  <div id="forgotStep3" class="forgot-card hidden">
+    <div class="step-indicator"><div class="step-dot"></div><div class="step-dot"></div><div class="step-dot active"></div></div>
+    <h2>Step 3 of 3</h2>
+    <p>Enter your new password.</p>
+    <div class="pwd-rules">
+      <strong>Password rules:</strong><br>
+      &bull; Minimum 6 characters<br>
+      &bull; Cannot match any of your last 3 passwords<br>
+      &bull; Will expire 60 days from today
+    </div>
+    <div class="field"><label>New Password</label>
+      <div class="pw-wrap"><input type="password" id="fpNewPwd" placeholder="Min. 6 characters"><button class="pw-toggle" onclick="togglePw('fpNewPwd',this)" tabindex="-1">&#128065;</button></div>
+    </div>
+    <div class="field"><label>Confirm Password</label>
+      <div class="pw-wrap"><input type="password" id="fpConfirmPwd" placeholder="Re-enter new password"><button class="pw-toggle" onclick="togglePw('fpConfirmPwd',this)" tabindex="-1">&#128065;</button></div>
+    </div>
+    <button class="btn btn-primary" onclick="resetPassword()" id="resetPwdBtn">Set New Password</button>
+  </div>
 </div>
 
-<!-- CAPTURE FORM -->
-<div class="screen" id="s-capture">
-  <div class="topbar">
+<!-- MAIN APP -->
+<div id="appSection" class="hidden" style="width:100%;max-width:600px;display:flex;flex-direction:column;min-height:100vh">
+  <div class="app-header">
     <div>
-      <button class="topbar-back" onclick="goBack()">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="15 18 9 12 15 6"/></svg>
-        Back
-      </button>
-      <div class="topbar-title" style="margin-top:4px;">New maintenance request</div>
+      <div class="title">MB Store Maintenance</div>
+      <div class="subtitle" id="headerSubtitle">Issue Tracker</div>
+    </div>
+    <div style="display:flex;align-items:center;gap:8px">
+      <div class="user-badge" id="userBadge">Loading...</div>
+      <button onclick="doLogout()" style="background:rgba(255,255,255,.2);border:none;color:#fff;border-radius:8px;padding:6px 10px;cursor:pointer;font-size:12px" title="Logout">&#x1F6AA;</button>
     </div>
   </div>
-  <div class="form-body">
-    <div class="form-section">
-      <div class="form-section-title">Store details</div>
-      <div class="field">
-        <label>Store Name<span class="required-mark">*</span></label>
-        <input type="text" id="fStoreName" placeholder="e.g. Chennai T.Nagar">
+
+  <div class="nav-tabs">
+    <button class="nav-tab active" id="tabNewReq" onclick="showView('newReq')">&#x1F527; New Request</button>
+    <button class="nav-tab" id="tabMyReqs" onclick="showView('myReqs')">&#x1F4CB; <span id="submissionsLabel">My Submissions</span></button>
+    <button class="nav-tab hidden" id="tabAdmin" onclick="showView('admin')">&#x1F451; Admin</button>
+  </div>
+
+  <!-- NEW REQUEST -->
+  <div id="newReqView" class="page">
+    <!-- Store Info (Auto-populated, locked) -->
+    <div class="card" style="margin-top:12px">
+      <div class="card-title">&#x1F3EA; Store Information <span style="color:#999;font-size:11px;font-weight:400;margin-left:4px">(auto-filled)</span></div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+        <div class="field"><label>Store Name</label>
+          <input type="text" id="custStoreName" readonly placeholder="-">
+        </div>
+        <div class="field"><label>Store Code</label>
+          <input type="text" id="custStoreCode" readonly placeholder="-">
+        </div>
       </div>
-      <div class="field" style="margin-bottom: 0;">
-        <label>Store Code<span class="required-mark">*</span></label>
-        <input type="text" id="fStoreCode" placeholder="e.g. MB-CHN-001">
-      </div>
+      <div class="info-row"><span>Reported By</span><span id="reportedByLabel">-</span></div>
+      <div class="info-row"><span>Designation</span><span id="reportedByDesignation">-</span></div>
     </div>
-    <div class="form-section">
-      <div class="form-section-title">Maintenance requirement</div>
-      <div class="field" style="margin-bottom: 0;">
-        <label>Requirements<span class="required-mark">*</span></label>
-        <textarea id="fRequirements" placeholder="Describe the maintenance issue in detail (e.g. AC not cooling in cashier area, tube light flickering in display section, leakage near store entry…)"></textarea>
-      </div>
+
+    <!-- Maintenance Issue Checklist -->
+    <div class="card">
+      <div class="card-title">&#x1F6E0; Maintenance Required <span style="color:#c62828;font-size:12px;font-weight:400;margin-left:4px">* Required</span></div>
+      <div style="font-size:12px;color:#777;margin-bottom:10px">Select all issues that apply. Pick "Others" to type a custom issue.</div>
+      <div id="requirementChecklist"></div>
     </div>
-    <div class="form-section">
-      <div class="form-section-title">Photographs<span class="required-mark">*</span></div>
-      <div class="photo-actions">
-        <button type="button" class="photo-btn" onclick="document.getElementById('cameraInput').click()">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
-          Camera
+
+    <!-- Audio Recording (Optional) -->
+    <div class="card">
+      <div class="card-title">&#x1F3A4; Voice Note <span style="color:#999;font-size:12px;font-weight:400;margin-left:4px">(optional)</span></div>
+      <div class="audio-section">
+        <button class="rec-btn start" id="recBtn" onclick="toggleRecording()">
+          <span>&#x23FA;</span> Start Recording
         </button>
-        <button type="button" class="photo-btn" onclick="document.getElementById('galleryInput').click()">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
-          Gallery
-        </button>
+        <span id="recTimer" style="font-size:13px;color:#555;display:none">
+          <span class="rec-indicator"></span> <span id="timerVal">00:00</span>
+        </span>
       </div>
-      <div class="photo-grid" id="photoGrid"></div>
-      <div class="photo-count-hint" id="photoHint">At least 1 photo required. Photos upload to Google Drive.</div>
+      <audio id="audioPlayer" controls class="audio-player hidden" style="width:100%;margin-top:8px"></audio>
+    </div>
+
+    <!-- Photo Upload (Required, min 2) -->
+    <div class="card">
+      <div class="card-title">&#x1F4F7; Photos / Images <span style="color:#c62828;font-size:12px;font-weight:400;margin-left:4px">* Required (min 2)</span></div>
+      <div style="font-size:12px;color:#777;margin-bottom:6px">Take or upload at least 2 clear photos showing the issue.</div>
+      <div class="photo-grid" id="photoGrid">
+        <div class="photo-add" onclick="document.getElementById('photoInput').click()">&#x2B;</div>
+      </div>
+      <input type="file" id="photoInput" accept="image/*" multiple class="hidden" onchange="handlePhotos(event)">
+      <div class="photo-counter" id="photoCounter">0 of 2 minimum photos uploaded</div>
+      <div id="photoUploadStatus" style="font-size:12px;color:#777;margin-top:4px"></div>
+    </div>
+
+    <!-- Submit -->
+    <div style="padding:0 12px 16px">
+      <button class="btn btn-primary" onclick="submitRequirement()" id="submitBtn">&#x2713; Submit Maintenance Request</button>
     </div>
   </div>
-  <div class="submit-bar">
-    <button class="btn-primary" id="submitBtn" onclick="submitForm()">Submit request</button>
-    <div class="sync-row">
-      <span class="sync-dot" id="submitSyncDot"></span>
-      <span id="submitSyncLabel">Checking connection…</span>
+
+  <!-- MY SUBMISSIONS -->
+  <div id="myReqsView" class="page hidden">
+    <div style="background:#fff;margin:10px 12px 0;border-radius:12px;padding:14px;box-shadow:0 2px 8px rgba(0,0,0,.07)">
+      <div style="font-size:12px;font-weight:700;color:#8DBBCC;text-transform:uppercase;letter-spacing:.4px;margin-bottom:10px">&#x1F50D; Filter Submissions</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px">
+        <div>
+          <label style="display:block;font-size:11px;font-weight:600;color:#555;margin-bottom:4px;text-transform:uppercase;letter-spacing:.3px">From Date</label>
+          <input type="date" id="filterDateFrom" style="width:100%;padding:9px 10px;border:1.5px solid #ddd;border-radius:8px;font-size:13px;outline:none;background:#F5EFE6;color:#333">
+        </div>
+        <div>
+          <label style="display:block;font-size:11px;font-weight:600;color:#555;margin-bottom:4px;text-transform:uppercase;letter-spacing:.3px">To Date</label>
+          <input type="date" id="filterDateTo" style="width:100%;padding:9px 10px;border:1.5px solid #ddd;border-radius:8px;font-size:13px;outline:none;background:#F5EFE6;color:#333">
+        </div>
+      </div>
+      <div id="storeFilterWrap" class="hidden" style="margin-bottom:8px">
+        <label style="display:block;font-size:11px;font-weight:600;color:#555;margin-bottom:4px;text-transform:uppercase;letter-spacing:.3px">Store</label>
+        <select id="filterStore" style="width:100%;padding:9px 10px;border:1.5px solid #ddd;border-radius:8px;font-size:13px;outline:none;background:#F5EFE6;appearance:none;-webkit-appearance:none;color:#333"><option value="">All Stores</option></select>
+      </div>
+      <div style="display:flex;gap:8px">
+        <button class="btn btn-sm btn-primary" onclick="loadMyReqs()" style="flex:1;padding:10px">&#x1F50D; Apply Filter</button>
+        <button class="btn btn-sm btn-secondary" onclick="clearFilters()" style="padding:10px 16px">&#x2715; Clear</button>
+      </div>
+    </div>
+    <div style="padding:10px 12px 4px;display:flex;justify-content:space-between;align-items:flex-start">
+      <div style="font-size:14px;font-weight:600;color:#555;line-height:1.5" id="reqsCount">Loading...</div>
+      <button class="btn-sm btn btn-secondary" onclick="loadMyReqs()">&#x21BB; Refresh</button>
+    </div>
+    <div id="reqsList"><div class="loading-text">&#x23F3; Loading submissions...</div></div>
+  </div>
+
+  <!-- ADMIN VIEW -->
+  <div id="adminView" class="page hidden">
+    <div style="padding:14px 12px">
+      <!-- Add Employee -->
+      <div style="margin-bottom:20px">
+        <button class="btn btn-primary" id="addEmpToggleBtn" onclick="showAddEmpForm()" style="width:100%;padding:12px 16px;font-size:0.95rem">&#x2795; Add New Employee</button>
+        <div id="addEmpForm" class="hidden" style="border:1px solid #ddd;border-radius:8px;padding:14px;margin-top:8px;background:#f9f9f9">
+          <h4 style="margin:0 0 12px;color:#8DBBCC;font-size:0.9rem">New Employee Details</h4>
+          <div style="background:#E3F2F8;color:#3a6f80;padding:8px 10px;border-radius:6px;font-size:11.5px;line-height:1.5;margin-bottom:12px">
+            &#x1F4A1; Default password will be auto-set as <strong>MB@&lt;EmployeeID&gt;</strong>. Employee will be forced to change it on first login.
+          </div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+            <div class="field"><label>Employee ID *</label><input type="number" id="addEmpCode" placeholder="e.g. 1001"></div>
+            <div class="field"><label>Role</label>
+              <select id="addEmpRole">
+                <option value="employee">Employee</option>
+                <option value="manager">Manager</option>
+                <option value="buyer">Buyer</option>
+                <option value="owner">Owner</option>
+              </select>
+            </div>
+          </div>
+          <div class="field"><label>Full Name *</label><input type="text" id="addEmpName" placeholder="Full name"></div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+            <div class="field"><label>Designation</label><input type="text" id="addEmpDesignation" placeholder="Store Manager"></div>
+            <div class="field"><label>Mobile</label><input type="tel" id="addEmpMobile" placeholder="10-digit" maxlength="10"></div>
+          </div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+            <div class="field"><label>Store Name</label><input type="text" id="addEmpStoreName" placeholder="Store name"></div>
+            <div class="field"><label>Store Code</label><input type="text" id="addEmpStoreCode" placeholder="Store code"></div>
+          </div>
+          <div style="display:flex;gap:8px;margin-top:12px">
+            <button class="btn btn-primary" id="addEmpSubmitBtn" onclick="submitAddEmployee()" style="flex:1">Add Employee</button>
+            <button class="btn" onclick="hideAddEmpForm()" style="background:#f5f5f5;color:#555;border:1px solid #ccc">Cancel</button>
+          </div>
+        </div>
+      </div>
+      <!-- Search Employee -->
+      <div>
+        <h3 style="margin:0 0 10px;font-size:0.95rem;color:#8DBBCC">&#x1F50D; Manage Employee Access</h3>
+        <div style="display:flex;gap:8px">
+          <input type="number" id="searchEmpCode" placeholder="Enter Employee ID" style="flex:1;padding:10px 12px;border:1px solid #ccc;border-radius:6px;font-size:0.9rem;background:#F5EFE6" onkeydown="if(event.key==='Enter')searchEmployee()">
+          <button class="btn btn-primary" onclick="searchEmployee()" style="white-space:nowrap;padding:10px 16px">Search</button>
+        </div>
+        <div id="searchResult" style="margin-top:12px"></div>
+      </div>
     </div>
   </div>
 </div>
 
-<!-- DETAIL -->
-<div class="screen" id="s-detail">
-  <div class="topbar">
-    <div>
-      <button class="topbar-back" onclick="goBack()">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="15 18 9 12 15 6"/></svg>
-        Back
-      </button>
-      <div class="topbar-title" style="margin-top:4px;">Request detail</div>
+<!-- FIRST LOGIN PASSWORD CHANGE -->
+<div id="changePwdModal" class="modal-overlay hidden">
+  <div class="modal">
+    <h3>&#x1F511; Set Your Password</h3>
+    <p>Welcome! This is your first login. Please set a personal password to continue.</p>
+    <div class="pwd-rules">
+      <strong>Password rules:</strong><br>
+      &bull; Minimum 6 characters<br>
+      &bull; Cannot match any of your last 3 passwords<br>
+      &bull; Will expire 60 days from today
     </div>
-    <div id="detailBadge" class="badge badge-new">New</div>
+    <div class="field"><label>Current Password</label>
+      <div class="pw-wrap"><input type="password" id="cpCurrent" placeholder="MB@YourCode (default password)"><button class="pw-toggle" onclick="togglePw('cpCurrent',this)" tabindex="-1">&#128065;</button></div>
+    </div>
+    <div class="field"><label>New Password</label>
+      <div class="pw-wrap"><input type="password" id="cpNew" placeholder="Min. 6 characters"><button class="pw-toggle" onclick="togglePw('cpNew',this)" tabindex="-1">&#128065;</button></div>
+    </div>
+    <div class="field"><label>Confirm Password</label>
+      <div class="pw-wrap"><input type="password" id="cpConfirm" placeholder="Re-enter new password"><button class="pw-toggle" onclick="togglePw('cpConfirm',this)" tabindex="-1">&#128065;</button></div>
+    </div>
+    <button class="btn btn-primary" onclick="doChangePassword()" id="cpBtn">Set Password</button>
   </div>
-  <div class="detail-body" id="detailBody"></div>
 </div>
 
-<!-- MANAGER -->
-<div class="screen" id="s-manager">
-  <div class="manager-topbar">
-    <div>
-      <div style="font-size:12px;color:rgba(255,255,255,0.5);">Manager view</div>
-      <div class="topbar-title" id="mgrName">Manager</div>
-      <div class="sync-pill" style="background:rgba(255,255,255,0.08);">
-        <span class="sync-dot" id="mgrSyncDot"></span>
-        <span id="mgrSyncLabel" style="font-size:11px;color:rgba(255,255,255,0.9);">Checking…</span>
-      </div>
+<!-- EXPIRED PASSWORD MODAL -->
+<div id="expiredPwdModal" class="modal-overlay hidden">
+  <div class="modal">
+    <h3>&#x1F512; Password Expired</h3>
+    <p>Your password has expired (passwords must be renewed every 60 days).<br>Please set a new password to continue.</p>
+    <div class="pwd-rules">
+      <strong>Password rules:</strong><br>
+      &bull; Minimum 6 characters<br>
+      &bull; Cannot match any of your last 3 passwords<br>
+      &bull; Will expire 60 days from today
     </div>
-    <div class="avatar" style="background:rgba(255,255,255,0.1);" id="mgrAvatar" onclick="doLogout()">MG</div>
-  </div>
-  <div class="filter-bar">
-    <button class="filter-chip active" onclick="filterMgr('all', this)">All</button>
-    <button class="filter-chip" onclick="filterMgr('new', this)">New</button>
-    <button class="filter-chip" onclick="filterMgr('reviewed', this)">Reviewed</button>
-    <button class="filter-chip" onclick="filterMgr('resolved', this)">Resolved</button>
-    <button class="filter-chip" onclick="filterMgr('today', this)">Today</button>
-    <button class="filter-chip" onclick="filterMgr('week', this)">This week</button>
-  </div>
-  <div class="manager-body">
-    <div class="mgr-stats">
-      <div class="mgr-stat"><div class="mgr-stat-num" id="mgrTotal">0</div><div class="mgr-stat-lbl">Total</div></div>
-      <div class="mgr-stat"><div class="mgr-stat-num" id="mgrToday">0</div><div class="mgr-stat-lbl">Today</div></div>
-      <div class="mgr-stat"><div class="mgr-stat-num" id="mgrStores">0</div><div class="mgr-stat-lbl">Stores</div></div>
+    <div class="field"><label>Current Password</label>
+      <div class="pw-wrap"><input type="password" id="epCurrent" placeholder="Enter current password"><button class="pw-toggle" onclick="togglePw('epCurrent',this)" tabindex="-1">&#128065;</button></div>
     </div>
-    <div class="action-row">
-      <button class="export-btn" onclick="exportCSV()">
-        <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-        Export CSV
-      </button>
-      <button class="refresh-btn" onclick="refreshManagerData()">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-4.95"/></svg>
-        Refresh
-      </button>
+    <div class="field"><label>New Password</label>
+      <div class="pw-wrap"><input type="password" id="epNew" placeholder="Min. 6 characters"><button class="pw-toggle" onclick="togglePw('epNew',this)" tabindex="-1">&#128065;</button></div>
     </div>
-    <div id="mgrList"></div>
+    <div class="field"><label>Confirm New Password</label>
+      <div class="pw-wrap"><input type="password" id="epConfirm" placeholder="Re-enter new password"><button class="pw-toggle" onclick="togglePw('epConfirm',this)" tabindex="-1">&#128065;</button></div>
+    </div>
+    <button class="btn btn-primary" onclick="doExpiredPasswordChange()" id="epBtn">Set New Password</button>
   </div>
 </div>
+
+<!-- T&C MODAL -->
+<div id="tcModal" class="modal-overlay hidden">
+  <div class="modal" style="max-width:520px">
+    <h3>&#x1F4CB; Terms &amp; Conditions</h3>
+    <p style="font-size:0.85rem;line-height:1.7;color:#333;max-height:240px;overflow-y:auto;border:1px solid #e0e0e0;padding:14px;border-radius:6px;background:#fafafa;text-align:justify">
+      I hereby agree that all store, vendor and employee data (including images, audio recordings, and maintenance details) accessed through this app is strictly confidential and the exclusive property of Meena Bazaar. I will not copy, store, share, or misuse any data in any form. I will not share my login credentials, OTP, or password with anyone and will ensure my mobile device is secure. I understand that any unauthorized access, data misuse, credential sharing, or retention of data&mdash;even after exit&mdash;will result in strict disciplinary action, including termination and legal proceedings under applicable laws.
+    </p>
+    <p style="font-size:0.8rem;color:#888;margin-top:10px">By clicking <strong>I Accept</strong>, you agree to these Terms &amp; Conditions.</p>
+    <div style="display:flex;gap:10px;margin-top:16px">
+      <button class="btn btn-primary" id="tcAcceptBtn" onclick="doAcceptTC()" style="flex:2">&#x2705; I Accept</button>
+      <button class="btn" onclick="doDeclineTC()" style="flex:1;background:#f5f5f5;color:#555;border:1px solid #ccc">Decline</button>
+    </div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div id="toast"></div>
 
 <script>
-// ──────────────────────────────────────────
-// MB Store Maintenance · Frontend
-// Storage: Google Sheets (entries) + Google Drive (photos)
-// ──────────────────────────────────────────
-const LS_ENTRIES = 'mbsm_entries';
-const LS_USER    = 'mbsm_user';
+// ─── CONSTANTS ─────────────────────────────────────────
+const MIN_PHOTOS = 2;
+const PASSWORD_HISTORY_DEPTH = 3;
+const PASSWORD_EXPIRY_DAYS = 60;
 
-let currentRole   = 'employee';
-let currentScreen = 's-login';
-let screenHistory = [];
-let entries       = [];
-let currentUser   = JSON.parse(localStorage.getItem(LS_USER) || 'null');
-let photoFiles    = [];      // File[]
-let photoPreviews = [];      // data URLs for thumbs
+// Store Maintenance issue list (replaces customer requirement chips)
+const MAINTENANCE_ISSUES = [
+  { id:'ac',       icon:'❄️', label:'AC Not Working' },
+  { id:'cctv',     icon:'\u{1F4F9}',    label:'CCTV Cameras Not Working' },
+  { id:'power',    icon:'\u{1F50C}',    label:'Power Backup (UPS / Inverter) Issue' },
+  { id:'lighting', icon:'\u{1F4A1}',    label:'Lighting (Replace Fused Lights)' },
+  { id:'others',   icon:'✏️', label:'Others' }
+];
 
-// ──────────── Time helpers ────────────
-function nowIST() {
-  const p = new Intl.DateTimeFormat('en-GB', {
-    timeZone: 'Asia/Kolkata',
-    year: 'numeric', month: '2-digit', day: '2-digit',
-    hour: '2-digit', minute: '2-digit', second: '2-digit',
-    hour12: false,
-  }).formatToParts(new Date());
-  const g = t => p.find(x => x.type === t).value;
-  return `${g('day')}-${g('month')}-${g('year')} ${g('hour')}:${g('minute')}:${g('second')}`;
+// ─── STATE ─────────────────────────────────────────────
+let currentUser = null;
+let authToken = null;
+let _loginRemember = false;
+let allStores = [];
+let selectedIssues = []; // array of issue ids
+let othersText = '';
+let audioBlob = null;
+let audioUploadUrl = '';
+let audioUploadPromise = Promise.resolve();
+let isRecording = false;
+let mediaRecorder = null;
+let audioChunks = [];
+let recInterval = null;
+let recSeconds = 0;
+let photoUrls = [];
+let fpResetToken = '';
+let fpEmpCodeVal = '';
+
+// ─── AUTH STORAGE HELPERS ─────────────────────────────
+function saveAuthToken(tk) {
+  try { localStorage.setItem('mb_token', tk); } catch(e) {}
+  try { sessionStorage.setItem('mb_token_s', tk); } catch(e) {}
+  const d = new Date(Date.now() + 30*24*60*60*1000);
+  const sec = location.protocol === 'https:' ? ';Secure' : '';
+  document.cookie = 'mb_tok=' + encodeURIComponent(tk) + ';expires=' + d.toUTCString() + ';path=/;SameSite=Lax' + sec;
 }
-function parseIST(str) {
-  if (!str) return new Date(NaN);
-  if (str instanceof Date) return str;
-  const m = String(str).match(/^(\d{2})-(\d{2})-(\d{4})[ T](\d{2}):(\d{2}):(\d{2})/);
-  if (m) {
-    const [, dd, mm, yyyy, h, mi, s] = m;
-    return new Date(+yyyy, +mm - 1, +dd, +h, +mi, +s);
+function getAuthToken() {
+  try { const v = localStorage.getItem('mb_token'); if (v) return v; } catch(e) {}
+  try { const v = sessionStorage.getItem('mb_token_s'); if (v) return v; } catch(e) {}
+  const m = document.cookie.match(/(?:^|;\s*)mb_tok=([^;]+)/);
+  return m ? decodeURIComponent(m[1]) : null;
+}
+function clearAuthToken() {
+  try { localStorage.removeItem('mb_token'); } catch(e) {}
+  try { sessionStorage.removeItem('mb_token_s'); } catch(e) {}
+  const sec = location.protocol === 'https:' ? ';Secure' : '';
+  document.cookie = 'mb_tok=;expires=Thu, 01 Jan 1970 00:00:00 GMT;path=/;SameSite=Lax' + sec;
+}
+
+// ─── INIT ──────────────────────────────────────────────
+window.addEventListener('DOMContentLoaded', async () => {
+  buildIssueChips();
+  const saved = getAuthToken();
+  if (saved) {
+    authToken = saved;
+    try {
+      const r = await apiFetch('/api/auth?action=verify', 'GET');
+      if (r.valid) {
+        currentUser = r.user;
+        await initApp();
+        return;
+      }
+      clearAuthToken();
+    } catch {}
   }
-  const d = new Date(str);
-  return isNaN(d) ? new Date(NaN) : d;
+  show('loginSection');
+});
+
+function driveImgUrl(u) {
+  if (!u) return '';
+  const m = u.match(/[?&]id=([^&]+)/);
+  return m ? 'https://drive.google.com/thumbnail?id=' + m[1] + '&sz=w600' : u;
 }
-// ──────────── API helpers ────────────
-async function apiListEntries(employee) {
-  const url = employee ? `/api/entries?employee=${encodeURIComponent(employee)}` : '/api/entries';
-  try {
-    const res = await fetch(url);
-    if (!res.ok) throw new Error('HTTP ' + res.status);
-    const d = await res.json();
-    return d.entries || [];
-  } catch (e) {
-    return null;
-  }
+function driveAudioUrl(u) {
+  if (!u) return '';
+  const m = u.match(/[?&]id=([^&]+)/);
+  return m ? '/api/file?id=' + m[1] : u;
 }
 
-async function apiCreateEntry(payload) {
-  try {
-    const res = await fetch('/api/entries', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(payload),
-    });
-    const d = await res.json();
-    return res.ok ? { ok: true, entry: d.entry } : { ok: false, error: d.error || 'api_error' };
-  } catch (e) {
-    return { ok: false, error: e.message };
-  }
-}
-
-async function apiUploadPhoto(file, meta) {
-  try {
-    // Read file as base64 in browser (FileReader is native, no deps).
-    const base64 = await new Promise((resolve, reject) => {
-      const r = new FileReader();
-      r.onload  = () => resolve(r.result);
-      r.onerror = () => reject(new Error('file read failed'));
-      r.readAsDataURL(file);
-    });
-    // Split "data:image/jpeg;base64,AAAA..." into mime + payload
-    const commaIdx = base64.indexOf(',');
-    const header   = base64.substring(5, commaIdx);       // "image/jpeg;base64"
-    const mime     = header.split(';')[0];                // "image/jpeg"
-    const payload  = base64.substring(commaIdx + 1);
-
-    const res = await fetch('/api/upload', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        photo:      payload,
-        filename:   file.name,
-        mimeType:   mime,
-        storeCode:  meta.storeCode  || '',
-        employeeId: meta.employeeId || '',
-      }),
-    });
-    const d = await res.json();
-    return res.ok ? { ok: true, url: d.url, name: d.name } : { ok: false, error: d.error || 'upload_error' };
-  } catch (e) {
-    return { ok: false, error: e.message };
-  }
-}
-
-async function apiPatchStatus(id, status) {
-  try {
-    await fetch(`/api/entries/${encodeURIComponent(id)}`, {
-      method: 'PATCH',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ status }),
-    });
-  } catch (e) { /* swallow */ }
-}
-
-async function pingConnection() {
-  try {
-    const ctrl = new AbortController();
-    const t = setTimeout(() => ctrl.abort(), 6000);
-    const res = await fetch('/api/entries', { signal: ctrl.signal });
-    clearTimeout(t);
-    setSyncStatus(res.ok);
-  } catch (e) {
-    setSyncStatus(false);
-  }
-}
-
-function setSyncStatus(ok) {
-  const cls = ok ? 'ok' : 'bad';
-  const label = ok ? 'Connected' : 'Offline';
-  ['homeSyncDot','submitSyncDot','mgrSyncDot'].forEach(id => {
-    const el = document.getElementById(id);
-    if (el) { el.classList.remove('ok','bad'); el.classList.add(cls); }
+// ─── VIEW HELPERS ──────────────────────────────────────
+function show(id) {
+  ['loginSection','forgotSection','appSection'].forEach(s => {
+    const el = document.getElementById(s);
+    if (el) { el.classList.add('hidden'); el.style.display = 'none'; }
   });
-  ['homeSyncLabel','submitSyncLabel','mgrSyncLabel'].forEach(id => {
-    const el = document.getElementById(id);
-    if (el) el.textContent = label;
+  const el = document.getElementById(id);
+  if (el) { el.classList.remove('hidden'); el.style.display = ''; }
+  window.scrollTo(0, 0);
+}
+function showLogin() { show('loginSection'); }
+function showForgot() { show('forgotSection'); showForgotStep(1); }
+function showForgotStep(n) {
+  [1,2,3].forEach(i => document.getElementById('forgotStep'+i).classList.add('hidden'));
+  document.getElementById('forgotStep'+n).classList.remove('hidden');
+}
+function showView(v) {
+  document.getElementById('newReqView').classList.toggle('hidden', v !== 'newReq');
+  document.getElementById('myReqsView').classList.toggle('hidden', v !== 'myReqs');
+  document.getElementById('tabNewReq').classList.toggle('active', v === 'newReq');
+  document.getElementById('tabMyReqs').classList.toggle('active', v === 'myReqs');
+  if (v === 'myReqs') loadMyReqs();
+  document.getElementById('adminView').classList.toggle('hidden', v !== 'admin');
+  document.getElementById('tabAdmin').classList.toggle('active', v === 'admin');
+}
+
+// ─── APP INIT ──────────────────────────────────────────
+async function initApp() {
+  show('appSection');
+  document.getElementById('userBadge').textContent = (currentUser.empName || '') + '\n' + (currentUser.designation || '');
+  document.getElementById('headerSubtitle').textContent = currentUser.storeName || 'Store Maintenance';
+  if (currentUser.role === 'manager') document.getElementById('submissionsLabel').textContent = 'Store Submissions';
+  if (isPrivileged()) document.getElementById('submissionsLabel').textContent = 'All Submissions';
+  if (currentUser.role === 'admin') document.getElementById('tabAdmin').classList.remove('hidden');
+  showView('newReq');
+
+  await loadStores();
+
+  // Auto-fill store info — LOCKED (readonly)
+  document.getElementById('custStoreName').value = currentUser.storeName || '';
+  document.getElementById('custStoreCode').value = currentUser.storeCode || '';
+  document.getElementById('reportedByLabel').textContent = (currentUser.empName || '-') + ' (' + (currentUser.empCode || '-') + ')';
+  document.getElementById('reportedByDesignation').textContent = currentUser.designation || '-';
+
+  if (currentUser.isFirstLogin || currentUser.mustChangePassword) {
+    document.getElementById('changePwdModal').classList.remove('hidden');
+  }
+
+  // Show store filter for admin / owner / buyer
+  if (isPrivileged()) {
+    const wrap = document.getElementById('storeFilterWrap');
+    if (wrap) wrap.classList.remove('hidden');
+    const fs = document.getElementById('filterStore');
+    if (fs && allStores.length) {
+      allStores.forEach(s => {
+        const o = document.createElement('option');
+        o.value = s.code;
+        o.textContent = s.name + ' (' + s.code + ')';
+        fs.appendChild(o);
+      });
+    }
+  }
+
+  updatePhotoCounter();
+}
+
+// ─── STORES ────────────────────────────────────────────
+async function loadStores() {
+  try {
+    const r = await apiFetch('/api/stores', 'GET');
+    allStores = (r.stores || []).sort((a,b) => String(a.code).localeCompare(String(b.code), undefined, {numeric:true}));
+  } catch { allStores = []; }
+}
+
+// ─── MAINTENANCE ISSUE CHIPS ───────────────────────────
+function buildIssueChips() {
+  const container = document.getElementById('requirementChecklist');
+  container.innerHTML = '';
+  const sec = document.createElement('div');
+  sec.className = 'req-section';
+  sec.innerHTML =
+    '<div class="req-section-header"><span class="sno">&#x2713;</span>SELECT ISSUE(S)</div>' +
+    '<div class="chips" id="chips_main"></div>' +
+    '<div class="others-input-wrap" id="othersWrap_main">' +
+    '<textarea id="othersInput_main" placeholder="Please describe the issue here... (required when Others is selected)"></textarea>' +
+    '</div>';
+  container.appendChild(sec);
+  const chipsEl = sec.querySelector('.chips');
+  MAINTENANCE_ISSUES.forEach(issue => {
+    const chip = document.createElement('span');
+    chip.className = issue.id === 'others' ? 'chip others-chip' : 'chip';
+    chip.innerHTML = '<span>' + issue.icon + '</span><span>' + issue.label + '</span>';
+    chip.dataset.id = issue.id;
+    chip.onclick = () => toggleIssue(issue.id, chip);
+    chipsEl.appendChild(chip);
   });
 }
-
-// ──────────── Navigation ────────────
-function goTo(id) {
-  if (currentScreen === id) return;
-  screenHistory.push(currentScreen);
-  document.getElementById(currentScreen).classList.remove('active');
-  document.getElementById(id).classList.add('active');
-  currentScreen = id;
-  if (id === 's-home')    renderHome();
-  if (id === 's-manager') renderManager();
-  if (id === 's-capture') resetForm();
+function toggleIssue(id, el) {
+  const idx = selectedIssues.indexOf(id);
+  if (idx === -1) { selectedIssues.push(id); el.classList.add('selected'); }
+  else { selectedIssues.splice(idx, 1); el.classList.remove('selected'); }
+  if (id === 'others') {
+    const wrap = document.getElementById('othersWrap_main');
+    if (wrap) {
+      wrap.style.display = selectedIssues.includes('others') ? 'block' : 'none';
+      if (selectedIssues.includes('others')) document.getElementById('othersInput_main').focus();
+    }
+  }
 }
-function goBack() {
-  const prev = screenHistory.pop() || (currentRole === 'manager' ? 's-manager' : 's-home');
-  document.getElementById(currentScreen).classList.remove('active');
-  document.getElementById(prev).classList.add('active');
-  currentScreen = prev;
-  if (prev === 's-home')    renderHome();
-  if (prev === 's-manager') renderManager();
+function getIssuesPayload() {
+  const labels = selectedIssues.map(id => {
+    if (id === 'others') {
+      const txt = (document.getElementById('othersInput_main').value || '').trim();
+      return txt ? 'Others: ' + txt : 'Others';
+    }
+    return MAINTENANCE_ISSUES.find(i => i.id === id).label;
+  });
+  return { issues: labels };
+}
+function resetIssues() {
+  selectedIssues = [];
+  document.querySelectorAll('#chips_main .chip').forEach(c => c.classList.remove('selected'));
+  document.getElementById('othersWrap_main').style.display = 'none';
+  document.getElementById('othersInput_main').value = '';
 }
 
-// ──────────── Auth ────────────
-function selectRole(role) {
-  currentRole = role;
-  document.getElementById('role-emp').classList.toggle('active', role === 'employee');
-  document.getElementById('role-mgr').classList.toggle('active', role === 'manager');
-}
-
+// ─── LOGIN ─────────────────────────────────────────────
 async function doLogin() {
-  const name  = document.getElementById('loginName').value.trim();
-  const id    = document.getElementById('loginId').value.trim();
-  const store = document.getElementById('loginStore').value.trim();
-  if (!name) { showToast('Please enter your name', 'error'); return; }
-  if (!id)   { showToast('Please enter your Employee ID', 'error'); return; }
-  currentUser = { name, id, store, role: currentRole };
-  localStorage.setItem(LS_USER, JSON.stringify(currentUser));
-  const initials = name.split(' ').map(w => w[0]).join('').slice(0,2).toUpperCase();
-  if (currentRole === 'manager') {
-    document.getElementById('mgrName').textContent   = name;
-    document.getElementById('mgrAvatar').textContent = initials;
-    goTo('s-manager');
-    refreshManagerData();
-  } else {
-    document.getElementById('empName').textContent   = name;
-    document.getElementById('empAvatar').textContent = initials;
-    goTo('s-home');
-    loadEmployeeEntries(name);
+  const empCode = document.getElementById('loginEmpCode').value.trim();
+  const password = document.getElementById('loginPwd').value;
+  const remember = document.getElementById('rememberMe').checked;
+  if (!empCode) return showToast('Enter your Employee ID', 'error');
+  if (!password) return showToast('Enter your password', 'error');
+
+  setLoading('loginBtn', true, 'Signing in...');
+  try {
+    const r = await apiFetch('/api/auth?action=login', 'POST', { empCode, password, remember });
+    if (!r.success) return showToast(r.error || 'Login failed', 'error');
+    authToken = r.token;
+    currentUser = r.employee;
+    if (r.passwordExpired) {
+      document.getElementById('loginSection').classList.add('hidden');
+      document.getElementById('expiredPwdModal').classList.remove('hidden');
+      ['epCurrent','epNew','epConfirm'].forEach(id => { document.getElementById(id).value = ''; });
+      return;
+    }
+    _loginRemember = remember;
+    if (!r.tcAccepted) {
+      document.getElementById('loginSection').classList.add('hidden');
+      document.getElementById('tcModal').classList.remove('hidden');
+      return;
+    }
+    if (remember) saveAuthToken(authToken); else clearAuthToken();
+    document.getElementById('loginSection').classList.add('hidden');
+    await initApp();
+  } catch(e) {
+    showToast('Network error. Please try again.', 'error');
+  } finally {
+    setLoading('loginBtn', false, 'Sign In');
   }
+}
+
+// ─── ACCEPT T&C ────────────────────────────────────────
+async function doAcceptTC() {
+  const btn = document.getElementById('tcAcceptBtn');
+  if (btn) btn.disabled = true;
+  try {
+    const r = await apiFetch('/api/auth?action=accept-tc', 'POST', { empCode: currentUser.empCode });
+    if (!r.success) {
+      showToast(r.error || 'Failed to accept. Please try again.', 'error');
+      if (btn) btn.disabled = false;
+      return;
+    }
+    document.getElementById('tcModal').classList.add('hidden');
+    if (_loginRemember) saveAuthToken(authToken); else clearAuthToken();
+    document.getElementById('loginSection').classList.add('hidden');
+    await initApp();
+  } catch(e) {
+    showToast('Network error. Please try again.', 'error');
+    if (btn) btn.disabled = false;
+  }
+}
+function doDeclineTC() {
+  authToken = null;
+  currentUser = null;
+  document.getElementById('tcModal').classList.add('hidden');
+  document.getElementById('loginSection').classList.remove('hidden');
+  showToast('You must accept the Terms & Conditions to use this app.', 'error');
+}
+
+// ─── ADMIN PANEL ───────────────────────────────────────
+async function searchEmployee() {
+  const code = document.getElementById('searchEmpCode').value.trim();
+  if (!code) return showToast('Please enter an Employee ID', 'error');
+  const result = document.getElementById('searchResult');
+  result.innerHTML = '<div style="text-align:center;padding:16px;color:#888">Searching...</div>';
+  try {
+    const r = await apiFetch('/api/admin?action=get-employee&empCode=' + code, 'GET');
+    if (!r.success) {
+      result.innerHTML = '<div style="background:#ffebee;color:#c62828;padding:12px;border-radius:8px;text-align:center">' + (r.error || 'Employee not found') + '</div>';
+      return;
+    }
+    renderEmployeeResult(r.employee);
+  } catch(e) {
+    result.innerHTML = '<div style="color:#c62828;padding:12px;text-align:center">Network error</div>';
+  }
+}
+
+function renderEmployeeResult(e) {
+  const result = document.getElementById('searchResult');
+  const isActive = e.store_status === 'Active';
+  const safeName = (e.emp_name || '').replace(/"/g, '&quot;');
+  result.innerHTML =
+    '<div style="background:#fff;border-radius:8px;padding:14px;box-shadow:0 1px 4px rgba(0,0,0,0.1)">' +
+      '<div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:12px">' +
+        '<div>' +
+          '<div style="font-weight:700;font-size:1rem">' + esc(e.emp_name) + ' <span style="color:#999;font-size:0.8rem">#' + esc(e.emp_code) + '</span></div>' +
+          '<div style="font-size:0.85rem;color:#666">' + esc(e.emp_designation || '') + (e.store_name ? ' &bull; ' + esc(e.store_name) + ' (' + esc(e.store_code || '') + ')' : '') + '</div>' +
+          (e.emp_mobile ? '<div style="font-size:0.8rem;color:#888">&#x1F4F1; ' + esc(e.emp_mobile) + '</div>' : '') +
+          '<div style="font-size:0.75rem;color:#aaa;margin-top:2px">Role: ' + esc(e.role || 'employee') + '</div>' +
+        '</div>' +
+        '<span style="padding:4px 10px;border-radius:12px;font-size:0.75rem;font-weight:700;background:' + (isActive ? '#E3F2F8' : '#ffebee') + ';color:' + (isActive ? '#8DBBCC' : '#c62828') + '">' + esc(e.store_status) + '</span>' +
+      '</div>' +
+      '<div style="display:flex;gap:8px;flex-wrap:wrap">' +
+        '<button class="btn btn-secondary btn-sm" data-code="' + esc(e.emp_code) + '" data-name="' + safeName + '" onclick="adminResetPwd(this.dataset.code, this.dataset.name)">&#x1F511; Reset Password</button>' +
+        '<button class="btn btn-sm" data-code="' + esc(e.emp_code) + '" data-status="' + esc(e.store_status) + '" onclick="adminToggleStatus(this.dataset.code, this.dataset.status)" style="background:' + (isActive ? '#fff3e0' : '#E3F2F8') + ';color:' + (isActive ? '#e65100' : '#8DBBCC') + ';border:1px solid ' + (isActive ? '#ffcc80' : '#8DBBCC') + '">' + (isActive ? '&#x1F534; Deactivate' : '&#x1F7E2; Activate') + '</button>' +
+      '</div>' +
+    '</div>';
+}
+
+async function adminToggleStatus(empCode, currentStatus) {
+  const newStatus = currentStatus === 'Active' ? 'Inactive' : 'Active';
+  const msg = newStatus === 'Inactive' ? 'DEACTIVATE this employee? They will lose app access immediately.' : 'ACTIVATE this employee? They will regain app access.';
+  if (!confirm('Are you sure you want to ' + msg)) return;
+  try {
+    const r = await apiFetch('/api/admin?action=toggle-status', 'POST', { empCode, status: newStatus });
+    if (!r.success) return showToast(r.error || 'Failed', 'error');
+    showToast(newStatus === 'Inactive' ? 'Employee deactivated' : 'Employee activated', 'success');
+    searchEmployee();
+  } catch(e) { showToast('Network error', 'error'); }
+}
+
+async function adminResetPwd(empCode, empName) {
+  if (!confirm('Reset password for ' + empName + ' to MB@' + empCode + '?\n\nEmployee will be forced to change it on next login.')) return;
+  try {
+    const r = await apiFetch('/api/admin?action=reset-password', 'POST', {
+      empCode,
+      newPassword: 'MB@' + empCode,
+      forceChangeOnNextLogin: true
+    });
+    if (!r.success) return showToast(r.error || 'Failed to reset', 'error');
+    showToast('Password reset to MB@' + empCode + ' for ' + empName, 'success');
+  } catch(e) { showToast('Network error', 'error'); }
+}
+
+function showAddEmpForm() {
+  document.getElementById('addEmpForm').classList.remove('hidden');
+  document.getElementById('addEmpToggleBtn').classList.add('hidden');
+  ['addEmpCode','addEmpName','addEmpDesignation','addEmpMobile','addEmpStoreName','addEmpStoreCode'].forEach(id => { document.getElementById(id).value = ''; });
+  document.getElementById('addEmpRole').value = 'employee';
+}
+function hideAddEmpForm() {
+  document.getElementById('addEmpForm').classList.add('hidden');
+  document.getElementById('addEmpToggleBtn').classList.remove('hidden');
+}
+async function submitAddEmployee() {
+  const empCode = document.getElementById('addEmpCode').value.trim();
+  const empName = document.getElementById('addEmpName').value.trim();
+  const empDesignation = document.getElementById('addEmpDesignation').value.trim();
+  const empMobile = document.getElementById('addEmpMobile').value.trim();
+  const storeCode = document.getElementById('addEmpStoreCode').value.trim();
+  const storeName = document.getElementById('addEmpStoreName').value.trim();
+  const role = document.getElementById('addEmpRole').value;
+  if (!empCode || !empName) return showToast('Employee ID and Name are required', 'error');
+  // Default password = MB@<empCode> (first-time login pattern)
+  const initialPassword = 'MB@' + empCode;
+  setLoading('addEmpSubmitBtn', true, 'Adding...');
+  try {
+    const r = await apiFetch('/api/admin?action=add-employee', 'POST', {
+      empCode: parseInt(empCode), empName, empDesignation, empMobile, storeCode, storeName, role,
+      initialPassword,
+      forceChangeOnNextLogin: true
+    });
+    if (!r.success) return showToast(r.error || 'Failed to add employee', 'error');
+    showToast(empName + ' added! Default password: ' + initialPassword, 'success');
+    hideAddEmpForm();
+  } catch(e) { showToast('Network error', 'error'); }
+  finally { setLoading('addEmpSubmitBtn', false, 'Add Employee'); }
+}
+
+// ─── EXPIRED PASSWORD CHANGE ───────────────────────────
+async function doExpiredPasswordChange() {
+  const current = document.getElementById('epCurrent').value;
+  const newPwd = document.getElementById('epNew').value;
+  const confirmV = document.getElementById('epConfirm').value;
+  if (!current || !newPwd || !confirmV) return showToast('All fields are required', 'error');
+  if (newPwd !== confirmV) return showToast('Passwords do not match', 'error');
+  if (newPwd.length < 6) return showToast('Password must be at least 6 characters', 'error');
+  if (newPwd === current) return showToast('New password cannot be the same as current password', 'error');
+  setLoading('epBtn', true, 'Saving...');
+  try {
+    const r = await apiFetch('/api/auth?action=change-password', 'POST', {
+      empCode: currentUser.empCode, currentPassword: current, newPassword: newPwd
+    });
+    if (!r.success) {
+      // Backend returns specific error if reused from last 3 passwords
+      return showToast(r.error || 'Failed to change password', 'error');
+    }
+    document.getElementById('expiredPwdModal').classList.add('hidden');
+    showToast('Password updated! Logging you in...', 'success');
+    await initApp();
+  } catch { showToast('Network error', 'error'); }
+  finally { setLoading('epBtn', false, 'Set New Password'); }
 }
 
 function doLogout() {
-  currentUser = null;
-  localStorage.removeItem(LS_USER);
-  screenHistory = [];
-  document.getElementById(currentScreen).classList.remove('active');
-  document.getElementById('s-login').classList.add('active');
-  currentScreen = 's-login';
+  authToken = null; currentUser = null;
+  clearAuthToken();
+  showLogin();
+  showToast('Logged out successfully');
 }
 
-// ──────────── Data load ────────────
-async function loadEmployeeEntries(employee) {
-  const fetched = await apiListEntries(employee);
-  if (fetched !== null) {
-    const apiIds  = new Set(fetched.map(e => e.id));
-    const pending = entries.filter(e => !apiIds.has(e.id) && e.employee === employee && !e.synced);
-    const others  = entries.filter(e => e.employee !== employee);
-    entries = [...fetched, ...pending, ...others];
-    saveEntriesLocal();
-  } else {
-    showToast('Offline — showing cached data', 'error');
+// ─── FIRST LOGIN PASSWORD CHANGE ───────────────────────
+async function doChangePassword() {
+  const current = document.getElementById('cpCurrent').value;
+  const newPwd = document.getElementById('cpNew').value;
+  const confirmV = document.getElementById('cpConfirm').value;
+  if (!current || !newPwd || !confirmV) return showToast('All fields are required', 'error');
+  if (newPwd !== confirmV) return showToast('Passwords do not match', 'error');
+  if (newPwd.length < 6) return showToast('Password must be at least 6 characters', 'error');
+  if (newPwd === current) return showToast('New password cannot match current/default password', 'error');
+
+  setLoading('cpBtn', true, 'Saving...');
+  try {
+    const r = await apiFetch('/api/auth?action=change-password', 'POST', {
+      empCode: currentUser.empCode, currentPassword: current, newPassword: newPwd
+    });
+    if (!r.success) return showToast(r.error || 'Failed to change password', 'error');
+    document.getElementById('changePwdModal').classList.add('hidden');
+    currentUser.isFirstLogin = false;
+    currentUser.mustChangePassword = false;
+    showToast('Password changed successfully ✓', 'success');
+  } catch {
+    showToast('Network error', 'error');
+  } finally {
+    setLoading('cpBtn', false, 'Set Password');
   }
-  renderHome();
 }
 
-async function refreshManagerData() {
-  showLoading('Fetching from Google Sheets…');
-  const fetched = await apiListEntries();
-  hideLoading();
-  if (fetched === null) { showToast('Could not reach backend', 'error'); return; }
-  const apiIds   = new Set(fetched.map(e => e.id));
-  const pending  = entries.filter(e => !apiIds.has(e.id) && !e.synced);
-  entries = [...fetched, ...pending];
-  saveEntriesLocal();
-  renderManager();
-  if (fetched.length > 0) showToast('Synced ✓', 'success');
-}
+// ─── FORGOT PASSWORD ───────────────────────────────────
+async function sendOTP() {
+  const empCode = document.getElementById('fpEmpCode').value.trim();
+  const mobile = document.getElementById('fpMobile').value.trim();
+  if (!empCode) return showToast('Enter your Employee ID', 'error');
+  if (!/^\d{10}$/.test(mobile)) return showToast('Enter a valid 10-digit mobile number', 'error');
+  fpEmpCodeVal = empCode;
 
-function saveEntriesLocal() {
-  try { localStorage.setItem(LS_ENTRIES, JSON.stringify(entries.slice(-200))); } catch (e) {}
-}
-
-// ──────────── Home ────────────
-function renderHome() {
-  const now = new Date();
-  const todayStart = new Date(now); todayStart.setHours(0,0,0,0);
-  const weekStart  = new Date(todayStart); weekStart.setDate(weekStart.getDate() - 7);
-  const mine = entries.filter(e => e.employee === currentUser?.name);
-  document.getElementById('statToday').textContent = mine.filter(e => parseIST(e.createdAt) >= todayStart).length;
-  document.getElementById('statWeek').textContent  = mine.filter(e => parseIST(e.createdAt) >= weekStart).length;
-  document.getElementById('statTotal').textContent = mine.length;
-
-  const list = document.getElementById('entriesList');
-  if (mine.length === 0) {
-    list.innerHTML = '<div class="empty-state"><div class="empty-icon">🧰</div><div class="empty-title">No requests yet</div><div class="empty-sub">Tap + to report your first maintenance issue</div></div>';
-    return;
+  setLoading('sendOtpBtn', true, 'Sending OTP...');
+  try {
+    const r = await apiFetch('/api/otp?action=send', 'POST', { empCode, mobile });
+    if (!r.success) return showToast(r.error || 'Failed to send OTP', 'error');
+    showForgotStep(2);
+    if (r.demo) {
+      document.getElementById('otpSentMsg').innerHTML = '&#x26A0; <strong>Demo Mode:</strong> SMS not configured. Your OTP is: <strong style="color:#8DBBCC;font-size:20px">' + r.otp + '</strong>';
+    } else {
+      document.getElementById('otpSentMsg').textContent = 'OTP sent to ****' + mobile.slice(-4) + '. Valid for 5 minutes.';
+    }
+    document.getElementById('o1').focus();
+  } catch {
+    showToast('Network error', 'error');
+  } finally {
+    setLoading('sendOtpBtn', false, 'Send OTP');
   }
-  list.innerHTML = mine.slice().reverse().map(e => `
-    <div class="entry-card" onclick="viewEntry('${e.id}')">
-      <div class="entry-icon">🛠️</div>
-      <div class="entry-info">
-        <div class="entry-title">${esc(e.storeName)} · ${esc(e.storeCode)}</div>
-        <div class="entry-store">${truncate(esc(e.requirements), 70)}</div>
-        <div class="entry-time">${formatTime(parseIST(e.createdAt))}</div>
-      </div>
-      <div class="entry-meta">
-        <span class="badge badge-${e.status || 'new'}">${capitalize(e.status || 'new')}</span>
-        <span class="photo-chip">📷 ${e.photoCount || 0}</span>
-      </div>
-    </div>
-  `).join('');
 }
 
-// ──────────── Capture form ────────────
-function resetForm() {
-  ['fStoreName','fStoreCode','fRequirements'].forEach(id => { const el = document.getElementById(id); if (el) el.value = ''; });
-  photoFiles = []; photoPreviews = [];
-  document.getElementById('photoGrid').innerHTML = '';
-  document.getElementById('photoHint').textContent = 'At least 1 photo required. Photos upload to Google Drive.';
-  if (currentUser?.store) document.getElementById('fStoreName').value = currentUser.store;
+function otpMove(el, nextId) {
+  el.value = el.value.replace(/\D/g, '');
+  if (el.value && nextId) document.getElementById(nextId).focus();
+}
+function otpBack(e, el, prevId) {
+  if (e.key === 'Backspace' && !el.value && prevId) document.getElementById(prevId).focus();
 }
 
-function handlePhotos(input) {
-  Array.from(input.files).forEach(file => {
-    photoFiles.push(file);
-    const reader = new FileReader();
-    reader.onload = ev => {
-      photoPreviews.push(ev.target.result);
-      renderPhotoGrid();
+async function verifyOTP() {
+  const otp = ['o1','o2','o3','o4','o5','o6'].map(id => document.getElementById(id).value).join('');
+  if (otp.length !== 6) return showToast('Enter the complete 6-digit OTP', 'error');
+  setLoading('verifyOtpBtn', true, 'Verifying...');
+  try {
+    const r = await apiFetch('/api/otp?action=verify', 'POST', { empCode: fpEmpCodeVal, otp });
+    if (!r.success) return showToast(r.error || 'Invalid OTP', 'error');
+    fpResetToken = r.resetToken;
+    showForgotStep(3);
+  } catch {
+    showToast('Network error', 'error');
+  } finally {
+    setLoading('verifyOtpBtn', false, 'Verify OTP');
+  }
+}
+
+async function resetPassword() {
+  const newPwd = document.getElementById('fpNewPwd').value;
+  const confirmV = document.getElementById('fpConfirmPwd').value;
+  if (!newPwd || !confirmV) return showToast('All fields are required', 'error');
+  if (newPwd !== confirmV) return showToast('Passwords do not match', 'error');
+  if (newPwd.length < 6) return showToast('Password must be at least 6 characters', 'error');
+
+  setLoading('resetPwdBtn', true, 'Saving...');
+  try {
+    const r = await apiFetch('/api/auth?action=reset-password', 'POST', {
+      empCode: fpEmpCodeVal, newPassword: newPwd, resetToken: fpResetToken
+    });
+    if (!r.success) return showToast(r.error || 'Reset failed', 'error');
+    showToast('Password reset successfully! Please login.', 'success');
+    setTimeout(() => { showLogin(); }, 1500);
+  } catch {
+    showToast('Network error', 'error');
+  } finally {
+    setLoading('resetPwdBtn', false, 'Set New Password');
+  }
+}
+
+// ─── SUBMIT MAINTENANCE REQUEST ────────────────────────
+async function submitRequirement() {
+  const storeName = document.getElementById('custStoreName').value;
+  const storeCode = document.getElementById('custStoreCode').value;
+
+  if (!storeName || !storeCode) return showToast('Your profile is missing store info. Contact admin.', 'error');
+  if (selectedIssues.length === 0) return showToast('Please select at least one maintenance issue', 'error');
+  if (selectedIssues.includes('others')) {
+    const txt = (document.getElementById('othersInput_main').value || '').trim();
+    if (!txt) return showToast('Please describe the issue under "Others"', 'error');
+  }
+  if (photoUrls.length < MIN_PHOTOS) return showToast('Please upload at least ' + MIN_PHOTOS + ' photos of the issue', 'error');
+
+  setLoading('submitBtn', true, 'Submitting...');
+  try {
+    if (isRecording) { stopRecording(); await new Promise(r => setTimeout(r, 600)); }
+    await audioUploadPromise;
+    if (audioBlob && !audioUploadUrl) {
+      try {
+        const b64 = await new Promise((res, rej) => {
+          const fr = new FileReader(); fr.onload = e => res(e.target.result); fr.onerror = () => rej(); fr.readAsDataURL(audioBlob);
+        });
+        const ur = await fetch('/api/upload', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ fileData: b64, fileName: 'audio_'+Date.now()+'.'+(audioBlob.type.includes('mp4')?'mp4':audioBlob.type.includes('ogg')?'ogg':'webm'), mimeType: audioBlob.type||'audio/webm' }) });
+        const ud = await ur.json(); audioUploadUrl = ud.url || '';
+      } catch {}
+    }
+
+    const id = 'req_' + Date.now() + '_' + Math.random().toString(36).slice(2,7);
+    const payload = getIssuesPayload();
+    const reqJson = JSON.stringify(payload);
+    const otherText = selectedIssues.includes('others') ? (document.getElementById('othersInput_main').value || '').trim() : '';
+
+    const body = {
+      id,
+      // legacy customer fields kept null/blank for backend compatibility
+      customerName: '',
+      mobileNumber: '',
+      storeName,
+      storeCode,
+      requirement: reqJson,
+      description: otherText,
+      employee: currentUser.empName,
+      employeeId: String(currentUser.empCode),
+      createdAt: new Date().toISOString(),
+      status: 'new',
+      hasVoice: !!audioUploadUrl,
+      voiceDuration: document.getElementById('timerVal').textContent,
+      photoCount: photoUrls.length,
+      photoUrls,
+      audioUrl: audioUploadUrl,
+      fulfillmentStatus: 'Pending',
+      submittedBy: currentUser.empCode,
+      requestType: 'Store Maintenance'
     };
-    reader.readAsDataURL(file);
-  });
-  input.value = '';
+
+    const r = await apiFetch('/api/entries', 'POST', body);
+    if (!r.success) return showToast('Submission failed. Try again.', 'error');
+
+    showToast('Maintenance request submitted ✓', 'success');
+    resetForm();
+  } catch(e) {
+    showToast('Error submitting. Please try again.', 'error');
+  } finally {
+    setLoading('submitBtn', false, '✓ Submit Maintenance Request');
+  }
 }
 
-function renderPhotoGrid() {
+function resetForm() {
+  resetIssues();
+  audioBlob = null; audioUploadUrl = ''; audioUploadPromise = Promise.resolve();
+  document.getElementById('audioPlayer').classList.add('hidden');
+  document.getElementById('audioPlayer').src = '';
+  document.getElementById('recBtn').innerHTML = '<span>⏺</span> Start Recording';
+  document.getElementById('recBtn').className = 'rec-btn start';
+  document.getElementById('recTimer').style.display = 'none';
+  photoUrls = [];
   const grid = document.getElementById('photoGrid');
-  grid.innerHTML = photoPreviews.map((src, i) => `
-    <div class="photo-thumb">
-      <img src="${src}" alt="photo ${i+1}" onclick="openFullscreen('${src}')">
-      <button class="photo-remove" onclick="removePhoto(${i})" type="button">✕</button>
-    </div>
-  `).join('');
-  document.getElementById('photoHint').textContent = `${photoFiles.length} photo(s) queued for upload to Google Drive.`;
+  grid.innerHTML = '<div class="photo-add" onclick="document.getElementById(\'photoInput\').click()">+</div>';
+  document.getElementById('photoUploadStatus').textContent = '';
+  updatePhotoCounter();
 }
 
-function removePhoto(i) {
-  photoFiles.splice(i, 1);
-  photoPreviews.splice(i, 1);
-  renderPhotoGrid();
+// ─── AUDIO RECORDING ───────────────────────────────────
+async function toggleRecording() {
+  if (!isRecording) await startRecording(); else stopRecording();
+}
+async function startRecording() {
+  try {
+    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+    audioChunks = []; recSeconds = 0;
+    const recMime = ['audio/webm;codecs=opus','audio/webm','audio/ogg;codecs=opus','audio/mp4'].find(t=>MediaRecorder.isTypeSupported(t))||'';
+    mediaRecorder = new MediaRecorder(stream, recMime ? {mimeType:recMime,audioBitsPerSecond:32000} : {audioBitsPerSecond:32000});
+    mediaRecorder.ondataavailable = e => { if (e.data.size) audioChunks.push(e.data); };
+    mediaRecorder.onstop = () => {
+      audioBlob = new Blob(audioChunks, { type: mediaRecorder.mimeType||'audio/webm' });
+      const url = URL.createObjectURL(audioBlob);
+      const player = document.getElementById('audioPlayer');
+      player.src = url; player.classList.remove('hidden');
+      stream.getTracks().forEach(t => t.stop());
+      audioUploadPromise = (async () => {
+        try {
+          const b64 = await new Promise((res,rej) => {
+            const fr = new FileReader(); fr.onload = e => res(e.target.result); fr.onerror = rej; fr.readAsDataURL(audioBlob);
+          });
+          const r = await fetch('/api/upload', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ fileData: b64, fileName: 'audio_'+Date.now()+'.'+(audioBlob.type.includes('mp4')?'mp4':audioBlob.type.includes('ogg')?'ogg':'webm'), mimeType: audioBlob.type||'audio/webm' }) });
+          const d = await r.json(); audioUploadUrl = d.url || '';
+        } catch(e) { console.warn('Audio upload failed', e); }
+      })();
+    };
+    mediaRecorder.start();
+    isRecording = true;
+    document.getElementById('recBtn').innerHTML = '<span>⏹</span> Stop Recording';
+    document.getElementById('recBtn').className = 'rec-btn stop';
+    document.getElementById('recTimer').style.display = 'inline-flex';
+    recInterval = setInterval(() => {
+      recSeconds++;
+      const m = String(Math.floor(recSeconds/60)).padStart(2,'0');
+      const s = String(recSeconds%60).padStart(2,'0');
+      document.getElementById('timerVal').textContent = m + ':' + s;
+    }, 1000);
+  } catch(e) {
+    showToast('Microphone access denied', 'error');
+  }
+}
+function stopRecording() {
+  if (mediaRecorder && isRecording) {
+    mediaRecorder.stop(); isRecording = false;
+    clearInterval(recInterval);
+    document.getElementById('recBtn').innerHTML = '<span>⏺</span> Record Again';
+    document.getElementById('recBtn').className = 'rec-btn start';
+    document.getElementById('recTimer').style.display = 'none';
+  }
 }
 
-async function submitForm() {
-  const storeName  = document.getElementById('fStoreName').value.trim();
-  const storeCode  = document.getElementById('fStoreCode').value.trim();
-  const reqs       = document.getElementById('fRequirements').value.trim();
-  if (!storeName) { showToast('Store Name is required', 'error'); return; }
-  if (!storeCode) { showToast('Store Code is required', 'error'); return; }
-  if (!reqs)      { showToast('Requirements are required', 'error'); return; }
-  if (photoFiles.length === 0) { showToast('Please add at least one photo', 'error'); return; }
+// ─── PHOTO UPLOAD ──────────────────────────────────────
+function updatePhotoCounter() {
+  const el = document.getElementById('photoCounter');
+  if (!el) return;
+  const count = photoUrls.length;
+  el.classList.remove('error','ok');
+  if (count >= MIN_PHOTOS) {
+    el.classList.add('ok');
+    el.textContent = '✓ ' + count + ' photo' + (count !== 1 ? 's' : '') + ' uploaded';
+  } else {
+    el.classList.add('error');
+    el.textContent = count + ' of ' + MIN_PHOTOS + ' minimum photos uploaded';
+  }
+}
+async function compressImage(file, maxW=1024, quality=0.72) {
+  return new Promise(resolve => {
+    const img = new Image();
+    const url = URL.createObjectURL(file);
+    img.onload = () => {
+      URL.revokeObjectURL(url);
+      const canvas = document.createElement('canvas');
+      let w = img.naturalWidth, h = img.naturalHeight;
+      if (w > maxW) { h = Math.round(h * maxW / w); w = maxW; }
+      canvas.width = w; canvas.height = h;
+      canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+      canvas.toBlob(blob => resolve(blob || file), 'image/jpeg', quality);
+    };
+    img.onerror = () => { URL.revokeObjectURL(url); resolve(file); };
+    img.src = url;
+  });
+}
+async function uploadWithRetry(payload, retries=3) {
+  for (let i=0; i<retries; i++) {
+    try {
+      const r = await fetch('/api/upload', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(payload) });
+      if (r.ok) return await r.json();
+    } catch(e) { if (i===retries-1) throw e; await new Promise(r=>setTimeout(r,1200*(i+1))); }
+  }
+}
+async function handlePhotos(e) {
+  const files = Array.from(e.target.files);
+  if (!files.length) return;
+  const statusEl = document.getElementById('photoUploadStatus');
+  let uploaded = 0;
+  for (let fi=0; fi<files.length; fi++) {
+    statusEl.textContent = 'Compressing & uploading ' + (fi+1) + ' of ' + files.length + '...';
+    try {
+      const compressed = await compressImage(files[fi]);
+      const b64 = await new Promise((res,rej) => {
+        const fr = new FileReader(); fr.onload = ev => res(ev.target.result); fr.onerror = rej; fr.readAsDataURL(compressed);
+      });
+      const d = await uploadWithRetry({ fileData: b64, fileName: 'photo_'+Date.now()+'.jpg', mimeType: 'image/jpeg' });
+      if (d && d.url) {
+        photoUrls.push(d.url);
+        addPhotoThumb(d.url);
+        uploaded++;
+      }
+    } catch { statusEl.textContent = 'Retrying photo ' + (fi+1) + '...'; }
+  }
+  statusEl.textContent = uploaded + ' of ' + files.length + ' photo(s) uploaded';
+  e.target.value = '';
+  updatePhotoCounter();
+}
+function addPhotoThumb(url) {
+  const grid = document.getElementById('photoGrid');
+  const wrap = document.createElement('div');
+  wrap.className = 'photo-thumb-wrap';
+  const img = document.createElement('img');
+  img.src = driveImgUrl(url); img.className = 'photo-thumb'; img.alt = 'Photo';
+  const rm = document.createElement('button');
+  rm.className = 'photo-remove';
+  rm.innerHTML = '✕';
+  rm.title = 'Remove photo';
+  rm.onclick = () => {
+    photoUrls = photoUrls.filter(u => u !== url);
+    wrap.remove();
+    updatePhotoCounter();
+  };
+  wrap.appendChild(img);
+  wrap.appendChild(rm);
+  grid.insertBefore(wrap, grid.lastElementChild);
+}
 
-  const btn = document.getElementById('submitBtn');
-  btn.disabled = true;
+// ─── LOAD SUBMISSIONS ──────────────────────────────────
+const PRIVILEGED_ROLES = ['admin', 'owner', 'buyer'];
+function isPrivileged() { return PRIVILEGED_ROLES.includes(currentUser && currentUser.role); }
 
-  // 1) Upload photos to Drive
-  showLoading(`Uploading photo 1 of ${photoFiles.length}…`);
-  const urls = [];
-  for (let i = 0; i < photoFiles.length; i++) {
-    document.getElementById('loadingText').textContent = `Uploading photo ${i+1} of ${photoFiles.length}…`;
-    const r = await apiUploadPhoto(photoFiles[i], { storeCode, employeeId: currentUser?.id });
-    if (!r.ok) {
-      hideLoading();
-      btn.disabled = false;
-      showToast('Photo upload failed: ' + r.error, 'error');
+function clearFilters() {
+  document.getElementById('filterDateFrom').value = '';
+  document.getElementById('filterDateTo').value = '';
+  const fs = document.getElementById('filterStore');
+  if (fs) fs.value = '';
+  loadMyReqs();
+}
+
+async function loadMyReqs() {
+  document.getElementById('reqsList').innerHTML = '<div class="loading-text">⏳ Loading...</div>';
+  try {
+    const dateFrom = document.getElementById('filterDateFrom').value;
+    const dateTo   = document.getElementById('filterDateTo').value;
+    const fs = document.getElementById('filterStore');
+    const filterStoreVal = fs ? fs.value : '';
+    const hasFilter = dateFrom || dateTo || filterStoreVal;
+    const limit = hasFilter ? 500 : 10;
+
+    const params = new URLSearchParams({ empCode: currentUser.empCode, role: currentUser.role, limit });
+    if (!isPrivileged() && currentUser.storeCode) params.set('storeCode', currentUser.storeCode);
+    if (isPrivileged() && filterStoreVal) params.set('storeCode', filterStoreVal);
+    if (dateFrom) params.set('dateFrom', dateFrom);
+    if (dateTo)   params.set('dateTo', dateTo);
+    params.set('requestType', 'Store Maintenance'); // restrict to maintenance entries
+
+    const entries = await apiFetch('/api/entries?' + params, 'GET');
+    const hint = !hasFilter ? '<div style="font-size:11px;color:#aaa;margin-top:2px">Showing last 10 — use filters to see more</div>' : '';
+    if (!Array.isArray(entries) || entries.length === 0) {
+      document.getElementById('reqsList').innerHTML = '<div class="loading-text">No submissions found.</div>';
+      document.getElementById('reqsCount').innerHTML = '0 submissions' + hint;
       return;
     }
-    urls.push(r.url);
-  }
-
-  // 2) Append row to Google Sheets
-  document.getElementById('loadingText').textContent = 'Saving to Google Sheets…';
-  const payload = {
-    id:           'MBSM' + Date.now(),
-    storeName,
-    storeCode,
-    requirements: reqs,
-    photoUrls:    urls,
-    photoCount:   urls.length,
-    employee:     currentUser?.name || 'Unknown',
-    employeeId:   currentUser?.id   || '',
-    createdAt:    nowIST(),
-    status:       'new',
-  };
-  const result = await apiCreateEntry(payload);
-  hideLoading();
-  btn.disabled = false;
-
-  if (result.ok) {
-    entries.push({ ...payload, synced: true });
-    saveEntriesLocal();
-    showToast('Submitted ✓', 'success');
-    setTimeout(() => goBack(), 800);
-  } else {
-    entries.push({ ...payload, synced: false });
-    saveEntriesLocal();
-    showToast('Sheet save failed — photos uploaded. Retry later.', 'error');
+    document.getElementById('reqsCount').innerHTML = entries.length + ' submission' + (entries.length !== 1 ? 's' : '') + hint;
+    document.getElementById('reqsList').innerHTML = '';
+    entries.forEach(entry => document.getElementById('reqsList').appendChild(buildEntryCard(entry)));
+  } catch(e) {
+    document.getElementById('reqsList').innerHTML = '<div class="loading-text" style="color:#c62828">Error loading. Please refresh.</div>';
   }
 }
 
-// ──────────── Detail view ────────────
-function viewEntry(id) {
-  const e = entries.find(x => x.id === id);
-  if (!e) return;
-  const badge = document.getElementById('detailBadge');
-  badge.textContent = capitalize(e.status || 'new');
-  badge.className = 'badge badge-' + (e.status || 'new');
-  const urls = Array.isArray(e.photoUrls) ? e.photoUrls : (e.photoUrls ? String(e.photoUrls).split(',').map(s => s.trim()).filter(Boolean) : []);
+function buildEntryCard(entry) {
+  const card = document.createElement('div');
+  card.className = 'entry-card';
+  card.id = 'ecard_' + entry.id;
 
-  document.getElementById('detailBody').innerHTML = `
-    <div class="detail-section">
-      <div class="detail-row"><span class="detail-key">Store Name</span><span class="detail-val">${esc(e.storeName)}</span></div>
-      <div class="detail-row"><span class="detail-key">Store Code</span><span class="detail-val">${esc(e.storeCode)}</span></div>
-      <div class="detail-row"><span class="detail-key">Reported by</span><span class="detail-val">${esc(e.employee)}${e.employeeId ? ' (' + esc(e.employeeId) + ')' : ''}</span></div>
-      <div class="detail-row"><span class="detail-key">Date &amp; time</span><span class="detail-val">${formatFull(parseIST(e.createdAt))}</span></div>
-      <div class="detail-row"><span class="detail-key">Photos</span><span class="detail-val">${urls.length}</span></div>
-      <div class="detail-row"><span class="detail-key">Status</span>
-        <select onchange="updateStatus('${e.id}', this.value)"
-          style="border:none;background:none;font-family:var(--font);font-size:13px;font-weight:600;color:var(--brand);outline:none;cursor:pointer;">
-          <option value="new"      ${e.status === 'new'      ? 'selected' : ''}>New</option>
-          <option value="reviewed" ${e.status === 'reviewed' ? 'selected' : ''}>Reviewed</option>
-          <option value="resolved" ${e.status === 'resolved' ? 'selected' : ''}>Resolved</option>
-        </select>
-      </div>
-    </div>
-    <div class="detail-section">
-      <div class="detail-section-title">Requirements</div>
-      <div class="desc-text">${esc(e.requirements || '—')}</div>
-    </div>
-    ${urls.length ? `
-      <div class="detail-section">
-        <div class="detail-section-title">Photographs (${urls.length})</div>
-        <div class="photo-gallery">
-          ${urls.map(u => `<a class="gallery-link" href="${esc(u)}" target="_blank" rel="noopener"><div class="gallery-img"><img src="${esc(u)}" alt="photo" onerror="this.parentElement.innerHTML='<div style=\\'width:100%;aspect-ratio:1;display:flex;align-items:center;justify-content:center;font-size:22px;\\'>🖼️</div>'"></div></a>`).join('')}
-        </div>
-        <div style="font-size:11px;color:var(--text3);margin-top:8px;">Tap any photo to open in Google Drive.</div>
-      </div>` : ''}
-  `;
-  goTo('s-detail');
+  const statusClass = { 'Fulfilled':'status-fulfilled', 'Not_Fulfilled':'status-not', 'Pending':'status-pending' }[entry.fulfillmentStatus] || 'status-pending';
+  const statusLabel = { 'Fulfilled':'Resolved ✓', 'Not_Fulfilled':'Not Resolved ✗', 'Pending':'Pending' }[entry.fulfillmentStatus] || 'Pending';
+  const date = (() => {
+    if (!entry.createdAt) return '';
+    const m = entry.createdAt.match(/^(\d{2})-(\d{2})-(\d{4})/);
+    if (m) {
+      const d = new Date(parseInt(m[3]), parseInt(m[2]) - 1, parseInt(m[1]));
+      return d.toLocaleDateString('en-IN', { day:'numeric', month:'short', year:'numeric' });
+    }
+    const d = new Date(entry.createdAt);
+    return isNaN(d) ? entry.createdAt : d.toLocaleDateString('en-IN', { day:'numeric', month:'short', year:'numeric' });
+  })();
+
+  let reqSummary = '';
+  try {
+    const parsed = JSON.parse(entry.requirement);
+    if (parsed.issues && Array.isArray(parsed.issues)) {
+      reqSummary = '<strong>Issues:</strong> ' + parsed.issues.join(', ');
+    } else {
+      reqSummary = Object.entries(parsed).map(([k,v]) => '<strong>' + esc(k) + ':</strong> ' + (Array.isArray(v) ? v.join(', ') : esc(String(v)))).join('<br>');
+    }
+  } catch { reqSummary = esc(entry.requirement || ''); }
+
+  card.innerHTML =
+    '<div class="entry-header">' +
+      '<div>' +
+        '<div class="entry-name">' + esc(entry.storeName) + ' <span style="color:#999;font-size:12px">(' + esc(entry.storeCode) + ')</span></div>' +
+        '<div class="entry-meta">\u{1F464} ' + esc(entry.employee) + ' &nbsp;•&nbsp; \u{1F4C5} ' + date + '</div>' +
+        (entry.audioUrl ? '<div class="entry-meta">\u{1F3A4} Voice note attached</div>' : '') +
+        (entry.photoCount ? '<div class="entry-meta">\u{1F4F7} ' + entry.photoCount + ' photo(s)</div>' : '') +
+      '</div>' +
+      '<span class="status-badge ' + statusClass + '">' + statusLabel + '</span>' +
+    '</div>' +
+    '<div class="entry-body">' +
+      (reqSummary ? '<div class="req-summary">' + reqSummary + '</div>' : '') +
+      (entry.audioUrl ? '<div style="margin-top:8px"><audio controls src="' + esc(driveAudioUrl(entry.audioUrl)) + '" style="width:100%;height:36px"></audio></div>' : '') +
+      (entry.photoUrls && entry.photoUrls.length ? '<div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:8px">' + entry.photoUrls.map(u=>'<img src="' + esc(driveImgUrl(u)) + '" style="width:60px;height:60px;object-fit:cover;border-radius:8px;border:1px solid #ddd">').join('') + '</div>' : '') +
+      '<div class="status-actions">' +
+        '<button class="btn btn-sm ' + (entry.fulfillmentStatus==='Fulfilled'?'btn-gray':'btn-primary') + '" onclick="updateStatus(\'' + esc(entry.id) + '\',\'Fulfilled\')">✔ Resolved</button>' +
+        '<button class="btn btn-sm ' + (entry.fulfillmentStatus==='Not_Fulfilled'?'btn-gray':'btn-danger') + '" onclick="updateStatus(\'' + esc(entry.id) + '\',\'Not_Fulfilled\')">✘ Not Resolved</button>' +
+        (entry.fulfillmentStatus !== 'Pending' ? '<button class="btn btn-sm btn-gray" onclick="updateStatus(\'' + esc(entry.id) + '\',\'Pending\')">Reset</button>' : '') +
+      '</div>' +
+    '</div>';
+  return card;
 }
 
+// ─── UPDATE STATUS ─────────────────────────────────────
 async function updateStatus(id, status) {
-  const e = entries.find(x => x.id === id);
-  if (!e) return;
-  e.status = status;
-  saveEntriesLocal();
-  showToast('Status updated');
-  apiPatchStatus(id, status);
-}
-
-// ──────────── Manager ────────────
-function renderManager() {
-  const now = new Date();
-  const todayStart = new Date(now); todayStart.setHours(0,0,0,0);
-  const today = entries.filter(e => parseIST(e.createdAt) >= todayStart).length;
-  const stores = new Set(entries.map(e => e.storeCode)).size;
-  document.getElementById('mgrTotal').textContent  = entries.length;
-  document.getElementById('mgrToday').textContent  = today;
-  document.getElementById('mgrStores').textContent = stores;
-  renderMgrList(entries);
-}
-
-function renderMgrList(list) {
-  const el = document.getElementById('mgrList');
-  if (list.length === 0) {
-    el.innerHTML = '<div class="empty-state"><div class="empty-icon">📭</div><div class="empty-title">No requests</div><div class="empty-sub">Tap Refresh to fetch from Google Sheets</div></div>';
-    return;
+  try {
+    const r = await apiFetch('/api/update-status', 'POST', { id, fulfillmentStatus: status });
+    if (!r.success) return showToast(r.error || 'Update failed', 'error');
+    showToast('Marked as ' + status.replace('_',' '), 'success');
+    loadMyReqs();
+  } catch {
+    showToast('Network error', 'error');
   }
-  el.innerHTML = list.slice().reverse().map(e => `
-    <div class="entry-card" onclick="viewMgrEntry('${e.id}')">
-      <div class="entry-icon">🛠️</div>
-      <div class="entry-info">
-        <div class="entry-title">${esc(e.storeName)} · ${esc(e.storeCode)}</div>
-        <div class="entry-store" style="color:var(--brand-dark);font-weight:500;">${truncate(esc(e.requirements), 60)}</div>
-        <div class="entry-store" style="font-size:11px;">${esc(e.employee)}${e.employeeId ? ' (' + esc(e.employeeId) + ')' : ''}</div>
-        <div class="entry-time">${formatTime(parseIST(e.createdAt))}</div>
-      </div>
-      <div class="entry-meta">
-        <span class="badge badge-${e.status || 'new'}">${capitalize(e.status || 'new')}</span>
-        <span class="photo-chip">📷 ${e.photoCount || (Array.isArray(e.photoUrls) ? e.photoUrls.length : 0)}</span>
-      </div>
-    </div>
-  `).join('');
 }
 
-function filterMgr(f, btn) {
-  document.querySelectorAll('.filter-chip').forEach(b => b.classList.remove('active'));
-  btn.classList.add('active');
-  const now = new Date();
-  const todayStart = new Date(now); todayStart.setHours(0,0,0,0);
-  const weekStart  = new Date(todayStart); weekStart.setDate(weekStart.getDate() - 7);
-  let out = entries;
-  if (f === 'new')      out = entries.filter(e => (e.status || 'new') === 'new');
-  else if (f === 'reviewed') out = entries.filter(e => e.status === 'reviewed');
-  else if (f === 'resolved') out = entries.filter(e => e.status === 'resolved');
-  else if (f === 'today')    out = entries.filter(e => parseIST(e.createdAt) >= todayStart);
-  else if (f === 'week')     out = entries.filter(e => parseIST(e.createdAt) >= weekStart);
-  renderMgrList(out);
+// ─── API FETCH ─────────────────────────────────────────
+async function apiFetch(url, method, body) {
+  const opts = { method, headers: { 'Content-Type': 'application/json' } };
+  if (authToken) opts.headers['Authorization'] = 'Bearer ' + authToken;
+  if (body) opts.body = JSON.stringify(body);
+  const r = await fetch(url, opts);
+  return r.json();
 }
 
-function viewMgrEntry(id) {
-  screenHistory.push('s-manager');
-  viewEntry(id);
-}
-
-function exportCSV() {
-  const headers = ['ID','Created At','Store Name','Store Code','Requirements','Employee','Employee ID','Status','Photo Count','Photo URLs'];
-  const rows = entries.map(e => [
-    e.id,
-    formatFull(parseIST(e.createdAt)),
-    q(e.storeName), q(e.storeCode), q(e.requirements),
-    q(e.employee), q(e.employeeId),
-    e.status || 'new',
-    e.photoCount || (Array.isArray(e.photoUrls) ? e.photoUrls.length : 0),
-    q(Array.isArray(e.photoUrls) ? e.photoUrls.join(' | ') : (e.photoUrls || '')),
-  ]);
-  const csv = [headers, ...rows].map(r => r.join(',')).join('\n');
-  const blob = new Blob([csv], { type: 'text/csv' });
-  const a = document.createElement('a');
-  a.href = URL.createObjectURL(blob);
-  a.download = `MB_Store_Maintenance_${new Date().toISOString().slice(0,10)}.csv`;
-  a.click();
-  showToast('CSV exported ✓', 'success');
-}
-function q(s) { return `"${String(s || '').replace(/"/g, '""')}"`; }
-
-// ──────────── Utils ────────────
-function showLoading(msg = 'Working…') {
-  document.getElementById('loadingText').textContent = msg;
-  document.getElementById('loadingOverlay').classList.add('show');
-}
-function hideLoading() { document.getElementById('loadingOverlay').classList.remove('show'); }
-function showToast(msg, type = '') {
+// ─── UTILS ─────────────────────────────────────────────
+function showToast(msg, type) {
   const t = document.getElementById('toast');
-  t.textContent = msg;
-  t.className = 'toast show' + (type ? ' ' + type : '');
-  setTimeout(() => t.classList.remove('show'), 2600);
+  t.innerHTML = msg;
+  t.className = 'show' + (type ? ' ' + type : '');
+  clearTimeout(window._toastTimer);
+  window._toastTimer = setTimeout(() => { t.className = ''; }, 3000);
 }
-function openFullscreen(src) {
-  document.getElementById('fullscreenImg').src = src;
-  document.getElementById('photoFullscreen').classList.add('show');
+function setLoading(btnId, loading, text) {
+  const btn = document.getElementById(btnId);
+  if (!btn) return;
+  btn.disabled = loading;
+  btn.innerHTML = loading ? '<span class="spinner"></span>' + text : text;
 }
-function closeFullscreen() { document.getElementById('photoFullscreen').classList.remove('show'); }
-function formatTime(d) {
-  if (isNaN(d)) return '';
-  const diff = Math.floor((new Date() - d) / 1000);
-  if (diff < 60)    return 'Just now';
-  if (diff < 3600)  return Math.floor(diff / 60) + ' min ago';
-  if (diff < 86400) return Math.floor(diff / 3600) + ' hr ago';
-  return formatFull(d);
+function togglePw(inputId, btn) {
+  const inp = document.getElementById(inputId);
+  if (inp.type === 'password') { inp.type = 'text'; btn.textContent = '\u{1F648}'; }
+  else { inp.type = 'password'; btn.textContent = '\u{1F441}'; }
 }
-function formatFull(d) {
-  if (isNaN(d)) return '';
-  return d.toLocaleDateString('en-IN', { day:'numeric', month:'short', year:'numeric' }) + ', ' +
-         d.toLocaleTimeString('en-IN', { hour:'2-digit', minute:'2-digit' });
+function esc(s) {
+  return String(s == null ? '' : s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
 }
-function capitalize(s) { return s ? s[0].toUpperCase() + s.slice(1) : ''; }
-function truncate(s, n) { return s && s.length > n ? s.slice(0, n - 1) + '…' : s; }
-function esc(s) { return String(s == null ? '' : s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;'); }
-
-// ──────────── Init ────────────
-(function init() {
-  entries = JSON.parse(localStorage.getItem(LS_ENTRIES) || '[]');
-  pingConnection();
-  setInterval(pingConnection, 30000);
-})();
 </script>
 </body>
 </html>

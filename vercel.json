@@ -1,3 +1,12 @@
 {
-  "version": 2
+  "version": 2,
+  "rewrites": [
+    { "source": "/", "destination": "/index.html" }
+  ],
+  "functions": {
+    "api/upload.js": { "maxDuration": 30 },
+    "api/entries.js": { "maxDuration": 20 },
+    "api/auth.js": { "maxDuration": 15 },
+    "api/admin.js": { "maxDuration": 15 }
+  }
 }

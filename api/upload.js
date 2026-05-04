@@ -1,4 +1,5 @@
-// api/upload.js - photo upload to Drive, one subfolder per storeCode.
+// api/upload.js - photo/audio upload to Drive, one subfolder per storeCode.
+// Accepts both legacy (photo, filename) and new (fileData, fileName) field names.
 const { getAuth } = require('../lib/google');
 const { Readable } = require('stream');
 
@@ -6,7 +7,6 @@ module.exports.config = {
   api: { bodyParser: { sizeLimit: '15mb' } },
 };
 
-// Module-level cache: survives within a warm serverless container.
 const _folderCache = new Map();
 
 function sanitizeFolderName(raw) {
@@ -16,12 +16,11 @@ function sanitizeFolderName(raw) {
 
 async function getOrCreateStoreFolder(drive, parentId, storeCode) {
   const name = sanitizeFolderName(storeCode);
-  const cacheKey = `${parentId}:${name}`;
+  const cacheKey = parentId + ':' + name;
   if (_folderCache.has(cacheKey)) return _folderCache.get(cacheKey);
 
-  // Escape single quotes in folder name for Drive query syntax
   const safeForQuery = name.replace(/'/g, "\\'");
-  const q = `'${parentId}' in parents and name='${safeForQuery}' and mimeType='application/vnd.google-apps.folder' and trashed=false`;
+  const q = "'" + parentId + "' in parents and name='" + safeForQuery + "' and mimeType='application/vnd.google-apps.folder' and trashed=false";
 
   const list = await drive.files.list({
     q,
@@ -45,10 +44,15 @@ async function getOrCreateStoreFolder(drive, parentId, storeCode) {
       supportsAllDrives: true,
     });
     id = created.data.id;
-    console.log(`[api/upload] created new store folder "${name}" -> ${id}`);
   }
   _folderCache.set(cacheKey, id);
   return id;
+}
+
+function stripDataUrl(s) {
+  if (typeof s !== 'string') return s;
+  const m = s.match(/^data:[^;]+;base64,(.*)$/);
+  return m ? m[1] : s;
 }
 
 module.exports = async function handler(req, res) {
@@ -70,26 +74,27 @@ module.exports = async function handler(req, res) {
       });
     }
 
-    const { photo, filename, mimeType, storeCode, employeeId } = body || {};
-    if (!photo) return res.status(400).json({ error: 'photo (base64) is required' });
+    const data     = body.fileData || body.photo;
+    const fileName = body.fileName || body.filename || ('upload_' + Date.now() + '.bin');
+    const mimeType = body.mimeType || 'application/octet-stream';
+    const storeCode = body.storeCode || body.store || 'UNKNOWN';
+    const employeeId = body.employeeId || body.empCode || 'UNKNOWN';
 
-    const buf = Buffer.from(photo, 'base64');
-    if (buf.length === 0) return res.status(400).json({ error: 'photo payload decoded to 0 bytes' });
+    if (!data) return res.status(400).json({ error: 'fileData (or photo) is required' });
 
-    const origName = filename || 'photo.jpg';
-    const ext      = (origName.match(/\.[a-z0-9]+$/i) || ['.jpg'])[0];
-    const stamp    = new Date().toISOString().replace(/[:.]/g, '-');
-    const driveName = `${sanitizeFolderName(storeCode)}__${employeeId || 'UNKNOWN'}__${stamp}${ext}`;
+    const buf = Buffer.from(stripDataUrl(data), 'base64');
+    if (buf.length === 0) return res.status(400).json({ error: 'payload decoded to 0 bytes' });
+
+    const ext   = (fileName.match(/\.[a-z0-9]+$/i) || ['.bin'])[0];
+    const stamp = new Date().toISOString().replace(/[:.]/g, '-');
+    const driveName = sanitizeFolderName(storeCode) + '__' + employeeId + '__' + stamp + ext;
 
     const { drive } = getAuth();
-    const mt = mimeType || 'image/jpeg';
-
-    // One subfolder per store under the root DRIVE_FOLDER_ID
     const storeFolderId = await getOrCreateStoreFolder(drive, DRIVE_FOLDER_ID, storeCode);
 
     const createRes = await drive.files.create({
       requestBody: { name: driveName, parents: [storeFolderId] },
-      media: { mimeType: mt, body: Readable.from(buf) },
+      media: { mimeType, body: Readable.from(buf) },
       fields: 'id, name, webViewLink, webContentLink',
       supportsAllDrives: true,
     });
@@ -101,8 +106,8 @@ module.exports = async function handler(req, res) {
       });
     } catch (permErr) { console.warn('[api/upload] permission set failed:', permErr.message); }
 
-    const viewUrl = `https://drive.google.com/uc?export=view&id=${fileId}`;
-    const openUrl = createRes.data.webViewLink || `https://drive.google.com/file/d/${fileId}/view`;
+    const viewUrl = 'https://drive.google.com/uc?export=view&id=' + fileId;
+    const openUrl = createRes.data.webViewLink || ('https://drive.google.com/file/d/' + fileId + '/view');
 
     res.status(200).json({ success: true, id: fileId, name: driveName, url: viewUrl, openUrl, folder: sanitizeFolderName(storeCode) });
   } catch (err) {
