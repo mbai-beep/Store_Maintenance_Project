@@ -7,20 +7,28 @@ function need(n) { const v = process.env[n]; if (!v) { console.error('Missing en
 
 (async () => {
   const db = createClient({ url: need('SOURCE_TURSO_URL'), authToken: need('SOURCE_TURSO_TOKEN') });
+
   const tables = await db.execute(`SELECT name FROM sqlite_master WHERE type='table' ORDER BY name`);
   console.log('Tables:'); tables.rows.forEach(r => console.log('  - ' + r.name));
   console.log('');
-  const cols = await db.execute(`PRAGMA table_info(employees)`);
-  console.log('employees columns:');
-  cols.rows.forEach(r => console.log('  ' + r.name + ' (' + r.type + (r.notnull ? ', NOT NULL' : '') + (r.pk ? ', PK' : '') + ')'));
-  console.log('');
-  const cnt = await db.execute(`SELECT COUNT(*) AS n FROM employees`);
-  console.log('Row count: ' + cnt.rows[0].n);
-  const sample = await db.execute(`SELECT * FROM employees LIMIT 3`);
-  console.log('Sample rows:');
-  sample.rows.forEach((r, i) => {
-    const safe = { ...r };
-    if (safe.password_hash) safe.password_hash = String(safe.password_hash).slice(0, 18) + '...';
-    console.log('  [' + i + '] ' + JSON.stringify(safe));
-  });
+
+  for (const t of ['employees', 'employee_auth']) {
+    const exists = tables.rows.some(r => r.name === t);
+    if (!exists) { console.log('[' + t + '] table not present'); continue; }
+    const cols = await db.execute(`PRAGMA table_info(${t})`);
+    console.log('[' + t + '] columns:');
+    cols.rows.forEach(r => console.log('    ' + r.name + ' (' + r.type + (r.notnull ? ', NOT NULL' : '') + (r.pk ? ', PK' : '') + ')'));
+    const cnt = await db.execute(`SELECT COUNT(*) AS n FROM ${t}`);
+    console.log('  row count: ' + cnt.rows[0].n);
+    const sample = await db.execute(`SELECT * FROM ${t} LIMIT 3`);
+    console.log('  sample rows:');
+    sample.rows.forEach((r, i) => {
+      const safe = { ...r };
+      for (const k of Object.keys(safe)) {
+        if (/pass|hash|secret|token/i.test(k) && safe[k]) safe[k] = String(safe[k]).slice(0, 22) + '...';
+      }
+      console.log('    [' + i + '] ' + JSON.stringify(safe));
+    });
+    console.log('');
+  }
 })().catch(err => { console.error(err); process.exit(1); });
