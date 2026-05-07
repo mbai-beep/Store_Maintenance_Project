@@ -120,8 +120,8 @@ module.exports = async function handler(req, res) {
       if (!requirementJson) return res.status(400).json({ success: false, error: 'requirement is required' });
 
       const photoCount = Array.isArray(body.photoUrls) ? body.photoUrls.length : Number(body.photoCount || 0);
-      if ((body.requestType || 'Store Maintenance') === 'Store Maintenance' && photoCount < 2) {
-        return res.status(400).json({ success: false, error: 'At least 2 photos are required for maintenance requests' });
+      if ((body.requestType || 'Store Maintenance') === 'Store Maintenance' && photoCount < 1) {
+        return res.status(400).json({ success: false, error: 'At least 1 photo is required for maintenance requests' });
       }
 
       const token = tokenFromReq(req);

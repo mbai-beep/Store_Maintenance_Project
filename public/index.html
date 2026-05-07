@@ -297,15 +297,15 @@ select option:disabled{color:#bbb}
       <audio id="audioPlayer" controls class="audio-player hidden" style="width:100%;margin-top:8px"></audio>
     </div>
 
-    <!-- Photo Upload (Required, min 2) -->
+    <!-- Photo Upload (Required) -->
     <div class="card">
-      <div class="card-title">&#x1F4F7; Photos / Images <span style="color:#c62828;font-size:12px;font-weight:400;margin-left:4px">* Required (min 2)</span></div>
-      <div style="font-size:12px;color:#777;margin-bottom:6px">Take or upload at least 2 clear photos showing the issue.</div>
+      <div class="card-title">&#x1F4F7; Photos / Images <span style="color:#c62828;font-size:12px;font-weight:400;margin-left:4px">* Required</span></div>
+      <div style="font-size:12px;color:#777;margin-bottom:6px">Take or upload at least 1 clear photo showing the issue.</div>
       <div class="photo-grid" id="photoGrid">
         <div class="photo-add" onclick="document.getElementById('photoInput').click()">&#x2B;</div>
       </div>
       <input type="file" id="photoInput" accept="image/*" multiple class="hidden" onchange="handlePhotos(event)">
-      <div class="photo-counter" id="photoCounter">0 of 2 minimum photos uploaded</div>
+      <div class="photo-counter" id="photoCounter">No photos uploaded yet</div>
       <div id="photoUploadStatus" style="font-size:12px;color:#777;margin-top:4px"></div>
     </div>
 
@@ -463,7 +463,7 @@ select option:disabled{color:#bbb}
 
 <script>
 // ─── CONSTANTS ─────────────────────────────────────────
-const MIN_PHOTOS = 2;
+const MIN_PHOTOS = 1;
 const PASSWORD_HISTORY_DEPTH = 3;
 const PASSWORD_EXPIRY_DAYS = 60;
 
@@ -978,7 +978,7 @@ async function submitRequirement() {
     const txt = (document.getElementById('othersInput_main').value || '').trim();
     if (!txt) return showToast('Please describe the issue under "Others"', 'error');
   }
-  if (photoUrls.length < MIN_PHOTOS) return showToast('Please upload at least ' + MIN_PHOTOS + ' photos of the issue', 'error');
+  if (photoUrls.length < MIN_PHOTOS) return showToast('Please upload at least ' + MIN_PHOTOS + ' photo of the issue', 'error');
 
   setLoading('submitBtn', true, 'Submitting...');
   try {
@@ -1112,7 +1112,9 @@ function updatePhotoCounter() {
     el.textContent = '✓ ' + count + ' photo' + (count !== 1 ? 's' : '') + ' uploaded';
   } else {
     el.classList.add('error');
-    el.textContent = count + ' of ' + MIN_PHOTOS + ' minimum photos uploaded';
+    el.textContent = MIN_PHOTOS === 1
+      ? 'At least 1 photo is required'
+      : count + ' of ' + MIN_PHOTOS + ' minimum photos uploaded';
   }
 }
 async function compressImage(file, maxW=1024, quality=0.72) {
