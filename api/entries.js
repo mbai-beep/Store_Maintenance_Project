@@ -86,7 +86,7 @@ module.exports = async function handler(req, res) {
       if (q.requestType) entries = entries.filter(e => (e.requestType || 'Store Maintenance') === q.requestType);
       if (q.storeCode) entries = entries.filter(e => String(e.storeCode) === String(q.storeCode));
       const role = String(q.role || '').toLowerCase();
-      const PRIVILEGED = ['admin', 'owner', 'buyer', 'manager'];
+      const PRIVILEGED = ['admin', 'owner', 'manager'];
       if (q.empCode && !PRIVILEGED.includes(role)) {
         entries = entries.filter(e => String(e.employeeId) === String(q.empCode));
       }

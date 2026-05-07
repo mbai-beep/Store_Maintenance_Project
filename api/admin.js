@@ -4,6 +4,8 @@ const {
   hashPassword, getEmployeeByToken, tokenFromReq, readJson,
 } = require('../lib/auth');
 
+const ADMIN_ROLES = ['admin', 'owner', 'manager'];
+
 async function requireAdmin(req, res) {
   const token = tokenFromReq(req);
   const emp = await getEmployeeByToken(token);
@@ -11,8 +13,8 @@ async function requireAdmin(req, res) {
     res.status(401).json({ success: false, error: 'Not authenticated' });
     return null;
   }
-  if (emp.role !== 'admin') {
-    res.status(403).json({ success: false, error: 'Admin role required' });
+  if (!ADMIN_ROLES.includes(String(emp.role || '').toLowerCase())) {
+    res.status(403).json({ success: false, error: 'Admin / Owner / Manager role required' });
     return null;
   }
   return emp;

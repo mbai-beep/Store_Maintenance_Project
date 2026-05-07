@@ -577,9 +577,8 @@ async function initApp() {
   show('appSection');
   document.getElementById('userBadge').textContent = (currentUser.empName || '') + '\n' + (currentUser.designation || '');
   document.getElementById('headerSubtitle').textContent = currentUser.storeName || 'Store Maintenance';
-  if (currentUser.role === 'manager') document.getElementById('submissionsLabel').textContent = 'Store Submissions';
   if (isPrivileged()) document.getElementById('submissionsLabel').textContent = 'All Submissions';
-  if (currentUser.role === 'admin') document.getElementById('tabAdmin').classList.remove('hidden');
+  if (canAccessAdmin()) document.getElementById('tabAdmin').classList.remove('hidden');
   showView('newReq');
 
   await loadStores();
@@ -1187,8 +1186,10 @@ function addPhotoThumb(url) {
 }
 
 // ─── LOAD SUBMISSIONS ──────────────────────────────────
-const PRIVILEGED_ROLES = ['admin', 'owner', 'buyer'];
-function isPrivileged() { return PRIVILEGED_ROLES.includes(currentUser && currentUser.role); }
+const PRIVILEGED_ROLES = ['admin', 'owner', 'manager']; // can see All Submissions + cross-store
+const ADMIN_ROLES      = ['admin', 'owner', 'manager']; // can use Admin tab
+function isPrivileged()  { return PRIVILEGED_ROLES.includes(currentUser && currentUser.role); }
+function canAccessAdmin(){ return ADMIN_ROLES.includes(currentUser && currentUser.role); }
 
 function clearFilters() {
   document.getElementById('filterDateFrom').value = '';
@@ -1323,6 +1324,11 @@ function togglePw(inputId, btn) {
 }
 function esc(s) {
   return String(s == null ? '' : s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+}
+</script>
+</body>
+</html>
+,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
 }
 </script>
 </body>
