@@ -569,9 +569,11 @@ function renderAudioBlock(audioUrl) {
   const m = String(audioUrl).match(/[?&\/]id=([^&\/]+)|\/d\/([^\/]+)/);
   const id = m ? (m[1] || m[2]) : '';
   if (!id) return '<div style="margin-top:8px;font-size:12px;color:#c62828">Audio link broken</div>';
-  const previewUrl = 'https://drive.google.com/file/d/' + esc(id) + '/preview';
+  // Plain <audio> via our /api/file proxy. Browser plays ogg/webm/mp4 natively.
+  // No external links or iframes - everything stays in the app.
+  const proxyUrl = '/api/file?id=' + esc(id);
   return '<div style="margin-top:8px">' +
-    '<iframe src="' + previewUrl + '" style="width:100%;height:60px;border:0;border-radius:8px;background:#f5f5f5" allow="autoplay"></iframe>' +
+    '<audio controls preload="metadata" src="' + proxyUrl + '" style="width:100%;height:36px"></audio>' +
   '</div>';
 }
 // Open an image full-size INSIDE the app (lightbox modal, no external link).
@@ -1099,7 +1101,8 @@ async function startRecording() {
   try {
     const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
     audioChunks = []; recSeconds = 0;
-    const recMime = ['audio/webm;codecs=opus','audio/webm','audio/ogg;codecs=opus','audio/mp4'].find(t=>MediaRecorder.isTypeSupported(t))||'';
+    // Prefer formats Drive's preview supports natively: ogg, mp4. webm last (Drive can't play webm audio).
+    const recMime = ['audio/ogg;codecs=opus','audio/mp4','audio/webm;codecs=opus','audio/webm'].find(t=>MediaRecorder.isTypeSupported(t))||'';
     mediaRecorder = new MediaRecorder(stream, recMime ? {mimeType:recMime,audioBitsPerSecond:32000} : {audioBitsPerSecond:32000});
     mediaRecorder.ondataavailable = e => { if (e.data.size) audioChunks.push(e.data); };
     mediaRecorder.onstop = () => {
@@ -1366,6 +1369,12 @@ function togglePw(inputId, btn) {
   else { inp.type = 'password'; btn.textContent = '\u{1F441}'; }
 }
 function esc(s) {
+  return String(s == null ? '' : s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+}
+</script>
+</body>
+</html>
+c(s) {
   return String(s == null ? '' : s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
 }
 </script>
