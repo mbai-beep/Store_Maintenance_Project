@@ -545,6 +545,35 @@ function driveAudioUrl(u) {
   const m = u.match(/[?&]id=([^&]+)/);
   return m ? '/api/file?id=' + m[1] : u;
 }
+function driveDirectDownloadUrl(u) {
+  if (!u) return '';
+  const m = u.match(/[?&]id=([^&]+)/);
+  return m ? 'https://drive.google.com/uc?export=download&id=' + m[1] : u;
+}
+function driveOpenUrl(u) {
+  if (!u) return u;
+  const m = u.match(/[?&]id=([^&]+)/);
+  return m ? 'https://drive.google.com/file/d/' + m[1] + '/view' : u;
+}
+// Renders a robust audio block: primary source via /api/file, JS fallback to
+// direct Drive download URL on error, and an "Open in Drive" link as ultimate fallback.
+function renderAudioBlock(audioUrl) {
+  if (!audioUrl) return '';
+  const proxyUrl  = esc(driveAudioUrl(audioUrl));
+  const directUrl = esc(driveDirectDownloadUrl(audioUrl));
+  const openUrl   = esc(driveOpenUrl(audioUrl));
+  return '<div style="margin-top:8px">' +
+    '<audio controls preload="metadata" style="width:100%;height:36px" ' +
+           'onerror="this.dataset.fallback||this.setAttribute(\'data-fallback\',\'1\'),this.src=\'' + directUrl + '\'">' +
+      '<source src="' + proxyUrl + '">' +
+      'Your browser does not support audio playback.' +
+    '</audio>' +
+    '<div style="font-size:11px;margin-top:4px">' +
+      '<a href="' + directUrl + '" download style="color:#8DBBCC;text-decoration:none">&#x2B07; Download</a> &nbsp;|&nbsp; ' +
+      '<a href="' + openUrl + '" target="_blank" rel="noopener" style="color:#8DBBCC;text-decoration:none">&#x1F517; Open in Drive</a>' +
+    '</div>' +
+  '</div>';
+}
 
 // ─── VIEW HELPERS ──────────────────────────────────────
 function show(id) {
@@ -1271,7 +1300,7 @@ function buildEntryCard(entry) {
     '</div>' +
     '<div class="entry-body">' +
       (reqSummary ? '<div class="req-summary">' + reqSummary + '</div>' : '') +
-      (entry.audioUrl ? '<div style="margin-top:8px"><audio controls src="' + esc(driveAudioUrl(entry.audioUrl)) + '" style="width:100%;height:36px"></audio></div>' : '') +
+      (entry.audioUrl ? renderAudioBlock(entry.audioUrl) : '') +
       (entry.photoUrls && entry.photoUrls.length ? '<div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:8px">' + entry.photoUrls.map(u=>'<img src="' + esc(driveImgUrl(u)) + '" style="width:60px;height:60px;object-fit:cover;border-radius:8px;border:1px solid #ddd">').join('') + '</div>' : '') +
       '<div class="status-actions">' +
         '<button class="btn btn-sm ' + (entry.fulfillmentStatus==='Fulfilled'?'btn-gray':'btn-primary') + '" onclick="updateStatus(\'' + esc(entry.id) + '\',\'Fulfilled\')">✔ Resolved</button>' +
