@@ -988,7 +988,7 @@ async function submitRequirement() {
         const b64 = await new Promise((res, rej) => {
           const fr = new FileReader(); fr.onload = e => res(e.target.result); fr.onerror = () => rej(); fr.readAsDataURL(audioBlob);
         });
-        const ur = await fetch('/api/upload', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ fileData: b64, fileName: 'audio_'+Date.now()+'.'+(audioBlob.type.includes('mp4')?'mp4':audioBlob.type.includes('ogg')?'ogg':'webm'), mimeType: audioBlob.type||'audio/webm' }) });
+        const ur = await fetch('/api/upload', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ fileData: b64, fileName: 'audio_'+Date.now()+'.'+(audioBlob.type.includes('mp4')?'mp4':audioBlob.type.includes('ogg')?'ogg':'webm'), mimeType: audioBlob.type||'audio/webm', storeCode: currentUser.storeCode, employeeId: currentUser.empCode }) });
         const ud = await ur.json(); audioUploadUrl = ud.url || '';
       } catch {}
     }
@@ -1070,7 +1070,7 @@ async function startRecording() {
           const b64 = await new Promise((res,rej) => {
             const fr = new FileReader(); fr.onload = e => res(e.target.result); fr.onerror = rej; fr.readAsDataURL(audioBlob);
           });
-          const r = await fetch('/api/upload', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ fileData: b64, fileName: 'audio_'+Date.now()+'.'+(audioBlob.type.includes('mp4')?'mp4':audioBlob.type.includes('ogg')?'ogg':'webm'), mimeType: audioBlob.type||'audio/webm' }) });
+          const r = await fetch('/api/upload', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ fileData: b64, fileName: 'audio_'+Date.now()+'.'+(audioBlob.type.includes('mp4')?'mp4':audioBlob.type.includes('ogg')?'ogg':'webm'), mimeType: audioBlob.type||'audio/webm', storeCode: currentUser.storeCode, employeeId: currentUser.empCode }) });
           const d = await r.json(); audioUploadUrl = d.url || '';
         } catch(e) { console.warn('Audio upload failed', e); }
       })();
@@ -1153,7 +1153,7 @@ async function handlePhotos(e) {
       const b64 = await new Promise((res,rej) => {
         const fr = new FileReader(); fr.onload = ev => res(ev.target.result); fr.onerror = rej; fr.readAsDataURL(compressed);
       });
-      const d = await uploadWithRetry({ fileData: b64, fileName: 'photo_'+Date.now()+'.jpg', mimeType: 'image/jpeg' });
+      const d = await uploadWithRetry({ fileData: b64, fileName: 'photo_'+Date.now()+'.jpg', mimeType: 'image/jpeg', storeCode: currentUser.storeCode, employeeId: currentUser.empCode });
       if (d && d.url) {
         photoUrls.push(d.url);
         addPhotoThumb(d.url);
@@ -1324,11 +1324,6 @@ function togglePw(inputId, btn) {
 }
 function esc(s) {
   return String(s == null ? '' : s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
-}
-</script>
-</body>
-</html>
-,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
 }
 </script>
 </body>
