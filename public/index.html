@@ -1107,10 +1107,20 @@ async function startRecording() {
     mediaRecorder.ondataavailable = e => { if (e.data.size) audioChunks.push(e.data); };
     mediaRecorder.onstop = () => {
       audioBlob = new Blob(audioChunks, { type: mediaRecorder.mimeType||'audio/webm' });
+      stream.getTracks().forEach(t => t.stop());
+      // GUARD: empty/tiny blob means the recording captured no audio (header only).
+      // Don't upload garbage; warn the user and reset.
+      if (!audioBlob || audioBlob.size < 1024) {
+        showToast('Recording was empty (' + (audioBlob ? audioBlob.size : 0) + ' bytes). Please record again and speak clearly for at least 2 seconds.', 'error');
+        audioBlob = null;
+        audioUploadUrl = '';
+        const player = document.getElementById('audioPlayer');
+        player.src = ''; player.classList.add('hidden');
+        return;
+      }
       const url = URL.createObjectURL(audioBlob);
       const player = document.getElementById('audioPlayer');
       player.src = url; player.classList.remove('hidden');
-      stream.getTracks().forEach(t => t.stop());
       audioUploadPromise = (async () => {
         try {
           const b64 = await new Promise((res,rej) => {
@@ -1137,13 +1147,18 @@ async function startRecording() {
   }
 }
 function stopRecording() {
-  if (mediaRecorder && isRecording) {
-    mediaRecorder.stop(); isRecording = false;
-    clearInterval(recInterval);
-    document.getElementById('recBtn').innerHTML = '<span>⏺</span> Record Again';
-    document.getElementById('recBtn').className = 'rec-btn start';
-    document.getElementById('recTimer').style.display = 'none';
+  if (!mediaRecorder || !isRecording) return;
+  // Enforce minimum 2-second recording. If the user clicks Stop too early,
+  // the encoder hasn't emitted any actual audio data yet (just the container header).
+  if (recSeconds < 2) {
+    showToast('Please record for at least 2 seconds (currently ' + recSeconds + 's)', 'error');
+    return;
   }
+  mediaRecorder.stop(); isRecording = false;
+  clearInterval(recInterval);
+  document.getElementById('recBtn').innerHTML = '<span>⏺</span> Record Again';
+  document.getElementById('recBtn').className = 'rec-btn start';
+  document.getElementById('recTimer').style.display = 'none';
 }
 
 // ─── PHOTO UPLOAD ──────────────────────────────────────
@@ -1375,6 +1390,29 @@ function esc(s) {
 </body>
 </html>
 c(s) {
+  return String(s == null ? '' : s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+}
+</script>
+</body>
+</html>
+.getElementById('toast');
+  t.innerHTML = msg;
+  t.className = 'show' + (type ? ' ' + type : '');
+  clearTimeout(window._toastTimer);
+  window._toastTimer = setTimeout(() => { t.className = ''; }, 3000);
+}
+function setLoading(btnId, loading, text) {
+  const btn = document.getElementById(btnId);
+  if (!btn) return;
+  btn.disabled = loading;
+  btn.innerHTML = loading ? '<span class="spinner"></span>' + text : text;
+}
+function togglePw(inputId, btn) {
+  const inp = document.getElementById(inputId);
+  if (inp.type === 'password') { inp.type = 'text'; btn.textContent = '\u{1F648}'; }
+  else { inp.type = 'password'; btn.textContent = '\u{1F441}'; }
+}
+function esc(s) {
   return String(s == null ? '' : s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
 }
 </script>
