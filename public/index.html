@@ -458,6 +458,12 @@ select option:disabled{color:#bbb}
   </div>
 </div>
 
+<!-- IMAGE LIGHTBOX (in-app full-size viewer) -->
+<div id="imgLightbox" class="hidden" onclick="closeImageLightbox()" style="position:fixed;inset:0;background:rgba(0,0,0,0.85);z-index:300;display:flex;align-items:center;justify-content:center;padding:20px;cursor:zoom-out">
+  <img id="imgLightboxImg" src="" alt="" style="max-width:100%;max-height:100%;object-fit:contain;border-radius:8px;box-shadow:0 4px 20px rgba(0,0,0,0.5)">
+  <button onclick="event.stopPropagation();closeImageLightbox()" style="position:absolute;top:20px;right:20px;background:rgba(255,255,255,0.95);border:none;border-radius:50%;width:40px;height:40px;font-size:20px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center" aria-label="Close">&#x2715;</button>
+</div>
+
 <!-- TOAST -->
 <div id="toast"></div>
 
@@ -555,24 +561,32 @@ function driveOpenUrl(u) {
   const m = u.match(/[?&]id=([^&]+)/);
   return m ? 'https://drive.google.com/file/d/' + m[1] + '/view' : u;
 }
-// Renders a robust audio block: primary source via /api/file, JS fallback to
-// direct Drive download URL on error, and an "Open in Drive" link as ultimate fallback.
+// Renders Drive's NATIVE audio player via /preview iframe. This bypasses our
+// proxy entirely; Drive handles streaming, Range requests, and codec quirks.
+// Works on Chrome, Firefox, Safari, iOS, Android - any browser Drive supports.
 function renderAudioBlock(audioUrl) {
   if (!audioUrl) return '';
-  const proxyUrl  = esc(driveAudioUrl(audioUrl));
-  const directUrl = esc(driveDirectDownloadUrl(audioUrl));
-  const openUrl   = esc(driveOpenUrl(audioUrl));
+  const m = String(audioUrl).match(/[?&\/]id=([^&\/]+)|\/d\/([^\/]+)/);
+  const id = m ? (m[1] || m[2]) : '';
+  if (!id) return '<div style="margin-top:8px;font-size:12px;color:#c62828">Audio link broken</div>';
+  const previewUrl = 'https://drive.google.com/file/d/' + esc(id) + '/preview';
   return '<div style="margin-top:8px">' +
-    '<audio controls preload="metadata" style="width:100%;height:36px" ' +
-           'onerror="this.dataset.fallback||this.setAttribute(\'data-fallback\',\'1\'),this.src=\'' + directUrl + '\'">' +
-      '<source src="' + proxyUrl + '">' +
-      'Your browser does not support audio playback.' +
-    '</audio>' +
-    '<div style="font-size:11px;margin-top:4px">' +
-      '<a href="' + directUrl + '" download style="color:#8DBBCC;text-decoration:none">&#x2B07; Download</a> &nbsp;|&nbsp; ' +
-      '<a href="' + openUrl + '" target="_blank" rel="noopener" style="color:#8DBBCC;text-decoration:none">&#x1F517; Open in Drive</a>' +
-    '</div>' +
+    '<iframe src="' + previewUrl + '" style="width:100%;height:60px;border:0;border-radius:8px;background:#f5f5f5" allow="autoplay"></iframe>' +
   '</div>';
+}
+// Open an image full-size INSIDE the app (lightbox modal, no external link).
+function openImageLightbox(url) {
+  const lb = document.getElementById('imgLightbox');
+  const img = document.getElementById('imgLightboxImg');
+  if (!lb || !img) return;
+  img.src = url;
+  lb.classList.remove('hidden');
+}
+function closeImageLightbox() {
+  const lb = document.getElementById('imgLightbox');
+  const img = document.getElementById('imgLightboxImg');
+  if (lb) lb.classList.add('hidden');
+  if (img) img.src = '';
 }
 
 // ─── VIEW HELPERS ──────────────────────────────────────
@@ -1104,7 +1118,7 @@ async function startRecording() {
         } catch(e) { console.warn('Audio upload failed', e); }
       })();
     };
-    mediaRecorder.start();
+    mediaRecorder.start(1000); // emit a chunk every 1s so audioChunks is never empty
     isRecording = true;
     document.getElementById('recBtn').innerHTML = '<span>⏹</span> Stop Recording';
     document.getElementById('recBtn').className = 'rec-btn stop';
@@ -1301,7 +1315,7 @@ function buildEntryCard(entry) {
     '<div class="entry-body">' +
       (reqSummary ? '<div class="req-summary">' + reqSummary + '</div>' : '') +
       (entry.audioUrl ? renderAudioBlock(entry.audioUrl) : '') +
-      (entry.photoUrls && entry.photoUrls.length ? '<div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:8px">' + entry.photoUrls.map(u=>'<img src="' + esc(driveImgUrl(u)) + '" style="width:60px;height:60px;object-fit:cover;border-radius:8px;border:1px solid #ddd">').join('') + '</div>' : '') +
+      (entry.photoUrls && entry.photoUrls.length ? '<div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:8px">' + entry.photoUrls.map(u=>'<img src="' + esc(driveImgUrl(u)) + '" onclick="openImageLightbox(this.src)" style="width:60px;height:60px;object-fit:cover;border-radius:8px;border:1px solid #ddd;cursor:zoom-in">').join('') + '</div>' : '') +
       '<div class="status-actions">' +
         '<button class="btn btn-sm ' + (entry.fulfillmentStatus==='Fulfilled'?'btn-gray':'btn-primary') + '" onclick="updateStatus(\'' + esc(entry.id) + '\',\'Fulfilled\')">✔ Resolved</button>' +
         '<button class="btn btn-sm ' + (entry.fulfillmentStatus==='Not_Fulfilled'?'btn-gray':'btn-danger') + '" onclick="updateStatus(\'' + esc(entry.id) + '\',\'Not_Fulfilled\')">✘ Not Resolved</button>' +
