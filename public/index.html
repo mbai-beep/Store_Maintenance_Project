@@ -1389,32 +1389,3 @@ function esc(s) {
 </script>
 </body>
 </html>
-c(s) {
-  return String(s == null ? '' : s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
-}
-</script>
-</body>
-</html>
-.getElementById('toast');
-  t.innerHTML = msg;
-  t.className = 'show' + (type ? ' ' + type : '');
-  clearTimeout(window._toastTimer);
-  window._toastTimer = setTimeout(() => { t.className = ''; }, 3000);
-}
-function setLoading(btnId, loading, text) {
-  const btn = document.getElementById(btnId);
-  if (!btn) return;
-  btn.disabled = loading;
-  btn.innerHTML = loading ? '<span class="spinner"></span>' + text : text;
-}
-function togglePw(inputId, btn) {
-  const inp = document.getElementById(inputId);
-  if (inp.type === 'password') { inp.type = 'text'; btn.textContent = '\u{1F648}'; }
-  else { inp.type = 'password'; btn.textContent = '\u{1F441}'; }
-}
-function esc(s) {
-  return String(s == null ? '' : s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
-}
-</script>
-</body>
-</html>
