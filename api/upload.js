@@ -51,8 +51,13 @@ async function getOrCreateStoreFolder(drive, parentId, storeCode) {
 
 function stripDataUrl(s) {
   if (typeof s !== 'string') return s;
-  const m = s.match(/^data:[^;]+;base64,(.*)$/);
-  return m ? m[1] : s;
+  // MIME types like "audio/mp4;codecs=opus" have extra semicolons, so the old
+  // regex /^data:[^;]+;base64,(.*)$/ failed and returned the full data URL,
+  // which Buffer.from(...,'base64') then mangled to ~14 garbage bytes.
+  // Just find ";base64," literally and slice everything after it.
+  const idx = s.indexOf(';base64,');
+  if (idx < 0) return s;
+  return s.slice(idx + 8); // 8 = length of ';base64,'
 }
 
 module.exports = async function handler(req, res) {
