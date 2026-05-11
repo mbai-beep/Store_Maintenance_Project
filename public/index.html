@@ -899,6 +899,10 @@ async function doExpiredPasswordChange() {
       return showToast(r.error || 'Failed to change password', 'error');
     }
     document.getElementById('expiredPwdModal').classList.add('hidden');
+    // CRITICAL: clear the flags BEFORE initApp() so it doesn't re-open the
+    // first-login modal on top of the expired-password change we just made.
+    currentUser.isFirstLogin = false;
+    currentUser.mustChangePassword = false;
     showToast('Password updated! Logging you in...', 'success');
     await initApp();
   } catch { showToast('Network error', 'error'); }
