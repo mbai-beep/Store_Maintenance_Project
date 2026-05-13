@@ -96,7 +96,20 @@ body{font-family:'Segoe UI',Arial,sans-serif;background:#EAF4F8;min-height:100vh
 .photo-counter.error{color:#c62828}
 .photo-counter.ok{color:#2e7d32}
 /* ENTRY CARDS */
-.entry-card{background:#fff;border-radius:14px;margin:8px 12px;box-shadow:0 2px 8px rgba(0,0,0,.07);overflow:hidden}
+.entry-card{background:#fff;border-radius:14px;margin:8px 12px;box-shadow:0 2px 8px rgba(0,0,0,.07);overflow:hidden;position:relative}
+/* select-mode (admin delete) */
+.entry-card.sel-selected{border:2px solid #c62828;box-shadow:0 0 0 3px rgba(198,40,40,.18)}
+.entry-card .sel-cb-wrap{display:none;position:absolute;top:10px;left:10px;z-index:10}
+.sel-mode .entry-card .sel-cb-wrap{display:flex}
+.sel-cb{width:22px;height:22px;accent-color:#c62828;cursor:pointer}
+#deleteBar{display:none;position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:600px;background:#c62828;color:#fff;z-index:5000;padding:12px 16px;box-shadow:0 -2px 12px rgba(0,0,0,.2);align-items:center;justify-content:space-between;gap:8px}
+#deleteBar.db-show{display:flex}
+#deleteBar .db-count{font-size:14px;font-weight:600}
+#deleteBar .db-actions{display:flex;gap:8px}
+#deleteBar button{padding:8px 14px;border-radius:8px;font-size:13px;font-weight:600;border:none;cursor:pointer}
+#delConfirmOverlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:6000;align-items:center;justify-content:center}
+#delConfirmOverlay.dc-show{display:flex}
+#delConfirmBox{background:#fff;border-radius:16px;padding:24px 20px;max-width:320px;width:90%;text-align:center}
 .entry-header{padding:12px 14px;display:flex;justify-content:space-between;align-items:flex-start;gap:8px}
 .entry-name{font-size:15px;font-weight:700;color:#222}
 .entry-meta{font-size:12px;color:#777;margin-top:3px}
@@ -340,9 +353,35 @@ select option:disabled{color:#bbb}
     </div>
     <div style="padding:10px 12px 4px;display:flex;justify-content:space-between;align-items:flex-start">
       <div style="font-size:14px;font-weight:600;color:#555;line-height:1.5" id="reqsCount">Loading...</div>
-      <button class="btn-sm btn btn-secondary" onclick="loadMyReqs()">&#x21BB; Refresh</button>
+      <div style="display:flex;gap:6px">
+        <button class="btn-sm btn btn-secondary" id="selModeBtn" onclick="toggleSelectMode()" style="display:none">&#x2610; Select</button>
+        <button class="btn-sm btn btn-secondary" onclick="loadMyReqs()">&#x21BB; Refresh</button>
+      </div>
     </div>
     <div id="reqsList"><div class="loading-text">&#x23F3; Loading submissions...</div></div>
+
+    <!-- Delete action bar (admin/owner/manager select mode) -->
+    <div id="deleteBar">
+      <span class="db-count" id="dbSelCount">0 selected</span>
+      <div class="db-actions">
+        <button id="db-btn-all" onclick="selectAllCards()">Select All</button>
+        <button id="db-btn-del" onclick="confirmDeleteSelected()">&#x1F5D1; Delete</button>
+        <button id="db-btn-cancel" onclick="toggleSelectMode()">Cancel</button>
+      </div>
+    </div>
+
+    <!-- Delete confirm dialog -->
+    <div id="delConfirmOverlay">
+      <div id="delConfirmBox">
+        <div style="font-size:22px;margin-bottom:8px">&#x26A0;&#xFE0F;</div>
+        <div style="font-weight:700;font-size:16px;margin-bottom:8px">Delete Submissions?</div>
+        <div id="delConfirmMsg" style="font-size:13px;color:#555;margin-bottom:18px"></div>
+        <div style="display:flex;gap:10px;justify-content:center">
+          <button class="btn btn-sm btn-gray" onclick="closeDelConfirm()">Cancel</button>
+          <button class="btn btn-sm btn-danger" id="delConfirmOkBtn" onclick="executeDelete()">Delete</button>
+        </div>
+      </div>
+    </div>
   </div>
 
   <!-- ADMIN VIEW -->
@@ -624,6 +663,7 @@ async function initApp() {
   document.getElementById('headerSubtitle').textContent = currentUser.storeName || 'Store Maintenance';
   if (isPrivileged()) document.getElementById('submissionsLabel').textContent = 'All Submissions';
   if (canAccessAdmin()) document.getElementById('tabAdmin').classList.remove('hidden');
+  initSelectBtn(); // show the Select button for admin/owner/manager roles
   showView('newReq');
 
   await loadStores();
@@ -1325,6 +1365,7 @@ function buildEntryCard(entry) {
   } catch { reqSummary = esc(entry.requirement || ''); }
 
   card.innerHTML =
+    '<div class="sel-cb-wrap"><input type="checkbox" class="sel-cb" id="cb_' + esc(entry.id) + '" onclick="toggleCardSelect(\'' + esc(entry.id) + '\',this)"></div>' +
     '<div class="entry-header">' +
       '<div>' +
         '<div class="entry-name">' + esc(entry.storeName) + ' <span style="color:#999;font-size:12px">(' + esc(entry.storeCode) + ')</span></div>' +
@@ -1345,6 +1386,77 @@ function buildEntryCard(entry) {
       '</div>' +
     '</div>';
   return card;
+}
+
+// ─── SELECT & DELETE (admin/owner/manager only) ──────
+const DELETE_ROLES = ['admin', 'owner', 'manager'];
+let _selMode = false;
+const _selIds = new Set();
+function initSelectBtn() {
+  const btn = document.getElementById('selModeBtn');
+  if (!btn) return;
+  if (currentUser && DELETE_ROLES.includes(String(currentUser.role || '').toLowerCase())) btn.style.display = '';
+  else btn.style.display = 'none';
+}
+function toggleSelectMode() {
+  _selMode = !_selMode;
+  _selIds.clear();
+  const list = document.getElementById('reqsList');
+  const btn  = document.getElementById('selModeBtn');
+  if (_selMode) {
+    list.classList.add('sel-mode');
+    btn.innerHTML = '&#x2716; Cancel';
+  } else {
+    list.classList.remove('sel-mode');
+    btn.innerHTML = '&#x2610; Select';
+    list.querySelectorAll('.sel-cb').forEach(cb => cb.checked = false);
+    list.querySelectorAll('.entry-card').forEach(c => c.classList.remove('sel-selected'));
+  }
+  updateDeleteBar();
+}
+function toggleCardSelect(id, cb) {
+  if (cb.checked) { _selIds.add(id); document.getElementById('ecard_' + id).classList.add('sel-selected'); }
+  else { _selIds.delete(id); document.getElementById('ecard_' + id).classList.remove('sel-selected'); }
+  updateDeleteBar();
+}
+function selectAllCards() {
+  document.querySelectorAll('#reqsList .entry-card').forEach(card => {
+    const entryId = card.id.replace('ecard_', '');
+    const cb = document.getElementById('cb_' + entryId);
+    if (cb) { cb.checked = true; _selIds.add(entryId); card.classList.add('sel-selected'); }
+  });
+  updateDeleteBar();
+}
+function updateDeleteBar() {
+  const bar = document.getElementById('deleteBar');
+  const count = document.getElementById('dbSelCount');
+  if (_selMode) { bar.classList.add('db-show'); count.textContent = _selIds.size + ' selected'; }
+  else { bar.classList.remove('db-show'); }
+}
+function confirmDeleteSelected() {
+  if (_selIds.size === 0) return showToast('Select at least one submission', 'error');
+  document.getElementById('delConfirmMsg').textContent =
+    'This will permanently delete ' + _selIds.size + ' submission' + (_selIds.size !== 1 ? 's' : '') + '. This cannot be undone.';
+  document.getElementById('delConfirmOverlay').classList.add('dc-show');
+}
+function closeDelConfirm() {
+  document.getElementById('delConfirmOverlay').classList.remove('dc-show');
+}
+async function executeDelete() {
+  closeDelConfirm();
+  const ids = Array.from(_selIds);
+  const btn = document.getElementById('db-btn-del');
+  btn.disabled = true; btn.textContent = 'Deleting...';
+  try {
+    const r = await apiFetch('/api/delete-entries', 'POST', { ids });
+    if (!r.success) { showToast(r.error || 'Delete failed', 'error'); }
+    else {
+      showToast('Deleted ' + r.deleted + ' submission' + (r.deleted !== 1 ? 's' : ''), 'success');
+      toggleSelectMode();
+      loadMyReqs();
+    }
+  } catch { showToast('Network error during delete', 'error'); }
+  finally { btn.disabled = false; btn.innerHTML = '&#x1F5D1; Delete'; }
 }
 
 // ─── UPDATE STATUS ─────────────────────────────────────
@@ -1386,6 +1498,117 @@ function togglePw(inputId, btn) {
   const inp = document.getElementById(inputId);
   if (inp.type === 'password') { inp.type = 'text'; btn.textContent = '\u{1F648}'; }
   else { inp.type = 'password'; btn.textContent = '\u{1F441}'; }
+}
+function esc(s) {
+  return String(s == null ? '' : s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+}
+</script>
+</body>
+</html>
+ch(url, method, body) {
+  const opts = { method, headers: { 'Content-Type': 'application/json' } };
+  if (authToken) opts.headers['Authorization'] = 'Bearer ' + authToken;
+  if (body) opts.body = JSON.stringify(body);
+  const r = await fetch(url, opts);
+  return r.json();
+}
+
+// ─── UTILS ─────────────────────────────────────────────
+function showToast(msg, type) {
+  const t = document.getElementById('toast');
+  t.innerHTML = msg;
+  t.className = 'show' + (type ? ' ' + type : '');
+  clearTimeout(window._toastTimer);
+  window._toastTimer = setTimeout(() => { t.className = ''; }, 3000);
+}
+function setLoading(btnId, loading, text) {
+  const btn = document.getElementById(btnId);
+  if (!btn) return;
+  btn.disabled = loading;
+  btn.innerHTML = loading ? '<span class="spinner"></span>' + text : text;
+}
+function togglePw(inputId, btn) {
+  const inp = document.getElementById(inputId);
+  if (inp.type === 'password') { inp.type = 'text'; btn.textContent = '\u{1F648}'; }
+  else { inp.type = 'password'; btn.textContent = '\u{1F441}'; }
+}
+function esc(s) {
+  return String(s == null ? '' : s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+}
+</script>
+</body>
+</html>
+entById('delConfirmMsg').textContent =
+    'This will permanently delete ' + _selIds.size + ' submission' + (_selIds.size !== 1 ? 's' : '') + '. This cannot be undone.';
+  document.getElementById('delConfirmOverlay').classList.add('dc-show');
+}
+function closeDelConfirm() {
+  document.getElementById('delConfirmOverlay').classList.remove('dc-show');
+}
+async function executeDelete() {
+  closeDelConfirm();
+  const ids = Array.from(_selIds);
+  const btn = document.getElementById('db-btn-del');
+  btn.disabled = true; btn.textContent = 'Deleting...';
+  try {
+    const r = await apiFetch('/api/delete-entries', 'POST', { ids });
+    if (!r.success) { showToast(r.error || 'Delete failed', 'error'); }
+    else {
+      showToast('Deleted ' + r.deleted + ' submission' + (r.deleted !== 1 ? 's' : ''), 'success');
+      toggleSelectMode();
+      loadMyReqs();
+    }
+  } catch { showToast('Network error during delete', 'error'); }
+  finally { btn.disabled = false; btn.innerHTML = '&#x1F5D1; Delete'; }
+}
+
+// ─── UPDATE STATUS ─────────────────────────────────────
+async function updateStatus(id, status) {
+  try {
+    const r = await apiFetch('/api/update-status', 'POST', { id, fulfillmentStatus: status });
+    if (!r.success) return showToast(r.error || 'Update failed', 'error');
+    showToast('Marked as ' + status.replace('_',' '), 'success');
+    loadMyReqs();
+  } catch {
+    showToast('Network error', 'error');
+  }
+}
+
+// ─── API FETCH ─────────────────────────────────────────
+async function apiFetch(url, method, body) {
+  const opts = { method, headers: { 'Content-Type': 'application/json' } };
+  if (authToken) opts.headers['Authorization'] = 'Bearer ' + authToken;
+  if (body) opts.body = JSON.stringify(body);
+  const r = await fetch(url, opts);
+  return r.json();
+}
+
+// ─── UTILS ─────────────────────────────────────────────
+function showToast(msg, type) {
+  const t = document.getElementById('toast');
+  t.innerHTML = msg;
+  t.className = 'show' + (type ? ' ' + type : '');
+  clearTimeout(window._toastTimer);
+  window._toastTimer = setTimeout(() => { t.className = ''; }, 3000);
+}
+function setLoading(btnId, loading, text) {
+  const btn = document.getElementById(btnId);
+  if (!btn) return;
+  btn.disabled = loading;
+  btn.innerHTML = loading ? '<span class="spinner"></span>' + text : text;
+}
+function togglePw(inputId, btn) {
+  const inp = document.getElementById(inputId);
+  if (inp.type === 'password') { inp.type = 'text'; btn.textContent = '\u{1F648}'; }
+  else { inp.type = 'password'; btn.textContent = '\u{1F441}'; }
+}
+function esc(s) {
+  return String(s == null ? '' : s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+}
+</script>
+</body>
+</html>
+ = 'password'; btn.textContent = '\u{1F441}'; }
 }
 function esc(s) {
   return String(s == null ? '' : s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
