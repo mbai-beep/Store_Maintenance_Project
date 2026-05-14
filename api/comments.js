@@ -11,7 +11,7 @@ const CORS = {
   'Access-Control-Allow-Headers': 'Content-Type, Authorization',
 };
 
-const DELETE_ROLES = new Set(['admin', 'owner', 'manager']);
+const DELETE_ROLES = new Set(['admin']); // only admin can delete remarks
 
 function toColLetter(idx /* 0-based */) {
   let s = '';
@@ -134,7 +134,7 @@ module.exports = async function handler(req, res) {
 
     if (req.method === 'DELETE') {
       if (!DELETE_ROLES.has(role)) {
-        return res.status(403).json({ success: false, error: 'Admin / Owner / Manager role required to delete remarks' });
+        return res.status(403).json({ success: false, error: 'Admin role required to delete remarks' });
       }
       const id = (req.query && req.query.id) ? String(req.query.id) : '';
       if (!id) return res.status(200).json({ success: false, error: 'Comment ID required' });

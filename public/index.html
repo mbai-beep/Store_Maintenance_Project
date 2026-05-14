@@ -1570,7 +1570,7 @@ function renderComments(entryId, comments) {
   if (!listEl) return;
   if (btn) btn.innerHTML = '&#x1F4AC; Remarks' + (comments.length ? ' (' + comments.length + ')' : '');
   if (!comments.length) { listEl.innerHTML = '<div style="font-size:11px;color:#aaa;padding:4px 0">No remarks yet.</div>'; return; }
-  const canDel = currentUser && ['admin','owner','manager'].includes(String(currentUser.role || '').toLowerCase());
+  const canDel = currentUser && String(currentUser.role || '').toLowerCase() === 'admin'; // admin only
   listEl.innerHTML = comments.map(c => {
     const initials = (c.commenter_name || '?').split(' ').map(w => w[0]).join('').substring(0,2).toUpperCase();
     const delBtn = canDel ? '<button class="rmk-del" title="Delete" onclick="deleteComment(\'' + esc(c.id) + '\',\'' + esc(entryId) + '\')">&#x2715;</button>' : '';
@@ -1620,4 +1620,36 @@ async function batchLoadCommentCounts(entries) {
   if (!entries || !entries.length) return;
   try {
     const ids = entries.map(e => e.id).join(',');
-    const counts = await apiFetch('/api/comments?action=cou
+    const counts = await apiFetch('/api/comments?action=counts&ids=' + encodeURIComponent(ids), 'GET');
+    entries.forEach(e => {
+      const btn = document.getElementById('rmkbtn_' + e.id);
+      if (btn && counts[e.id] > 0) btn.innerHTML = '&#x1F4AC; Remarks (' + counts[e.id] + ')';
+    });
+  } catch {}
+}
+
+// ─── UTILS ─────────────────────────────────────────────
+function showToast(msg, type) {
+  const t = document.getElementById('toast');
+  t.innerHTML = msg;
+  t.className = 'show' + (type ? ' ' + type : '');
+  clearTimeout(window._toastTimer);
+  window._toastTimer = setTimeout(() => { t.className = ''; }, 3000);
+}
+function setLoading(btnId, loading, text) {
+  const btn = document.getElementById(btnId);
+  if (!btn) return;
+  btn.disabled = loading;
+  btn.innerHTML = loading ? '<span class="spinner"></span>' + text : text;
+}
+function togglePw(inputId, btn) {
+  const inp = document.getElementById(inputId);
+  if (inp.type === 'password') { inp.type = 'text'; btn.textContent = '\u{1F648}'; }
+  else { inp.type = 'password'; btn.textContent = '\u{1F441}'; }
+}
+function esc(s) {
+  return String(s == null ? '' : s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+}
+</script>
+</body>
+</html>
