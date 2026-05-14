@@ -1349,10 +1349,31 @@ async function loadMyReqs() {
     }
     document.getElementById('reqsCount').innerHTML = entries.length + ' submission' + (entries.length !== 1 ? 's' : '') + hint;
     document.getElementById('reqsList').innerHTML = '';
-    entries.forEach(entry => document.getElementById('reqsList').appendChild(buildEntryCard(entry)));
-    batchLoadCommentCounts(entries);
+    // Render each entry independently — one bad entry should NOT blank the whole list.
+    let rendered = 0, failed = 0;
+    entries.forEach(entry => {
+      try {
+        document.getElementById('reqsList').appendChild(buildEntryCard(entry));
+        rendered++;
+      } catch (err) {
+        failed++;
+        console.error('Failed to render entry', entry && entry.id, err);
+        const errDiv = document.createElement('div');
+        errDiv.className = 'entry-card';
+        errDiv.style.padding = '12px';
+        errDiv.style.color = '#c62828';
+        errDiv.innerHTML = '<strong>⚠ Failed to render entry</strong> ' + esc((entry && entry.id) || '(unknown id)') +
+                           '<div style="font-size:11px;margin-top:4px;color:#888">' + esc(err && err.message) + '</div>';
+        document.getElementById('reqsList').appendChild(errDiv);
+      }
+    });
+    if (failed > 0) console.warn('Rendered ' + rendered + ' / failed ' + failed);
+    // Comment counts: call but isolate errors so they can't break the list
+    try { batchLoadCommentCounts(entries); } catch (e) { console.warn('comment counts failed:', e); }
   } catch(e) {
-    document.getElementById('reqsList').innerHTML = '<div class="loading-text" style="color:#c62828">Error loading. Please refresh.</div>';
+    console.error('loadMyReqs fatal error:', e);
+    document.getElementById('reqsList').innerHTML =
+      '<div class="loading-text" style="color:#c62828">Error loading. Please refresh.<br><span style="font-size:11px">' + esc(e && e.message) + '</span></div>';
   }
 }
 
