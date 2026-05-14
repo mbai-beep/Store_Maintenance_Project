@@ -95,6 +95,25 @@ body{font-family:'Segoe UI',Arial,sans-serif;background:#EAF4F8;min-height:100vh
 .photo-counter{font-size:12px;color:#777;margin-top:6px;font-weight:600}
 .photo-counter.error{color:#c62828}
 .photo-counter.ok{color:#2e7d32}
+/* REMARKS / COMMENTS */
+.rmk-toggle-btn{display:block;width:100%;margin:10px 0 0;padding:8px 12px;background:#E3F2F8;color:#8DBBCC;border:1.5px solid #c5cae9;border-radius:8px;text-align:left;font-size:12px;font-weight:600;cursor:pointer}
+.rmk-panel{background:#f8faff;border-top:1px solid #e8eaf6;padding:12px;display:none}
+.rmk-item{display:flex;gap:8px;margin-bottom:10px;align-items:flex-start}
+.rmk-avatar{width:28px;height:28px;min-width:28px;border-radius:50%;background:#8DBBCC;color:#fff;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700}
+.rmk-body{flex:1;min-width:0}
+.rmk-name{font-size:11px;font-weight:700;color:#8DBBCC}
+.rmk-role{font-size:10px;color:#888;margin-left:3px;text-transform:capitalize}
+.rmk-time{font-size:10px;color:#bbb;margin-left:4px}
+.rmk-text{font-size:12px;color:#333;margin-top:2px;word-break:break-word;line-height:1.4}
+.rmk-del{background:none;border:none;color:#ddd;cursor:pointer;font-size:13px;padding:2px 4px;flex-shrink:0;line-height:1}
+.rmk-del:hover{color:#c62828}
+.quick-rmk{display:flex;flex-wrap:wrap;gap:5px;margin:8px 0 6px}
+.quick-rmk button{padding:4px 9px;border-radius:16px;border:1.5px solid #8DBBCC;background:#fff;color:#555;font-size:11px;cursor:pointer;white-space:nowrap}
+.quick-rmk button:active{background:#e3f2fd}
+.rmk-input-row{display:flex;gap:6px}
+.rmk-inp{flex:1;padding:8px 10px;border:1.5px solid #ddd;border-radius:8px;font-size:12px;outline:none;min-width:0;background:#fff}
+.rmk-inp:focus{border-color:#8DBBCC}
+.rmk-post{padding:8px 14px;background:#8DBBCC;color:#fff;border:none;border-radius:8px;font-size:12px;cursor:pointer;font-weight:600;white-space:nowrap}
 /* ENTRY CARDS */
 .entry-card{background:#fff;border-radius:14px;margin:8px 12px;box-shadow:0 2px 8px rgba(0,0,0,.07);overflow:hidden;position:relative}
 /* select-mode (admin delete) */
@@ -1331,6 +1350,7 @@ async function loadMyReqs() {
     document.getElementById('reqsCount').innerHTML = entries.length + ' submission' + (entries.length !== 1 ? 's' : '') + hint;
     document.getElementById('reqsList').innerHTML = '';
     entries.forEach(entry => document.getElementById('reqsList').appendChild(buildEntryCard(entry)));
+    batchLoadCommentCounts(entries);
   } catch(e) {
     document.getElementById('reqsList').innerHTML = '<div class="loading-text" style="color:#c62828">Error loading. Please refresh.</div>';
   }
@@ -1383,6 +1403,21 @@ function buildEntryCard(entry) {
         '<button class="btn btn-sm ' + (entry.fulfillmentStatus==='Fulfilled'?'btn-gray':'btn-primary') + '" onclick="updateStatus(\'' + esc(entry.id) + '\',\'Fulfilled\')">✔ Resolved</button>' +
         '<button class="btn btn-sm ' + (entry.fulfillmentStatus==='Not_Fulfilled'?'btn-gray':'btn-danger') + '" onclick="updateStatus(\'' + esc(entry.id) + '\',\'Not_Fulfilled\')">✘ Not Resolved</button>' +
         (entry.fulfillmentStatus !== 'Pending' ? '<button class="btn btn-sm btn-gray" onclick="updateStatus(\'' + esc(entry.id) + '\',\'Pending\')">Reset</button>' : '') +
+      '</div>' +
+      // Remarks toggle button + collapsible panel
+      '<button id="rmkbtn_' + esc(entry.id) + '" class="rmk-toggle-btn" onclick="toggleRemarks(\'' + esc(entry.id) + '\')">&#x1F4AC; Remarks</button>' +
+      '<div id="rmk_' + esc(entry.id) + '" class="rmk-panel">' +
+        '<div class="rmk-list" style="margin-bottom:8px"></div>' +
+        '<div class="quick-rmk">' +
+          '<button onclick="quickRemark(\'' + esc(entry.id) + '\',\'✅ Request Granted\')">✅ Granted</button>' +
+          '<button onclick="quickRemark(\'' + esc(entry.id) + '\',\'\u{1F527} Working on it\')">\u{1F527} Working</button>' +
+          '<button onclick="quickRemark(\'' + esc(entry.id) + '\',\'⏳ Delayed\')">⏳ Delayed</button>' +
+          '<button onclick="quickRemark(\'' + esc(entry.id) + '\',\'\u{1F6AB} Not Available\')">\u{1F6AB} N/A</button>' +
+        '</div>' +
+        '<div class="rmk-input-row">' +
+          '<input id="rmkinp_' + esc(entry.id) + '" class="rmk-inp" placeholder="Type a remark..." type="text" onkeydown="if(event.key===\'Enter\')postComment(\'' + esc(entry.id) + '\')">' +
+          '<button id="rmkpost_' + esc(entry.id) + '" class="rmk-post" onclick="postComment(\'' + esc(entry.id) + '\')">Post</button>' +
+        '</div>' +
       '</div>' +
     '</div>';
   return card;
@@ -1505,3 +1540,84 @@ function esc(s) {
 </script>
 </body>
 </html>
+Content-Type': 'application/json' } };
+  if (authToken) opts.headers['Authorization'] = 'Bearer ' + authToken;
+  if (body) opts.body = JSON.stringify(body);
+  const r = await fetch(url, opts);
+  return r.json();
+}
+
+// ─── REMARKS / COMMENTS ───────────────────────────────
+function toggleRemarks(entryId) {
+  const panel = document.getElementById('rmk_' + entryId);
+  if (!panel) return;
+  const isOpen = panel.style.display === 'block';
+  if (isOpen) { panel.style.display = 'none'; }
+  else { panel.style.display = 'block'; loadComments(entryId); }
+}
+async function loadComments(entryId) {
+  const listEl = document.querySelector('#rmk_' + entryId + ' .rmk-list');
+  if (!listEl) return;
+  listEl.innerHTML = '<div style="font-size:11px;color:#aaa;padding:4px 0">Loading...</div>';
+  try {
+    const data = await apiFetch('/api/comments?entryId=' + encodeURIComponent(entryId), 'GET');
+    renderComments(entryId, Array.isArray(data) ? data : []);
+  } catch { listEl.innerHTML = '<div style="font-size:11px;color:#c62828">Failed to load remarks.</div>'; }
+}
+function renderComments(entryId, comments) {
+  const listEl = document.querySelector('#rmk_' + entryId + ' .rmk-list');
+  const btn = document.getElementById('rmkbtn_' + entryId);
+  if (!listEl) return;
+  if (btn) btn.innerHTML = '&#x1F4AC; Remarks' + (comments.length ? ' (' + comments.length + ')' : '');
+  if (!comments.length) { listEl.innerHTML = '<div style="font-size:11px;color:#aaa;padding:4px 0">No remarks yet.</div>'; return; }
+  const canDel = currentUser && ['admin','owner','manager'].includes(String(currentUser.role || '').toLowerCase());
+  listEl.innerHTML = comments.map(c => {
+    const initials = (c.commenter_name || '?').split(' ').map(w => w[0]).join('').substring(0,2).toUpperCase();
+    const delBtn = canDel ? '<button class="rmk-del" title="Delete" onclick="deleteComment(\'' + esc(c.id) + '\',\'' + esc(entryId) + '\')">&#x2715;</button>' : '';
+    return '<div class="rmk-item" id="cmt_' + esc(c.id) + '">' +
+      '<div class="rmk-avatar">' + esc(initials) + '</div>' +
+      '<div class="rmk-body">' +
+        '<span class="rmk-name">' + esc(c.commenter_name) + '</span>' +
+        '<span class="rmk-role">' + esc(c.commenter_role) + '</span>' +
+        '<span class="rmk-time">' + formatCommentTime(c.created_at) + '</span>' +
+        '<div class="rmk-text">' + esc(c.comment) + '</div>' +
+      '</div>' + delBtn + '</div>';
+  }).join('');
+}
+function formatCommentTime(ts) {
+  if (!ts) return '';
+  const m = String(ts).match(/^(\d{2})-(\d{2})-(\d{4}) (\d{2}):(\d{2})/);
+  if (m) { const mo = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec']; return parseInt(m[1]) + ' ' + mo[parseInt(m[2])-1] + ', ' + m[4] + ':' + m[5]; }
+  return ts;
+}
+function quickRemark(entryId, text) {
+  const inp = document.getElementById('rmkinp_' + entryId);
+  if (inp) { inp.value = text; inp.focus(); }
+}
+async function postComment(entryId) {
+  const inp = document.getElementById('rmkinp_' + entryId);
+  const btn = document.getElementById('rmkpost_' + entryId);
+  if (!inp) return;
+  const comment = inp.value.trim();
+  if (!comment) return;
+  if (btn) { btn.disabled = true; btn.textContent = '...'; }
+  try {
+    const r = await apiFetch('/api/comments', 'POST', { entryId, comment });
+    if (r.success) { inp.value = ''; await loadComments(entryId); }
+    else showToast(r.error || 'Failed to post remark', 'error');
+  } catch { showToast('Network error', 'error'); }
+  finally { if (btn) { btn.disabled = false; btn.textContent = 'Post'; } }
+}
+async function deleteComment(commentId, entryId) {
+  if (!confirm('Delete this remark?')) return;
+  try {
+    const r = await apiFetch('/api/comments?id=' + encodeURIComponent(commentId), 'DELETE');
+    if (r.success) await loadComments(entryId);
+    else showToast(r.error || 'Delete failed', 'error');
+  } catch { showToast('Network error', 'error'); }
+}
+async function batchLoadCommentCounts(entries) {
+  if (!entries || !entries.length) return;
+  try {
+    const ids = entries.map(e => e.id).join(',');
+    const counts = await apiFetch('/api/comments?action=cou
