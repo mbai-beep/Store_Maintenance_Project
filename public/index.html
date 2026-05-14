@@ -1536,6 +1536,145 @@ async function apiFetch(url, method, body) {
   return r.json();
 }
 
+// ─── REMARKS / COMMENTS ───────────────────────────────
+function toggleRemarks(entryId) {
+  const panel = document.getElementById('rmk_' + entryId);
+  if (!panel) return;
+  const isOpen = panel.style.display === 'block';
+  if (isOpen) {
+    panel.style.display = 'none';
+  } else {
+    panel.style.display = 'block';
+    loadComments(entryId);
+  }
+}
+
+async function loadComments(entryId) {
+  try {
+    const r = await apiFetch('/api/comments?entryId=' + encodeURIComponent(entryId), 'GET');
+    const list = Array.isArray(r) ? r : [];
+    renderComments(entryId, list);
+  } catch (e) {
+    console.warn('loadComments failed:', e);
+  }
+}
+
+function formatCommentTime(ts) {
+  if (!ts) return '';
+  // ts is in "DD-MM-YYYY HH:MM:SS" IST format - just show DD-MMM HH:MM
+  const m = String(ts).match(/^(\d{2})-(\d{2})-(\d{4})\s+(\d{2}):(\d{2})/);
+  if (!m) return ts;
+  const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  const mo = months[parseInt(m[2], 10) - 1] || m[2];
+  return m[1] + ' ' + mo + ' ' + m[4] + ':' + m[5];
+}
+
+function renderComments(entryId, comments) {
+  const panel = document.getElementById('rmk_' + entryId);
+  if (!panel) return;
+  const listEl = panel.querySelector('.rmk-list');
+  if (!listEl) return;
+  // Only admin can delete remarks
+  const canDel = currentUser && String(currentUser.role || '').toLowerCase() === 'admin';
+  if (!comments.length) {
+    listEl.innerHTML = '<div style="color:#999;font-size:11px;padding:4px 0">No remarks yet.</div>';
+  } else {
+    listEl.innerHTML = comments.map(c => {
+      const initials = (c.commenter_name || '?').trim().charAt(0).toUpperCase();
+      const role = c.commenter_role && c.commenter_role !== 'employee' ? c.commenter_role : '';
+      const delBtn = canDel
+        ? '<button class="rmk-del" title="Delete remark" onclick="deleteComment(\'' + esc(c.id) + '\',\'' + esc(entryId) + '\')">&#x2716;</button>'
+        : '';
+      return ''
+        + '<div class="rmk-item">'
+        +   '<div class="rmk-avatar">' + esc(initials) + '</div>'
+        +   '<div class="rmk-body">'
+        +     '<span class="rmk-name">' + esc(c.commenter_name || '') + '</span>'
+        +     (role ? '<span class="rmk-role">(' + esc(role) + ')</span>' : '')
+        +     '<span class="rmk-time">' + esc(formatCommentTime(c.created_at)) + '</span>'
+        +     '<div class="rmk-text">' + esc(c.comment || '') + '</div>'
+        +   '</div>'
+        +   delBtn
+        + '</div>';
+    }).join('');
+  }
+  // Update count badge on the toggle button
+  const btn = document.getElementById('rmkbtn_' + entryId);
+  if (btn) {
+    const n = comments.length;
+    btn.innerHTML = '&#x1F4AC; Remarks' + (n ? ' (' + n + ')' : '');
+  }
+}
+
+async function quickRemark(entryId, text) {
+  if (!text) return;
+  try {
+    const r = await apiFetch('/api/comments', 'POST', { entryId, comment: text });
+    if (r && r.success) {
+      loadComments(entryId);
+      showToast('Remark added', 'success');
+    } else {
+      showToast((r && r.error) || 'Failed to add remark', 'error');
+    }
+  } catch (e) {
+    showToast('Failed to add remark', 'error');
+  }
+}
+
+async function postComment(entryId) {
+  const inp = document.getElementById('rmkinp_' + entryId);
+  if (!inp) return;
+  const text = (inp.value || '').trim();
+  if (!text) { showToast('Please enter a remark', 'error'); return; }
+  const btn = document.getElementById('rmkpost_' + entryId);
+  if (btn) { btn.disabled = true; btn.textContent = '...'; }
+  try {
+    const r = await apiFetch('/api/comments', 'POST', { entryId, comment: text });
+    if (r && r.success) {
+      inp.value = '';
+      loadComments(entryId);
+    } else {
+      showToast((r && r.error) || 'Failed to post', 'error');
+    }
+  } catch (e) {
+    showToast('Failed to post remark', 'error');
+  } finally {
+    if (btn) { btn.disabled = false; btn.textContent = 'Post'; }
+  }
+}
+
+async function deleteComment(commentId, entryId) {
+  if (!confirm('Delete this remark?')) return;
+  try {
+    const r = await apiFetch('/api/comments?id=' + encodeURIComponent(commentId), 'DELETE');
+    if (r && r.success) {
+      loadComments(entryId);
+      showToast('Remark deleted', 'success');
+    } else {
+      showToast((r && r.error) || 'Failed to delete', 'error');
+    }
+  } catch (e) {
+    showToast('Failed to delete remark', 'error');
+  }
+}
+
+async function batchLoadCommentCounts(entries) {
+  if (!entries || !entries.length) return;
+  const ids = entries.map(e => e.id).filter(Boolean).slice(0, 200).join(',');
+  if (!ids) return;
+  try {
+    const counts = await apiFetch('/api/comments?action=counts&ids=' + encodeURIComponent(ids), 'GET');
+    if (!counts || typeof counts !== 'object') return;
+    Object.keys(counts).forEach(id => {
+      const n = Number(counts[id] || 0);
+      const btn = document.getElementById('rmkbtn_' + id);
+      if (btn) btn.innerHTML = '&#x1F4AC; Remarks' + (n ? ' (' + n + ')' : '');
+    });
+  } catch (e) {
+    console.warn('batchLoadCommentCounts failed:', e);
+  }
+}
+
 // ─── UTILS ─────────────────────────────────────────────
 function showToast(msg, type) {
   const t = document.getElementById('toast');
