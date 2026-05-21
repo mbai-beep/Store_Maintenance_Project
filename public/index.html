@@ -20,7 +20,7 @@ body{font-family:'Segoe UI',Arial,sans-serif;background:#EAF4F8;min-height:100vh
 .page{width:100%;max-width:600px;padding:0 0 80px;flex:1}
 /* LOGIN */
 #loginSection{width:100%;max-width:600px;min-height:100vh;display:flex;flex-direction:column;align-items:center}
-.login-hero{width:100%;background:linear-gradient(135deg,#8DBBCC,#8DBBCC);color:#fff;padding:28px 20px 26px;text-align:center}
+.login-hero{width:100%;background:linear-gradient(135deg,#8DBBCC,#8DBBCC);color:#fff;padding:40px 20px 30px;text-align:center}
 .login-hero .logo{font-size:52px;margin-bottom:8px}
 .login-hero h1{font-size:22px;font-weight:700}
 .login-hero p{font-size:13px;opacity:.85;margin-top:4px}
@@ -193,7 +193,8 @@ select option:disabled{color:#bbb}
     <div id="logoFallback" class="mb-logo-text" style="display:none">Meena Bazaar</div>
   </div>
   <div class="login-hero">
-    <h1>Store Maintenance</h1>
+    <div class="logo">&#x1F527;</div>
+    <h1>MB Store Maintenance</h1>
     <p>Store Issue &amp; Repair Tracker</p>
   </div>
   <div class="login-card">
@@ -274,14 +275,9 @@ select option:disabled{color:#bbb}
 <!-- MAIN APP -->
 <div id="appSection" class="hidden" style="width:100%;max-width:600px;display:flex;flex-direction:column;min-height:100vh">
   <div class="app-header">
-    <div style="display:flex;align-items:center;gap:10px;min-width:0">
-      <img src="/meena_bazaar_logo.png?v=2" alt="Meena Bazaar"
-           style="height:34px;width:auto;background:#fff;border-radius:6px;padding:3px 6px;flex-shrink:0"
-           onerror="this.style.display='none'">
-      <div style="min-width:0">
-        <div class="title">Store Maintenance</div>
-        <div class="subtitle" id="headerSubtitle">Issue Tracker</div>
-      </div>
+    <div>
+      <div class="title">MB Store Maintenance</div>
+      <div class="subtitle" id="headerSubtitle">Issue Tracker</div>
     </div>
     <div style="display:flex;align-items:center;gap:8px">
       <div class="user-badge" id="userBadge">Loading...</div>
